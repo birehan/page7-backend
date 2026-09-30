@@ -60,7 +60,7 @@ deploy_pool() {
     --cpu=1 \
     --memory=1Gi \
     --set-cloudsql-instances="$CONNECTION_NAME" \
-    --set-env-vars="^|^APP_ENV=${APP_ENV}|STORAGE__PROVIDER=r2|LLM__PROVIDER=auto|SOCIAL__PROVIDER=auto|ZERNIO_CREDENTIAL_ALIASES=t1,t2,t3,t4|SOCIAL__FILL_TO_TIER=3" \
+    --set-env-vars="^|^APP_ENV=${APP_ENV}|DATABASE__POOL_SIZE=2|STORAGE__PROVIDER=r2|LLM__PROVIDER=auto|SOCIAL__PROVIDER=auto|ZERNIO_CREDENTIAL_ALIASES=t1,t2,t3,t4|SOCIAL__FILL_TO_TIER=3" \
     "${SECRET_FLAGS[@]}" \
     --quiet
 }
