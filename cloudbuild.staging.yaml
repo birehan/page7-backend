@@ -70,27 +70,39 @@ steps:
 
   - name: gcr.io/cloud-builders/docker
     id: push-api
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:$SHORT_SHA]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:$SHORT_SHA
 
   - name: gcr.io/cloud-builders/docker
     id: push-api-staging
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:staging]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:staging
 
   - name: gcr.io/cloud-builders/docker
     id: push-worker
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:$SHORT_SHA]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:$SHORT_SHA
 
   - name: gcr.io/cloud-builders/docker
     id: push-worker-staging
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:staging]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:staging
 
   - name: gcr.io/cloud-builders/docker
     id: push-scheduler
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:$SHORT_SHA]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:$SHORT_SHA
 
   - name: gcr.io/cloud-builders/docker
     id: push-scheduler-staging
-    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:staging]
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:staging
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     id: migrate
