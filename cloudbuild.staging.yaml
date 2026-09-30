@@ -1,0 +1,127 @@
+# Staging CD: push to main → build api/worker/scheduler → migrate → deploy.
+# Trigger: branch ^main$
+substitutions:
+  _REGION: me-central1
+  _AR_REPO: page7
+  _SQL_INSTANCE: page7
+  _FRONTEND_ORIGIN: https://page7-git-staging-birehans-projects.vercel.app
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  env:
+    - DOCKER_BUILDKIT=1
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    id: pull-cache
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        for t in api worker scheduler; do
+          IMG="${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/$$t:staging"
+          docker pull "$$IMG" || echo "==> No staging cache for $$t"
+        done
+
+  - name: gcr.io/cloud-builders/docker
+    id: build-api
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --target=api
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:staging
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:staging
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    id: build-worker
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --target=worker
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:staging
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:staging
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    id: build-scheduler
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --target=scheduler
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:staging
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:$SHORT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:staging
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-api
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:$SHORT_SHA]
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-api-staging
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/api:staging]
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-worker
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:$SHORT_SHA]
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-worker-staging
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/worker:staging]
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-scheduler
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:$SHORT_SHA]
+
+  - name: gcr.io/cloud-builders/docker
+    id: push-scheduler-staging
+    args: [push, ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/scheduler:staging]
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: migrate
+    entrypoint: bash
+    env:
+      - PROJECT=$PROJECT_ID
+      - REGION=${_REGION}
+      - SQL_INSTANCE=${_SQL_INSTANCE}
+      - DATABASE_URL_SECRET=DATABASE_URL
+    args:
+      - -ceu
+      - |
+        apt-get update -qq && apt-get install -y -qq curl ca-certificates python3 >/dev/null
+        curl -LsSf https://astral.sh/uv/0.12.9/install.sh | sh
+        export PATH="$HOME/.local/bin:$PATH"
+        bash deploy/migrate-cloudsql.sh
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: deploy
+    entrypoint: bash
+    env:
+      - PROJECT=$PROJECT_ID
+      - REGION=${_REGION}
+      - AR_REPO=${_AR_REPO}
+      - IMAGE_TAG=$SHORT_SHA
+      - FRONTEND_ORIGIN=${_FRONTEND_ORIGIN}
+    args:
+      - -ceu
+      - |
+        chmod +x deploy/deploy-api.sh deploy/deploy-workers.sh
+        ./deploy/deploy-api.sh
+        ./deploy/deploy-workers.sh
+
+timeout: 2400s

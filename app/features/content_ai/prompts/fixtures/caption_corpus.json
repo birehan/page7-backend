@@ -1,0 +1,170 @@
+[
+  {
+    "theme_index": 0,
+    "theme": "booking / appointment",
+    "ar_gulf": "{brand} — يومكم يبدأ بابتسامة ✨ احجزوا موعدكم الآن",
+    "ar_msa": "{brand} — يبدأ يومكم بابتسامة ✨ يُرجى حجز موعدكم الآن",
+    "en": "{brand} — your smile deserves the best care. Book today."
+  },
+  {
+    "theme_index": 1,
+    "theme": "welcome / greeting",
+    "ar_gulf": "فريقنا في {brand} جاهز يستقبلكم بكل ترحاب — زورونا هذا الأسبوع",
+    "ar_msa": "فريق {brand} على استعداد لاستقبالكم بكل ترحاب — تفضّلوا بزيارتنا هذا الأسبوع",
+    "en": "Fresh moments at {brand}, every single morning."
+  },
+  {
+    "theme_index": 2,
+    "theme": "tip of the day",
+    "ar_gulf": "نصيحة اليوم من {brand}: خطوة بسيطة تحمي راحتكم اليوم وبكرة",
+    "ar_msa": "نصيحة اليوم من {brand}: خطوة بسيطة تحافظ على راحتكم اليوم وغدًا",
+    "en": "A quick tip from {brand} for a healthier day ahead."
+  },
+  {
+    "theme_index": 3,
+    "theme": "come experience it",
+    "ar_gulf": "{brand} — تجربة تستاهل الزيارة، تعالوا شوفوا بنفسكم 🌟",
+    "ar_msa": "{brand} — تجربة تستحق الزيارة، ندعوكم لاكتشافها بأنفسكم 🌟",
+    "en": "{brand} — come experience it for yourself."
+  },
+  {
+    "theme_index": 4,
+    "theme": "atmosphere",
+    "ar_gulf": "جو {brand} يخلي وقتكم أحلى — احجزوا واستمتعوا معنا",
+    "ar_msa": "أجواء {brand} تجعل وقتكم أكثر متعة — احجزوا واستمتعوا معنا",
+    "en": "We're open and ready to welcome you this week at {brand}."
+  },
+  {
+    "theme_index": 5,
+    "theme": "thank-you / loyalty",
+    "ar_gulf": "شكرًا لثقتكم في {brand}، نسعد دائمًا بخدمتكم من جديد",
+    "ar_msa": "نشكركم على ثقتكم في {brand}، ويسعدنا دائمًا تقديم خدماتنا لكم مجددًا",
+    "en": "Thank you for trusting {brand} — see you again soon."
+  },
+  {
+    "theme_index": 6,
+    "theme": "weekly offers",
+    "ar_gulf": "{brand} يرحب فيكم بعروض هذا الأسبوع، لا تفوتون الفرصة",
+    "ar_msa": "يرحب {brand} بكم مع عروض هذا الأسبوع، فلا تفوّتوا الفرصة",
+    "en": "{brand} has something special this week. Don't miss it."
+  },
+  {
+    "theme_index": 7,
+    "theme": "behind the scenes",
+    "ar_gulf": "خلف الكواليس في {brand}: هذا كيف نحضّر لكم الأفضل دائمًا",
+    "ar_msa": "خلف الكواليس في {brand}: هكذا نُعدّ لكم الأفضل دائمًا",
+    "en": "Behind the scenes at {brand}: how we get it right, every time."
+  },
+  {
+    "theme_index": 8,
+    "theme": "new arrival / product launch",
+    "ar_gulf": "وصل الجديد في {brand} 🆕 تعالوا جربوه قبل الكل",
+    "ar_msa": "يُعلن {brand} عن وصول الجديد 🆕 وندعوكم لتكونوا أول من يكتشفه",
+    "en": "Something new just landed at {brand}. Come be the first to try it."
+  },
+  {
+    "theme_index": 9,
+    "theme": "customer testimonial",
+    "ar_gulf": "آراؤكم الحلوة عن {brand} تسعدنا وتشجعنا نسوي الأفضل — شكرًا لكل كلمة طيبة",
+    "ar_msa": "تسعدنا آراء عملائنا عن {brand} وتحفزنا على تقديم الأفضل دائمًا — شكرًا لكل كلمة طيبة",
+    "en": "Nothing means more than hearing you love {brand}. Thank you for every kind review."
+  },
+  {
+    "theme_index": 10,
+    "theme": "before/after result",
+    "ar_gulf": "شوفوا الفرق بعد زيارتكم لـ {brand} — نتيجة نفتخر فيها وتستاهل المشاركة",
+    "ar_msa": "لاحظوا الفرق بعد زيارتكم لـ {brand} — نتيجة نفخر بها وتستحق المشاركة",
+    "en": "See the difference for yourself after a visit to {brand}. Results we're proud of."
+  },
+  {
+    "theme_index": 11,
+    "theme": "team introduction",
+    "ar_gulf": "فريق {brand} يشتغل بشغف عشان يوصلكم أفضل خدمة كل يوم",
+    "ar_msa": "يعمل فريق {brand} بشغف لتقديم أفضل خدمة لكم في كل زيارة",
+    "en": "Meet the passionate team behind {brand}, working hard for you every day."
+  },
+  {
+    "theme_index": 12,
+    "theme": "FAQ answer",
+    "ar_gulf": "عندكم سؤال عن {brand}؟ راسلونا وبنرد عليكم بأسرع وقت",
+    "ar_msa": "لديكم استفسار عن {brand}؟ يسعدنا الرد عليكم في أقرب وقت ممكن",
+    "en": "Got a question about {brand}? Send us a message — we're happy to help."
+  },
+  {
+    "theme_index": 13,
+    "theme": "opening hours / availability",
+    "ar_gulf": "{brand} فاتح أبوابه لكم طول الأسبوع — تعالوا بأي وقت يناسبكم",
+    "ar_msa": "يفتح {brand} أبوابه لكم طوال أيام الأسبوع — تفضّلوا بالحضور في الوقت الذي يناسبكم",
+    "en": "{brand} is open all week and ready for you, whenever works best."
+  },
+  {
+    "theme_index": 14,
+    "theme": "Ramadan greeting",
+    "ar_gulf": "رمضان مبارك من فريق {brand} 🌙 كل عام وأنتم بخير وصحة وسعادة",
+    "ar_msa": "رمضان مبارك من {brand} 🌙 أعاده الله عليكم باليمن والبركات",
+    "en": "Ramadan Mubarak from all of us at {brand}. Wishing you a blessed month."
+  },
+  {
+    "theme_index": 15,
+    "theme": "Eid greeting",
+    "ar_gulf": "عيدكم مبارك من {brand} 🎉 نتمنى لكم أيام مليئة بالفرح مع أحبابكم",
+    "ar_msa": "عيد مبارك من {brand} 🎉 أعاده الله عليكم بالخير واليمن والبركات",
+    "en": "Eid Mubarak from {brand}. Wishing you and your family a joyful celebration."
+  },
+  {
+    "theme_index": 16,
+    "theme": "Saudi National Day",
+    "ar_gulf": "كل عام والسعودية بخير — {brand} يشارككم فرحة اليوم الوطني",
+    "ar_msa": "بمناسبة اليوم الوطني السعودي، يتقدم {brand} لكم بأصدق التهاني والتبريكات",
+    "en": "Happy Saudi National Day from {brand}. Proud to celebrate with you."
+  },
+  {
+    "theme_index": 17,
+    "theme": "Founding Day",
+    "ar_gulf": "يوم التأسيس فرحتنا فيه وايد — {brand} يهنيكم بهالمناسبة الغالية",
+    "ar_msa": "بمناسبة يوم التأسيس، يتقدم {brand} بأطيب التهاني بهذه المناسبة العزيزة",
+    "en": "Happy Founding Day from {brand}. Celebrating our shared heritage together."
+  },
+  {
+    "theme_index": 18,
+    "theme": "limited-time countdown",
+    "ar_gulf": "الأيام الباقية على عرض {brand} معدودة — سارعوا قبل ما يخلص",
+    "ar_msa": "الوقت المتبقي على عرض {brand} محدود — بادروا قبل انتهائه",
+    "en": "Time's almost up on this offer from {brand}. Don't wait too long."
+  },
+  {
+    "theme_index": 19,
+    "theme": "free consultation",
+    "ar_gulf": "استشارتكم الأولى في {brand} علينا — تعالوا نتعرف على اللي تحتاجونه",
+    "ar_msa": "تحصلون على استشارة مجانية في {brand} — ندعوكم للتعرف على احتياجاتكم عن قرب",
+    "en": "Your first consultation at {brand} is on us. Let's talk about what you need."
+  },
+  {
+    "theme_index": 20,
+    "theme": "delivery / pickup",
+    "ar_gulf": "ما ودكم تطلعون من البيت؟ {brand} يوصلكم طلبكم أينما كنتم",
+    "ar_msa": "لا داعي للخروج من المنزل — يوفر لكم {brand} خدمة التوصيل أينما كنتم",
+    "en": "Too busy to stop by? {brand} delivers straight to your door."
+  },
+  {
+    "theme_index": 21,
+    "theme": "loyalty rewards program",
+    "ar_gulf": "كل زيارة لكم في {brand} تقربكم من مكافأة حلوة 🎁 انضموا لبرنامج الولاء",
+    "ar_msa": "تقربكم كل زيارة إلى {brand} من مكافأة مميزة 🎁 انضموا إلى برنامج الولاء الخاص بنا",
+    "en": "Every visit to {brand} gets you closer to a reward. Join our loyalty program."
+  },
+  {
+    "theme_index": 22,
+    "theme": "WhatsApp / DM prompt",
+    "ar_gulf": "تراسلونا في أي وقت — فريق {brand} يرد عليكم بأسرع ما يمكن على واتساب",
+    "ar_msa": "تواصلوا معنا في أي وقت عبر واتساب، ويسعد فريق {brand} بخدمتكم",
+    "en": "Message {brand} on WhatsApp anytime. We're quick to reply."
+  },
+  {
+    "theme_index": 23,
+    "theme": "quality & hygiene reassurance",
+    "ar_gulf": "نظافة وجودة {brand} أمانة قبل لا تكون شغل — راحتكم وسلامتكم أولويتنا",
+    "ar_msa": "تحرص {brand} على أعلى معايير النظافة والجودة حفاظًا على راحتكم وسلامتكم",
+    "en": "At {brand}, cleanliness and quality come first — always, for your peace of mind."
+  }
+]

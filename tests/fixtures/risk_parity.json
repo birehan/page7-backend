@@ -1,0 +1,541 @@
+{
+  "generatedAt": "2026-09-04T16:23:42.106Z",
+  "fixtures": [
+    {
+      "id": "banned_claim_full_match",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا — ضمان الشفاء التام",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "bannedClaims": [
+          "ضمان الشفاء التام"
+        ]
+      },
+      "expected": {
+        "score": 0.8,
+        "reasons": [
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "ضمان الشفاء التام"
+            }
+          },
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "ضمان الشفاء"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "banned_claim_short_prefix_no_match",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا — نتائج مضمونة خلال أسبوع بإذن الله",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "bannedClaims": [
+          "نتائج مضمونة 100% خلال يوم واحد بدون أي مجهود إطلاقًا"
+        ]
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "medical_financial_keyword",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا — عائد مضمون 20% شهريًا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ]
+      },
+      "expected": {
+        "score": 0.4,
+        "reasons": [
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "عائد مضمون"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "too_many_hashtags_once",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": [
+              "#tag0",
+              "#tag1",
+              "#tag2",
+              "#tag3",
+              "#tag4",
+              "#tag5",
+              "#tag6",
+              "#tag7",
+              "#tag8",
+              "#tag9",
+              "#tag10",
+              "#tag11",
+              "#tag12",
+              "#tag13",
+              "#tag14",
+              "#tag15",
+              "#tag16",
+              "#tag17",
+              "#tag18",
+              "#tag19",
+              "#tag20",
+              "#tag21",
+              "#tag22",
+              "#tag23",
+              "#tag24",
+              "#tag25",
+              "#tag26",
+              "#tag27",
+              "#tag28",
+              "#tag29",
+              "#tag30"
+            ]
+          }
+        ],
+        "platforms": [
+          "instagram",
+          "facebook",
+          "tiktok"
+        ]
+      },
+      "expected": {
+        "score": 0.08,
+        "reasons": [
+          {
+            "code": "too_many_hashtags",
+            "severity": "low",
+            "params": {
+              "max": 30
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "caption_over_limit_snapchat_only",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "snapchat",
+          "whatsapp"
+        ]
+      },
+      "expected": {
+        "score": 0.28,
+        "reasons": [
+          {
+            "code": "caption_over_limit",
+            "severity": "medium",
+            "params": {
+              "platform": "snapchat",
+              "limit": 250
+            }
+          },
+          {
+            "code": "missing_cta",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cultural_sensitivity_alcohol",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا — عرض خاص على القمار الليلي",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ]
+      },
+      "expected": {
+        "score": 0.2,
+        "reasons": [
+          {
+            "code": "cultural_sensitivity",
+            "severity": "medium",
+            "params": {
+              "match": "قمار"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ordinary_promo_no_cultural",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا — عرض خاص هذا الأسبوع على جميع الخدمات",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ]
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "missing_ad_disclosure",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "isPaid": true
+      },
+      "expected": {
+        "score": 0.4,
+        "reasons": [
+          {
+            "code": "missing_ad_disclosure",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ad_disclosure_present",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا #إعلان",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "isPaid": true
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "unpaid_no_disclosure_flag",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "isPaid": false
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "missing_alt",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "mediaAlts": [
+          ""
+        ]
+      },
+      "expected": {
+        "score": 0.08,
+        "reasons": [
+          {
+            "code": "no_alt_text",
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "id": "alt_present",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "mediaAlts": [
+          "A dentist smiling at the camera"
+        ]
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "prayer_dhuhr_summer_riyadh",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "scheduledAt": "2026-07-15T09:20:00.000Z"
+      },
+      "expected": {
+        "score": 0.08,
+        "reasons": [
+          {
+            "code": "prayer_time_overlap",
+            "severity": "low",
+            "params": {
+              "prayer": "dhuhr"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "prayer_outside_window",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "scheduledAt": "2026-07-15T07:00:00.000Z"
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "prayer_dammam_offset",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "scheduledAt": "2026-07-15T09:30:00.000Z",
+        "city": "Dammam"
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    },
+    {
+      "id": "prayer_winter_fajr_boundary",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "scheduledAt": "2026-01-15T02:10:00.000Z"
+      },
+      "expected": {
+        "score": 0.08,
+        "reasons": [
+          {
+            "code": "prayer_time_overlap",
+            "severity": "low",
+            "params": {
+              "prayer": "fajr"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "score_capped_at_1",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "عائد مضمون ربح مضمون استثمار مضمون",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ],
+        "bannedClaims": [
+          "عائد مضمون",
+          "ربح مضمون",
+          "استثمار مضمون"
+        ],
+        "isPaid": true
+      },
+      "expected": {
+        "score": 1,
+        "reasons": [
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "عائد مضمون"
+            }
+          },
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "ربح مضمون"
+            }
+          },
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "استثمار مضمون"
+            }
+          },
+          {
+            "code": "banned_claim",
+            "severity": "high",
+            "params": {
+              "match": "عائد مضمون"
+            }
+          },
+          {
+            "code": "missing_cta",
+            "severity": "low"
+          },
+          {
+            "code": "missing_ad_disclosure",
+            "severity": "high"
+          }
+        ]
+      }
+    },
+    {
+      "id": "clean_post_score_0",
+      "input": {
+        "variants": [
+          {
+            "lang": "ar",
+            "dialect": "gulf",
+            "caption": "احجزوا الآن معنا",
+            "hashtags": []
+          }
+        ],
+        "platforms": [
+          "instagram"
+        ]
+      },
+      "expected": {
+        "score": 0,
+        "reasons": []
+      }
+    }
+  ]
+}

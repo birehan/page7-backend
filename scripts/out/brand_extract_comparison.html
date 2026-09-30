@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Brand extract approach comparison</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --ink: #1c1917;
+      --muted: #78716c;
+      --card: #fffdf9;
+      --line: #e7e0d5;
+      --ok: #166534;
+      --warn: #92400e;
+      --bad: #991b1b;
+      --accent: #0f766e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #dcebe7 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #f0e2d0 0%, transparent 50%),
+        var(--bg);
+      line-height: 1.45;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin: 0 0 0.4rem; }
+    h2 {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .lede { color: var(--muted); max-width: 60ch; margin-bottom: 1.5rem; }
+    .rec {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .rec strong.pick { color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 0.95rem;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid var(--line);
+    }
+    th {
+      background: #f3eee6;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+    }
+    .pill, .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 0.15rem 0.55rem;
+      font-size: 0.78rem;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .bad { color: var(--bad); }
+    .pill.ok, .tag.fetch_only { background: #dcfce7; color: var(--ok); }
+    .pill.warn { background: #ffedd5; color: var(--warn); }
+    .pill.bad, .tag.neither { background: #fee2e2; color: var(--bad); }
+    .tag.full { background: #ccfbf1; color: #115e59; }
+    .tag.both { background: #e7e5e4; color: #44403c; }
+    .tag.tie { background: #e7e5e4; color: #44403c; }
+    .meta, .muted, .conf { color: var(--muted); font-size: 0.9rem; }
+    .conf { margin-top: 0.25rem; font-family: ui-monospace, monospace; }
+    details { margin-top: 0.6rem; }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #1c1917;
+      color: #f5f5f4;
+      padding: 0.8rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      max-height: 320px;
+      overflow: auto;
+    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+    a { color: var(--accent); }
+    footer { margin-top: 3rem; color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Brand extract: fetch-only vs full</h1>
+    <p class="lede">
+      Two separate approaches on five Saudi sites, run in parallel.
+      <strong>fetch_only</strong> = website crawl + LLM extract.
+      <strong>full</strong> = same, then web_search stage (90s cap) + merge.
+      Generated 2026-09-07 20:49:36 UTC.
+    </p>
+
+    <div class="rec">
+      <p><strong class="pick">Recommendation: fetch_only</strong></p>
+      <p>Fetch-only wins on more sites: similar (or better) field coverage at much lower latency because it skips the 90s search stage. Per-site: Obeid Hospitals: fetch_only (fetch_only 8 fields / 54.0s; full 8 fields / 151.1s) | Extra: fetch_only (fetch_only 9 fields / 54.1s; full 9 fields / 145.6s) | Al Rajhi Bank: fetch_only (fetch_only 9 fields / 39.6s; full 9 fields / 129.8s) | Albaik: fetch_only (fetch_only 7 fields / 22.7s; full 8 fields / 157.6s) | Panda: fetch_only (fetch_only 7 fields / 17.7s; full 8 fields / 106.2s)</p>
+    </div>
+
+    <h2>Scoreboard</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Site</th>
+          <th>fetch_only</th>
+          <th>full</th>
+          <th>Local pick</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Obeid Hospitals</strong><div class='muted'>https://obeidhospitals.com/</div></td><td class='warn'>partial · 54.0s · 8f</td><td class='warn'>partial · 151.1s · 8f</td><td class='tag fetch_only'>fetch_only</td></tr><tr><td><strong>Extra</strong><div class='muted'>https://www.extra.com/</div></td><td class='warn'>partial · 54.1s · 9f</td><td class='warn'>partial · 145.6s · 9f</td><td class='tag fetch_only'>fetch_only</td></tr><tr><td><strong>Al Rajhi Bank</strong><div class='muted'>https://www.alrajhibank.com.sa/</div></td><td class='warn'>partial · 39.6s · 9f</td><td class='warn'>partial · 129.8s · 9f</td><td class='tag fetch_only'>fetch_only</td></tr><tr><td><strong>Albaik</strong><div class='muted'>https://www.albaik.com/</div></td><td class='warn'>partial · 22.7s · 7f</td><td class='warn'>partial · 157.6s · 8f</td><td class='tag fetch_only'>fetch_only</td></tr><tr><td><strong>Panda</strong><div class='muted'>https://www.panda.sa/</div></td><td class='warn'>partial · 17.7s · 7f</td><td class='warn'>partial · 106.2s · 8f</td><td class='tag fetch_only'>fetch_only</td></tr>
+      </tbody>
+    </table>
+
+    
+            <section class="site">
+              <h2>Obeid Hospitals
+                <span class="tag fetch_only">pick: fetch_only</span>
+              </h2>
+              <p class="muted"><a href="https://obeidhospitals.com/">https://obeidhospitals.com/</a></p>
+              <div class="grid">
+                
+    <div class="card">
+      <h3>fetch_only</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">54.0s ·
+         8 fields · 3 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://obeidhospitals.com/, https://obeidhospitals.com/about-us/, https://obeidhospitals.com/contact-us/</p>
+      <details>
+        <summary>Warnings (6)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>لم يتم استخراج ألوان العلامة التجارية من بيانات الصفحة المتاحة؛ يُفضّل الرجوع إلى الشعار أو دليل الهوية البصرية الرسمي.</li><li>بيانات الموقع تحتوي على بعض اختلافات كتابية في الاسم مثل: مستشفيات عبيد التخصصية / مستشفي عبيد الخصصي؛ يُنصح بتوحيد الاسم الرسمي قبل النشر.</li><li>قائمة المنافسين مقترحة بناءً على كون العلامة مستشفى تخصصياً في السعودية، ولم يتم التحقق منها من مصادر خارجية ضمن البيانات المتاحة.</li><li>ينبغي مراجعة أي محتوى طبي أو ترويجي من الفريق الطبي/القانوني قبل النشر، خصوصاً العروض، التأمين، وادعاءات الجودة أو التفوق.</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;الرعاية الإنسانية وجودة الخدمة&quot;,
+      &quot;description&quot;: &quot;محتوى يبرز أن الرعاية تبدأ بالاهتمام الحقيقي بكل مريض، مع التركيز على الجودة، السلامة، والاحترام.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التخصصات والعيادات&quot;,
+      &quot;description&quot;: &quot;تعريف الجمهور بالعيادات والأقسام مثل القلب، الأطفال، النساء والولادة، العيون، الطوارئ، المختبر، الأشعة، العلاج الطبيعي وغيرها.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الأطباء والخبرات الطبية&quot;,
+      &quot;description&quot;: &quot;تسليط الضوء على الفريق الطبي والتخصصات المتاحة مع دعوات حجز واضحة، دون مبالغة في الوعود الطبية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الفروع وسهولة الوصول&quot;,
+      &quot;description&quot;: &quot;محتوى يوضح خدمات وفرص الحجز في فرعي الرياض والأحساء، وطرق التواصل والعنوان.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;تجربة المريض والتقييم&quot;,
+      &quot;description&quot;: &quot;تشجيع المرضى على تقييم الزيارة ومشاركة الملاحظات لتحسين مستوى الخدمة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التوعية الصحية الآمنة&quot;,
+      &quot;description&quot;: &quot;نصائح صحية عامة ومبسطة مرتبطة بالتخصصات، مع تنبيه إلى ضرورة مراجعة الطبيب للحالات الفردية.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@DrSulaimanAlHabib&quot;,
+      &quot;platform&quot;: &quot;Instagram/X suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@DallahHospital&quot;,
+      &quot;platform&quot;: &quot;Instagram/X suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@SaudiGermanHospital&quot;,
+      &quot;platform&quot;: &quot;Instagram/X suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@MouwasatHospital&quot;,
+      &quot;platform&quot;: &quot;Instagram/X suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@AlmanaHospitals&quot;,
+      &quot;platform&quot;: &quot;Instagram/X suggested&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;إنساني&quot;,
+      &quot;مهني&quot;,
+      &quot;موثوق&quot;,
+      &quot;مطمئن&quot;,
+      &quot;متخصص&quot;,
+      &quot;جودة عالية&quot;,
+      &quot;حديث ومتطور&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;اكتب بالعربية الفصحى الواضحة مع نبرة سعودية مفهومة عند الحاجة.&quot;,
+      &quot;ركّز على الرعاية الإنسانية والاهتمام الحقيقي بالمريض.&quot;,
+      &quot;استخدم عبارات مرتبطة بالجودة، السلامة، الكفاءة، الاحترافية، والبيئة الآمنة.&quot;,
+      &quot;اذكر التخصصات والخدمات الطبية بشكل مباشر وواضح مثل العيون، القلب، الأطفال، النساء والولادة، الطوارئ، المختبر، الأشعة وغيرها.&quot;,
+      &quot;استخدم دعوات إجراء عملية مثل: احجز الآن، اعرف المزيد، تواصل معنا، قيّم زيارتك.&quot;,
+      &quot;عند ذكر الفروع، وضّح الرياض والأحساء عند توفر المعلومة.&quot;,
+      &quot;أبرز وجود فريق طبي متخصص وتقنيات حديثة دون مبالغة أو وعود علاجية.&quot;,
+      &quot;حافظ على أسلوب مطمئن ومحترم يناسب قطاع الرعاية الصحية.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم نبرة مرحة جداً أو ساخرة؛ القطاع طبي ويتطلب جدية وطمأنة.&quot;,
+      &quot;لا تعد بنتائج علاجية مضمونة أو شفاء مؤكد.&quot;,
+      &quot;لا تبالغ في التفوق مثل “الأفضل على الإطلاق” أو “رقم 1” دون دليل رسمي قابل للتحقق.&quot;,
+      &quot;لا تقدّم نصائح طبية تشخيصية بديلة عن استشارة الطبيب.&quot;,
+      &quot;لا تذكر أسعاراً أو عروضاً أو تغطية تأمينية إلا إذا كانت مؤكدة ومحدثة.&quot;,
+      &quot;لا تستخدم لغة تخويف أو ضغط مبالغ فيها لدفع الحجز.&quot;,
+      &quot;لا تنشر معلومات مرضى أو تجارب شخصية يمكن أن تكشف الهوية.&quot;,
+      &quot;لا تغيّر أسماء الأطباء أو تخصصاتهم أو الفروع دون التحقق من المصدر الرسمي.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;ضمان الشفاء أو نجاح العلاج بنسبة محددة.&quot;,
+      &quot;ادعاء أن المستشفى هو الأفضل أو الأول في المملكة/الرياض/الأحساء دون توثيق رسمي.&quot;,
+      &quot;ادعاء توفر خدمة أو تخصص أو طبيب أو فرع غير مذكور أو غير مؤكد رسمياً.&quot;,
+      &quot;ادعاء أن التحقق من التأمين يعني قبول التغطية بشكل نهائي دون شروط شركة التأمين.&quot;,
+      &quot;ادعاء أوقات انتظار أو استجابة للطوارئ محددة دون بيانات رسمية.&quot;,
+      &quot;ادعاء استخدام أحدث التقنيات بتفاصيل محددة أو أسماء أجهزة غير موثقة في الموقع.&quot;,
+      &quot;أي نص يوحي بأن المحتوى يغني عن مراجعة الطبيب أو التشخيص الطبي المباشر.&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+                
+    <div class="card">
+      <h3>full</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">151.1s ·
+         8 fields · 3 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://obeidhospitals.com/, https://obeidhospitals.com/about-us/, https://obeidhospitals.com/contact-us/</p>
+      <details>
+        <summary>Warnings (8)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>Fetched website data is Arabic-first and appears sufficient for tone, services, values, and contact context, but no explicit brand guideline document was found.</li><li>Color palette could not be verified from the provided fetched data; logo URL exists, but no reliable hex colors were extracted.</li><li>The site text includes the phrase “أفضل مستشفى في الرياض والأحساء”; this is a high-risk healthcare superlative unless supported by an official ranking or substantiation.</li><li>Competitors are suggested based on the Saudi private healthcare market, not explicitly listed on the brand website; verify handles before use.</li><li>Healthcare content should be reviewed for Saudi healthcare advertising compliance, medical accuracy, patient privacy, and offer terms before publishing.</li><li>search stage timed out</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;الرعاية الصحية التخصصية&quot;,
+      &quot;description&quot;: &quot;محتوى يعرّف بالعيادات والأقسام مثل الباطنية، الأورام، القلب، الأطفال، النساء والولادة، العيون، الأسنان، الطوارئ، العناية المركزة، وغيرها.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الأطباء والخبرات الطبية&quot;,
+      &quot;description&quot;: &quot;تسليط الضوء على الأطباء حسب التخصص والفرع والمسميات المهنية، مع دعوات واضحة للحجز أو معرفة المزيد.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الجودة وسلامة المرضى&quot;,
+      &quot;description&quot;: &quot;رسائل حول الالتزام بالجودة، سلامة المرضى، الأداء المتميز، والبيئة الآمنة المتطورة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الرعاية الإنسانية وتجربة المريض&quot;,
+      &quot;description&quot;: &quot;محتوى يبرز الاهتمام الحقيقي بكل مريض، القيم الإنسانية، وطلب تقييم الزيارة لتحسين الخدمة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الفروع وسهولة الوصول&quot;,
+      &quot;description&quot;: &quot;منشورات توضح خدمات فرع الرياض وفرع الأحساء، أوقات العمل، العنوان، وطرق التواصل.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التوعية الصحية&quot;,
+      &quot;description&quot;: &quot;نصائح عامة مبسطة مرتبطة بالتخصصات، مع تجنب التشخيص أو الوعود العلاجية وتوجيه الجمهور للطبيب المختص.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الخدمات الرقمية والحجز&quot;,
+      &quot;description&quot;: &quot;الترويج للبحث عن الطبيب، الحجز، التحقق من تغطية التأمين، ونموذج التواصل.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;العروض والحملات الموسمية&quot;,
+      &quot;description&quot;: &quot;محتوى عن عروض الفروع والحملات الصحية مع توضيح الشروط والفترات عند توفرها.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@DrSulaimanAlHabib&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / social search suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@SaudiGermanHealth&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / social search suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@DallahHospitals&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / social search suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@MouwasatHospital&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / social search suggested&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@AlmoosaHealth&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / social search suggested&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;إنساني&quot;,
+      &quot;مهني&quot;,
+      &quot;موثوق&quot;,
+      &quot;مطمئن&quot;,
+      &quot;راقي/متميز&quot;,
+      &quot;واضح ومباشر&quot;,
+      &quot;يركّز على الجودة والسلامة&quot;,
+      &quot;حديث ومتطور&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;اكتب بالعربية الفصحى المبسطة المناسبة للجمهور السعودي، مع عبارات ترحيبية وطمأنة مثل: “مرحباً بكم” و“نهتم بصحتكم”.&quot;,
+      &quot;ركّز على الرعاية الصحية الشاملة والمتخصصة، وجودة الخدمة، وسلامة المرضى، والبيئة الآمنة والمتطورة.&quot;,
+      &quot;أبرز القيم المعلنة للعلامة: العناية، الكفاءة، الأمانة، الابتكار، الاحترام.&quot;,
+      &quot;استخدم نبرة إنسانية تؤكد الاهتمام الحقيقي بكل مريض، لا نبرة تجارية بحتة.&quot;,
+      &quot;اذكر الفروع بوضوح عند الحاجة: الرياض والأحساء، ووضّح العيادة/القسم المرتبط بكل خدمة.&quot;,
+      &quot;ادعُ المستخدم لاتخاذ إجراء واضح: احجز الآن، ابحث عن طبيبك، اعرف المزيد، تواصل معنا، قيّم زيارتك.&quot;,
+      &quot;عند الحديث عن الأطباء، استخدم المسميات المهنية بدقة مثل استشاري، أخصائي، طبيب عام، مع التخصص والفرع.&quot;,
+      &quot;استخدم صياغات حذرة في المحتوى الطبي: “قد يساعد”، “ينصح الطبيب”، “حسب تقييم الحالة”، “راجع الطبيب المختص”.&quot;,
+      &quot;شجّع على التواصل عبر الهاتف أو البريد أو نموذج الرسائل للاستفسارات غير الطارئة.&quot;,
+      &quot;حافظ على الخصوصية والسرية عند أي إشارة لتجارب المرضى أو الحالات الطبية.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم وعوداً علاجية قاطعة أو عبارات مثل “شفاء مضمون” أو “نتائج مضمونة”.&quot;,
+      &quot;لا تقدّم تشخيصاً أو وصفة علاجية تفصيلية عبر المحتوى التسويقي؛ وجّه القارئ لحجز موعد أو مراجعة الطبيب.&quot;,
+      &quot;لا تبالغ في المقارنات أو مهاجمة مستشفيات أخرى.&quot;,
+      &quot;لا تستخدم ادعاء “الأفضل” أو “رقم 1” إلا إذا كان مدعوماً بمصدر رسمي وحديث؛ الموقع يستخدم عبارة “أفضل مستشفى”، لكنها تحتاج حذراً تسويقياً وتنظيمياً.&quot;,
+      &quot;لا تنشر صور مرضى أو قصص حالات أو نتائج قبل/بعد دون موافقة صريحة وامتثال للأنظمة الصحية.&quot;,
+      &quot;لا تستخدم لغة مخيفة أو ضاغطة عند الحديث عن الأمراض؛ حافظ على الطمأنة والتوعية.&quot;,
+      &quot;لا تخلط بين فروع الرياض والأحساء في المواعيد أو الأطباء أو العروض.&quot;,
+      &quot;لا تذكر أسعاراً أو عروضاً طبية دون التأكد من صلاحيتها وشروطها.&quot;,
+      &quot;لا تستخدم مصطلحات طبية معقدة دون شرح مبسط للمريض.&quot;,
+      &quot;لا تجعل المحتوى يبدو كبديل عن الاستشارة الطبية المتخصصة.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;“شفاء مضمون” أو أي ضمان للنتائج العلاجية أو الجراحية.&quot;,
+      &quot;“أفضل مستشفى في الرياض والأحساء” أو “الأول/رقم 1” ما لم يتوفر اعتماد أو تصنيف رسمي موثق ومسموح باستخدامه.&quot;,
+      &quot;أي ادعاء بأن خدمة أو طبيباً يحقق نتائج مؤكدة بنسبة 100%.&quot;,
+      &quot;أي نص يَعِد بتشخيص أو علاج دون فحص طبي أو تقييم من الطبيب المختص.&quot;,
+      &quot;أي ادعاء يتعارض مع تعليمات وزارة الصحة أو الأنظمة الإعلانية الصحية في السعودية.&quot;,
+      &quot;أي استخدام لمعلومات أو صور مرضى تكشف الهوية دون موافقة موثقة.&quot;,
+      &quot;أي مبالغة في “أحدث التقنيات” إن لم تكن الخدمة أو الجهاز محدداً ومثبتاً داخلياً.&quot;,
+      &quot;أي ادعاء بأن التحقق من التأمين يعني الموافقة النهائية على التغطية ما لم يتم تأكيده من شركة التأمين.&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+              </div>
+              <h3>Field-by-field</h3>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>fetch_only</th><th>full</th><th>Who filled</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>voiceAdjectives</code></td><td class='both'>إنساني, مهني, موثوق, مطمئن, متخصص, جودة عالية (+1)<div class='conf'>0.86</div></td><td class='both'>إنساني, مهني, موثوق, مطمئن, راقي/متميز, واضح ومباشر (+2)<div class='conf'>0.84</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>doList</code></td><td class='both'>اكتب بالعربية الفصحى الواضحة مع نبرة سعودية مفهومة عند الحاجة., ركّز على الرعاية الإنسانية والاهتمام الحقيقي بالمريض., استخدم عبارات مرتبطة بالجودة، السلامة، الكفاءة، الاحترافية، …<div class='conf'>0.90</div></td><td class='both'>اكتب بالعربية الفصحى المبسطة المناسبة للجمهور السعودي، مع عبارات ترحيبية وطمأنة مثل: “مرحباً بكم” و“نهتم بصحتكم”., ركّز على الرعاية الصحية الشاملة والمتخصصة، وجودة الخدمة، وسلامة …<div class='conf'>0.86</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dontList</code></td><td class='both'>لا تستخدم نبرة مرحة جداً أو ساخرة؛ القطاع طبي ويتطلب جدية وطمأنة., لا تعد بنتائج علاجية مضمونة أو شفاء مؤكد., لا تبالغ في التفوق مثل “الأفضل على الإطلاق” أو “رقم 1” دون دليل رسمي …<div class='conf'>0.87</div></td><td class='both'>لا تستخدم وعوداً علاجية قاطعة أو عبارات مثل “شفاء مضمون” أو “نتائج مضمونة”., لا تقدّم تشخيصاً أو وصفة علاجية تفصيلية عبر المحتوى التسويقي؛ وجّه القارئ لحجز موعد أو مراجعة الطبيب.,…<div class='conf'>0.78</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>bannedClaims</code></td><td class='both'>ضمان الشفاء أو نجاح العلاج بنسبة محددة., ادعاء أن المستشفى هو الأفضل أو الأول في المملكة/الرياض/الأحساء دون توثيق رسمي., ادعاء توفر خدمة أو تخصص أو طبيب أو فرع غير مذكور أو غير مؤ…<div class='conf'>0.82</div></td><td class='both'>“شفاء مضمون” أو أي ضمان للنتائج العلاجية أو الجراحية., “أفضل مستشفى في الرياض والأحساء” أو “الأول/رقم 1” ما لم يتوفر اعتماد أو تصنيف رسمي موثق ومسموح باستخدامه., أي ادعاء بأن خدمة…<div class='conf'>0.72</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>colors</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>dialect</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>languages</code></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>pillars</code></td><td class='both'>الرعاية الإنسانية وجودة الخدمة, التخصصات والعيادات, الأطباء والخبرات الطبية, الفروع وسهولة الوصول (+2)<div class='conf'>0.88</div></td><td class='both'>الرعاية الصحية التخصصية, الأطباء والخبرات الطبية, الجودة وسلامة المرضى, الرعاية الإنسانية وتجربة المريض (+4)<div class='conf'>0.87</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>competitors</code></td><td class='both'>@DrSulaimanAlHabib, @DallahHospital, @SaudiGermanHospital, @MouwasatHospital (+1)<div class='conf'>0.35</div></td><td class='both'>@DrSulaimanAlHabib, @SaudiGermanHealth, @DallahHospitals, @MouwasatHospital (+1)<div class='conf'>0.45</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>logoUrl</code></td><td class='both'>https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png<div class='conf'>0.90</div></td><td class='both'>https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="site">
+              <h2>Extra
+                <span class="tag fetch_only">pick: fetch_only</span>
+              </h2>
+              <p class="muted"><a href="https://www.extra.com/">https://www.extra.com/</a></p>
+              <div class="grid">
+                
+    <div class="card">
+      <h3>fetch_only</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">54.1s ·
+         9 fields · 5 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, colors, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.extra.com/ar-sa, https://www.extra.com/ar-sa/contactus, https://www.extra.com/ar-sa/extraservices, https://www.extra.com/ar-sa/homemaintenance, https://www.extra.com/ar-sa/mri/air-conditioner/ac-cleaning-service-/c/20-2001-1</p>
+      <details>
+        <summary>Warnings (5)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>لم يتم العثور على صفحة إرشادات رسمية لنبرة الصوت أو الهوية البصرية ضمن البيانات المتاحة؛ معظم توصيات النبرة مستنتجة من عناوين الصفحات والنصوص التسويقية.</li><li>البيانات المجلوبة تحتوي كثيراً من نصوص ملفات تعريف الارتباط، مما يحد من عمق تحليل الصفحات.</li><li>قائمة المنافسين مقترحة بناءً على فئة تجارة الإلكترونيات في السعودية وليست مذكورة في الصفحات المجلوبة.</li><li>يجب التحقق من أي عرض، خصم، توفر خدمة، أو ادعاء ضمان قبل استخدامه في محتوى تسويقي منشور.</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;الإلكترونيات بثقة&quot;,
+      &quot;description&quot;: &quot;محتوى يبرز التسوق من علامات تجارية رائدة في الجوالات، الأجهزة المنزلية، التلفزيونات، واللابتوبات مع ضمان المصنع الرسمي عندما يكون مذكوراً.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;العروض والقيمة&quot;,
+      &quot;description&quot;: &quot;رسائل ترويجية حول أفضل العروض، الخصومات، ونهايات الحملات الزمنية مع الالتزام بالمعلومات المتاحة فقط.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الخدمات بعد الشراء&quot;,
+      &quot;description&quot;: &quot;شرح خدمات تجهيز إكسترا، ضمان إكسترا، حماية إكسترا، وصيانة إكسترا بطريقة تبين الراحة والدعم والأمان.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الدعم والتواصل&quot;,
+      &quot;description&quot;: &quot;محتوى يسهّل الوصول لخدمة العملاء، أرقام التواصل، واتساب، وساعات العمل.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الصيانة المنزلية والمكيفات&quot;,
+      &quot;description&quot;: &quot;محتوى خدمي حول تنظيف وغسيل وصيانة المكيفات والخدمات المنزلية، مع إبراز الحجز أونلاين والفنيين الخبراء عند ذكرهم رسمياً.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@JarirBookstore&quot;,
+      &quot;platform&quot;: &quot;X / Twitter&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@jarirbookstore&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@noon&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@noon&quot;,
+      &quot;platform&quot;: &quot;X / Twitter&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@amazonsa&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@lulu.hypermarket&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;موثوق&quot;,
+      &quot;خدوم&quot;,
+      &quot;عملي&quot;,
+      &quot;ترويجي&quot;,
+      &quot;مريح&quot;,
+      &quot;خبير في الإلكترونيات والخدمات المنزلية&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;اكتب بالعربية المناسبة للسوق السعودي عند استهداف صفحة ar-sa.&quot;,
+      &quot;ركّز على الثقة في شراء الإلكترونيات، كما في عبارة الموقع: «اشترِ الإلكترونيات بثقة».&quot;,
+      &quot;ابرز العروض والخصومات عندما تكون موثقة ومحددة، مثل صفحات العروض أو الخصومات المنشورة.&quot;,
+      &quot;استخدم رسائل واضحة ومباشرة عن الراحة، الدعم، الصيانة، الضمان، الحماية، التركيب أو تجهيز الأجهزة.&quot;,
+      &quot;اذكر قنوات التواصل وخدمة العملاء عند الحاجة: 920004123 و8001240900، وواتساب 920004123 إذا كان السياق خدمة أو دعم.&quot;,
+      &quot;استخدم نبرة مفيدة ومطمئنة تبرز خدمة العملاء: «سنسعد بخدمتكم».&quot;,
+      &quot;عند الحديث عن الخدمات، اربطها بمنافع عملية مثل الراحة، الدعم الفني، الحماية، الخصوصية، الأمان، والصيانة المعتمدة.&quot;,
+      &quot;حافظ على صياغة تجارة إلكترونية واضحة: تصفّح، اكتشف، استمتع، احجز الآن، اطلب الخدمة أونلاين.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم وعوداً مطلقة أو غير موثقة مثل «الأرخص دائماً» أو «أفضل خدمة في السعودية» ما لم تكن مدعومة بمصدر رسمي.&quot;,
+      &quot;لا تذكر خصومات أو عروضاً زمنية إلا إذا كانت ظاهرة ومحددة في الصفحة أو الحملة الحالية.&quot;,
+      &quot;لا تتحدث بنبرة ساخرة أو شبابية مفرطة؛ العلامة تظهر كنبرة موثوقة وخدمية أكثر من كونها مرحة.&quot;,
+      &quot;لا تهمل شروط الخدمة أو اختلاف توفر الخدمات حسب المدينة، خصوصاً الصيانة المنزلية وتنظيف المكيفات.&quot;,
+      &quot;لا تدّعِ اعتماد الصيانة أو الفنيين لعلامات تجارية محددة إلا إذا كان ذلك مذكوراً صراحة في الصفحة المعنية.&quot;,
+      &quot;لا تخلط بين خدمات إكسترا المختلفة: تجهيز إكسترا، ضمان إكسترا، حماية إكسترا، وصيانة إكسترا.&quot;,
+      &quot;لا تستخدم لهجات محلية ثقيلة؛ الأفضل عربية سعودية/فصحى مبسطة وواضحة.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;تجنب الادعاء بأن إكسترا هي «الأكبر» أو «الأرخص» أو «الأفضل» في السوق ما لم يتوفر مصدر رسمي حديث.&quot;,
+      &quot;تجنب ضمان نتائج صحية أو تقنية مؤكدة من خدمات تنظيف المكيفات مثل «يقضي على كل الجراثيم» أو «يعالج الحساسية» ما لم تكن مدعومة بشروط/مواصفات رسمية.&quot;,
+      &quot;تجنب الوعد بتوصيل أو صيانة فورية في كل مناطق السعودية؛ استخدم صياغات مشروطة مثل «حسب التوفر» عند عدم وجود تفاصيل.&quot;,
+      &quot;تجنب استخدام أرقام خصومات مثل 50% إلا عند ارتباطها بصفحة أو حملة حالية موثقة.&quot;
+    ],
+    &quot;colors&quot;: [
+      &quot;#0065A4&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+                
+    <div class="card">
+      <h3>full</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">145.6s ·
+         9 fields · 5 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, colors, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.extra.com/ar-sa, https://www.extra.com/ar-sa/contactus, https://www.extra.com/ar-sa/extraservices, https://www.extra.com/ar-sa/homemaintenance, https://www.extra.com/ar-sa/mri/air-conditioner/ac-cleaning-service-/c/20-2001-1</p>
+      <details>
+        <summary>Warnings (8)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>لم تظهر في الصفحات المزوّدة إرشادات رسمية لنبرة الصوت أو قائمة ادعاءات محظورة؛ تم استنتاج بعض العناصر من نصوص الموقع فقط.</li><li>بيانات المنافسين غير مذكورة في الموقع؛ القائمة المقترحة مستنتجة من فئة النشاط والسوق وليست مستندة إلى مصدر مباشر داخل الصفحات.</li><li>الزحف المعطى يتضمن صفحات محدودة، وكثير من النص الظاهر متعلق بملفات تعريف الارتباط، لذلك قد تكون بعض تفاصيل الهوية البصرية أو الرسائل التسويقية ناقصة.</li><li>تم رصد اللون #0065A4 من theme_color فقط؛ لم تتوفر لوحة ألوان كاملة أو دليل استخدام الشعار.</li><li>ينبغي التحقق من أي عرض أو خصم أو توفر خدمة جغرافياً قبل استخدامه في محتوى تسويقي.</li><li>search stage timed out</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;التسوق بثقة&quot;,
+      &quot;description&quot;: &quot;محتوى يبرز شراء الإلكترونيات بثقة، ضمان المصنع الرسمي، وأرقى العلامات التجارية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;العروض والقيمة&quot;,
+      &quot;description&quot;: &quot;محتوى يسلّط الضوء على أفضل العروض والخصومات المحددة عند توفرها بمصدر واضح.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الراحة والخدمات الإضافية&quot;,
+      &quot;description&quot;: &quot;محتوى عن تجهيز إكسترا، ضمان إكسترا، حماية إكسترا، وصيانة إكسترا، مع التركيز على الراحة والمساعدة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الصيانة والدعم الفني&quot;,
+      &quot;description&quot;: &quot;محتوى عن مراكز الصيانة المعتمدة، تنظيف وغسيل المكيفات، الدعم الفني، الحماية، الخصوصية، والأمان.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;خدمة العملاء&quot;,
+      &quot;description&quot;: &quot;محتوى إرشادي يوضح قنوات التواصل الرسمية وأوقات الخدمة عبر الهاتف والواتساب ومنصات التواصل الاجتماعي.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@JarirBookstore&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / Facebook&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@noon&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / Facebook&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@amazonksa&quot;,
+      &quot;platform&quot;: &quot;X / Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@alghanim&quot;,
+      &quot;platform&quot;: &quot;X / Instagram / Facebook&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;موثوق&quot;,
+      &quot;خدوم&quot;,
+      &quot;عملي&quot;,
+      &quot;ترويجي&quot;,
+      &quot;مطمئن&quot;,
+      &quot;متمحور حول الراحة&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;استخدم العربية كلغة أساسية، وبنبرة مناسبة للسوق السعودي.&quot;,
+      &quot;ركّز على الثقة عند شراء الإلكترونيات، بما يتماشى مع عبارة الموقع: «اشترِ الإلكترونيات بثقة».&quot;,
+      &quot;ابرز العروض والخصومات عند وجود مصدر واضح لها، مثل العروض أو خصم 50% المذكور في صفحة صيانة المنازل.&quot;,
+      &quot;اذكر فئات المنتجات الأساسية عند الحاجة: الجوالات، الأجهزة المنزلية، أجهزة التلفزيون، وأجهزة الكمبيوتر المحمولة.&quot;,
+      &quot;شدّد على الراحة والمساعدة في الخدمات، مثل تجهيز الأجهزة، الضمان، الحماية، الصيانة، وتنظيف المكيفات.&quot;,
+      &quot;عند الحديث عن الصيانة، استخدم صياغات حذرة مثل «مركز صيانة معتمد لأكبر العلامات التجارية» كما ورد في الموقع، دون تعميم زائد.&quot;,
+      &quot;وجّه العملاء لقنوات الدعم الرسمية: الهاتف 920004123 / 8001240900، وواتساب 920004123 مع مراعاة أوقات الخدمة المذكورة.&quot;,
+      &quot;استخدم دعوات إجراء واضحة مثل: تسوّق الآن، اكتشف العروض، احجز الخدمة أونلاين، تواصل معنا.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم لهجة عامية ثقيلة؛ التزم بعربية فصحى تسويقية مفهومة للسعودية.&quot;,
+      &quot;لا تدّعِ توفر دعم هاتفي 24/7؛ الصفحة تذكر أن الاتصال من السبت إلى الخميس 9:00 صباحاً - 5:00 مساءً، والواتساب يومياً 7:00 صباحاً - 11:00 مساءً.&quot;,
+      &quot;لا تعمم الخصومات مثل «خصم 50%» على كل الخدمات أو المنتجات؛ المصدر يربطه بصفحة صيانة منازل الخبر والدمام فقط.&quot;,
+      &quot;لا تدّعِ أن كل الخدمات متاحة في كل مناطق السعودية ما لم يظهر ذلك في الصفحة المعنية.&quot;,
+      &quot;لا تقل إن إكسترا تبيع كل العلامات التجارية أو تصلح كل العلامات التجارية؛ استخدم «أكبر العلامات التجارية» أو «أرقى العلامات التجارية» عند الاستناد للنص المتاح.&quot;,
+      &quot;لا تقدّم وعوداً غير موثقة مثل أرخص سعر، توصيل مجاني، تسليم فوري، أو ضمان مدى الحياة.&quot;,
+      &quot;لا تغيّر أسماء الخدمات الرسمية: تجهيز إكسترا، ضمان إكسترا، حماية إكسترا، صيانة إكسترا.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;أرخص الأسعار في السعودية&quot;,
+      &quot;أفضل سعر مضمون&quot;,
+      &quot;توصيل مجاني دائماً&quot;,
+      &quot;توصيل فوري أو في نفس اليوم لكل الطلبات&quot;,
+      &quot;دعم العملاء متاح 24/7 عبر الهاتف&quot;,
+      &quot;ضمان مدى الحياة على جميع المنتجات&quot;,
+      &quot;إصلاح معتمد لكل العلامات التجارية دون استثناء&quot;,
+      &quot;خصم 50% على جميع المنتجات أو جميع الخدمات&quot;,
+      &quot;الخدمة متاحة في جميع مدن السعودية دون استثناء&quot;
+    ],
+    &quot;colors&quot;: [
+      &quot;#0065A4&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+              </div>
+              <h3>Field-by-field</h3>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>fetch_only</th><th>full</th><th>Who filled</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>voiceAdjectives</code></td><td class='both'>موثوق, خدوم, عملي, ترويجي, مريح, خبير في الإلكترونيات والخدمات المنزلية<div class='conf'>0.72</div></td><td class='both'>موثوق, خدوم, عملي, ترويجي, مطمئن, متمحور حول الراحة<div class='conf'>0.72</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>doList</code></td><td class='both'>اكتب بالعربية المناسبة للسوق السعودي عند استهداف صفحة ar-sa., ركّز على الثقة في شراء الإلكترونيات، كما في عبارة الموقع: «اشترِ الإلكترونيات بثقة»., ابرز العروض والخصومات عندما تكو…<div class='conf'>0.76</div></td><td class='both'>استخدم العربية كلغة أساسية، وبنبرة مناسبة للسوق السعودي., ركّز على الثقة عند شراء الإلكترونيات، بما يتماشى مع عبارة الموقع: «اشترِ الإلكترونيات بثقة»., ابرز العروض والخصومات عند و…<div class='conf'>0.78</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dontList</code></td><td class='both'>لا تستخدم وعوداً مطلقة أو غير موثقة مثل «الأرخص دائماً» أو «أفضل خدمة في السعودية» ما لم تكن مدعومة بمصدر رسمي., لا تذكر خصومات أو عروضاً زمنية إلا إذا كانت ظاهرة ومحددة في الصفحة…<div class='conf'>0.64</div></td><td class='both'>لا تستخدم لهجة عامية ثقيلة؛ التزم بعربية فصحى تسويقية مفهومة للسعودية., لا تدّعِ توفر دعم هاتفي 24/7؛ الصفحة تذكر أن الاتصال من السبت إلى الخميس 9:00 صباحاً - 5:00 مساءً، والواتسا…<div class='conf'>0.76</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>bannedClaims</code></td><td class='both'>تجنب الادعاء بأن إكسترا هي «الأكبر» أو «الأرخص» أو «الأفضل» في السوق ما لم يتوفر مصدر رسمي حديث., تجنب ضمان نتائج صحية أو تقنية مؤكدة من خدمات تنظيف المكيفات مثل «يقضي على كل الجر…<div class='conf'>0.50</div></td><td class='both'>أرخص الأسعار في السعودية, أفضل سعر مضمون, توصيل مجاني دائماً, توصيل فوري أو في نفس اليوم لكل الطلبات, دعم العملاء متاح 24/7 عبر الهاتف, ضمان مدى الحياة على جميع المنتجات (+3)<div class='conf'>0.45</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>colors</code></td><td class='both'>#0065A4<div class='conf'>0.95</div></td><td class='both'>#0065A4<div class='conf'>0.95</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dialect</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>languages</code></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>pillars</code></td><td class='both'>الإلكترونيات بثقة, العروض والقيمة, الخدمات بعد الشراء, الدعم والتواصل (+1)<div class='conf'>0.78</div></td><td class='both'>التسوق بثقة, العروض والقيمة, الراحة والخدمات الإضافية, الصيانة والدعم الفني (+1)<div class='conf'>0.78</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>competitors</code></td><td class='both'>@JarirBookstore, @jarirbookstore, @noon, @noon (+2)<div class='conf'>0.38</div></td><td class='both'>@JarirBookstore, @noon, @amazonksa, @alghanim<div class='conf'>0.34</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>logoUrl</code></td><td class='both'>https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png<div class='conf'>0.90</div></td><td class='both'>https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="site">
+              <h2>Al Rajhi Bank
+                <span class="tag fetch_only">pick: fetch_only</span>
+              </h2>
+              <p class="muted"><a href="https://www.alrajhibank.com.sa/">https://www.alrajhibank.com.sa/</a></p>
+              <div class="grid">
+                
+    <div class="card">
+      <h3>fetch_only</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">39.6s ·
+         9 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, colors, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.alrajhibank.com.sa/</p>
+      <details>
+        <summary>Warnings (6)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>Fetched data is from the Arabic individuals homepage only; deeper product pages, English pages, brand guidelines, and legal pages were not fetched.</li><li>Colors are under-evidenced because the fetched metadata only exposed theme_color #ffffff and not a full brand palette.</li><li>Banned claims and don&#x27;t-list items include compliance-oriented inferences for Saudi banking/financial advertising; they were not presented as an explicit banned-claims policy on the fetched page.</li><li>Competitor handles are suggested from general Saudi banking market knowledge and were not sourced from the brand website.</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;الخدمات المصرفية اليومية للأفراد&quot;,
+      &quot;description&quot;: &quot;الحسابات، البطاقات، الفئات المصرفية، والخدمات التي تسهّل معاملات العميل اليومية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التجربة الرقمية الآمنة&quot;,
+      &quot;description&quot;: &quot;التطبيق والخدمات الرقمية السهلة والآمنة، مع التركيز على السرعة والراحة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التمويل والتأمين&quot;,
+      &quot;description&quot;: &quot;حلول التمويل الشخصي والعقاري وتمويل السيارات والتأمين، مع مراعاة الشروط والأهلية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الولاء والعروض&quot;,
+      &quot;description&quot;: &quot;برنامج مكافأة، نقاط الولاء، الشركاء التجاريون، والعروض الموسمية مثل العودة للمدارس.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الثقة المؤسسية والاستدامة&quot;,
+      &quot;description&quot;: &quot;إبراز تاريخ المصرف، الأصول، العملاء، الفروع، الأخبار، الشراكات، والمسؤولية الاجتماعية.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@SNBAlahli&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@RiyadBank&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@saiblive&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@BankAlbilad&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@alinma&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.alrajhibank.com.sa/default-og-image.jpg&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;رسمي&quot;,
+      &quot;موثوق&quot;,
+      &quot;مطمئن&quot;,
+      &quot;عملي&quot;,
+      &quot;متمحور حول العميل&quot;,
+      &quot;رقمي ومبتكر&quot;,
+      &quot;طموح&quot;,
+      &quot;واضح ومباشر&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;اكتب بالعربية الفصحى/السعودية الرسمية وبأسلوب مهني واضح.&quot;,
+      &quot;ركّز على الراحة وتبسيط المعاملات اليومية مثل: \&quot;صُمّمت لك\&quot; و\&quot;تواكب احتياجات يومك\&quot;.&quot;,
+      &quot;أبرز الخدمات الرقمية والتطبيق باعتبارها سهلة وآمنة وتدعم احتياجات العميل.&quot;,
+      &quot;قسّم الرسائل حسب احتياجات الجمهور: الحسابات، البطاقات، التمويل، التأمين، العروض، وبرنامج الولاء.&quot;,
+      &quot;استخدم نبرة ثقة واستقرار عند ذكر أرقام البنك أو تاريخه أو انتشاره، مع نسبتها للمصدر والتاريخ عند الإمكان.&quot;,
+      &quot;ادعم أي عرض أو منتج بدعوة واضحة للإجراء مثل: افتح حسابك، استكشف المنتجات، اطلب بطاقتك، اكتشف مكافأة.&quot;,
+      &quot;عند الحديث عن العروض أو برنامج الولاء، اذكر الشروط أو رابط التفاصيل عند توفره.&quot;,
+      &quot;حافظ على الحساسية التنظيمية لقطاع البنوك في السعودية، واذكر أن المصرف خاضع لرقابة وإشراف البنك المركزي السعودي عند السياق المؤسسي أو القانوني.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم لهجة عامية زائدة أو نبرة ساخرة؛ العلامة تظهر بنبرة مصرفية رسمية.&quot;,
+      &quot;لا تَعِد بالموافقة الفورية أو التمويل المؤكد أو الأرباح المضمونة ما لم تكن منصوصاً عليها في شروط المنتج.&quot;,
+      &quot;لا تعرض أرقاماً أو إحصاءات مثل عدد العملاء أو الأصول أو الأرباح دون تاريخ/مصدر، لأنها قد تتغير.&quot;,
+      &quot;لا تستخدم عبارات تفوق مطلقة مثل \&quot;الأفضل\&quot; أو \&quot;الأكبر\&quot; دون دعم واضح أو اقتباس مطابق من المصدر.&quot;,
+      &quot;لا تبسط المخاطر المالية أو تجعل المنتجات تبدو مناسبة للجميع؛ يجب مراعاة الأهلية والشروط والأحكام.&quot;,
+      &quot;لا تستخدم صوراً أو رسائل قد توحي بأن الخدمات مجانية بالكامل إذا كانت هناك رسوم أو تعرفة بنكية.&quot;,
+      &quot;لا تطلب معلومات حساسة من العملاء في المحتوى التسويقي مثل كلمات المرور أو رموز التحقق؛ وجّههم للقنوات الرسمية الآمنة.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;\&quot;موافقة مضمونة على التمويل\&quot; أو أي صياغة تفيد ضمان القبول.&quot;,
+      &quot;\&quot;أرباح/عوائد مضمونة\&quot; للمنتجات المالية أو الاستثمارية.&quot;,
+      &quot;\&quot;بدون رسوم\&quot; أو \&quot;مجاني بالكامل\&quot; ما لم يكن مثبتاً ضمن شروط المنتج الحالية.&quot;,
+      &quot;\&quot;أفضل بنك\&quot; أو \&quot;الأول دائماً\&quot; أو أي ادعاء تفوق مطلق غير موثق.&quot;,
+      &quot;أي مطالبة العميل بمشاركة كلمة المرور أو رمز التحقق أو بيانات البطاقة خارج القنوات الرسمية.&quot;,
+      &quot;أي ادعاء تنظيمي غير دقيق، مثل الإيحاء بأن المصرف غير خاضع لرقابة البنك المركزي السعودي.&quot;
+    ],
+    &quot;colors&quot;: [
+      &quot;#ffffff&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+                
+    <div class="card">
+      <h3>full</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">129.8s ·
+         9 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, colors, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.alrajhibank.com.sa/</p>
+      <details>
+        <summary>Warnings (7)</summary>
+        <ul><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>البيانات المتاحة مأخوذة من الصفحة الرئيسية فقط؛ لم يتم فحص صفحات الهوية البصرية أو الإرشادات التسويقية أو الشروط التفصيلية للمنتجات.</li><li>لون العلامة لم يظهر بوضوح في البيانات الملتقطة باستثناء theme_color الأبيض؛ يفضل الرجوع إلى دليل الهوية البصرية الرسمي قبل اعتماد لوحة الألوان.</li><li>قائمة المنافسين مقترحة بالاستدلال من السوق المصرفي السعودي وليست مستخرجة من صفحة مصرف الراجحي.</li><li>أي محتوى عن التمويل، الرسوم، العوائد، أو الأهلية يجب مراجعته قانونياً وتنظيمياً قبل النشر.</li><li>search stage timed out</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;الخدمات المصرفية اليومية&quot;,
+      &quot;description&quot;: &quot;الحسابات والفئات المصرفية والبطاقات المصممة لتسهيل المعاملات اليومية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التحول الرقمي والراحة&quot;,
+      &quot;description&quot;: &quot;فتح الحساب وطلب الخدمات عبر التطبيق، مع التأكيد على السهولة والأمان وأكثر من 200 خدمة رقمية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;التمويل والحلول المالية&quot;,
+      &quot;description&quot;: &quot;حلول التمويل الشخصي والعقاري وتمويل السيارات، مع مراعاة الشروط والأهلية.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الولاء والمكافآت&quot;,
+      &quot;description&quot;: &quot;برنامج مكافأة، نقاط الولاء، الاسترداد النقدي، الأميال، والعروض مع الشركاء.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الثقة والحجم المؤسسي&quot;,
+      &quot;description&quot;: &quot;إبراز تاريخ المصرف منذ 1957، قاعدة العملاء، شبكة الفروع وأجهزة الصراف، والنتائج السنوية المنشورة.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;الدعم والمسؤولية&quot;,
+      &quot;description&quot;: &quot;الدعم والمساعدة، حماية العملاء، مكافحة الاحتيال، الشكاوى، والمسؤولية الاجتماعية.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@snbalahli&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@RiyadBank&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@alinma&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@BankAlbilad&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@SABB_eCare&quot;,
+      &quot;platform&quot;: &quot;X&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.alrajhibank.com.sa/default-og-image.jpg&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;موثوق&quot;,
+      &quot;مطمئن&quot;,
+      &quot;عملي&quot;,
+      &quot;متمحور حول العميل&quot;,
+      &quot;رقمي وواثق&quot;,
+      &quot;طموح&quot;,
+      &quot;خدمي&quot;,
+      &quot;واضح&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;اكتب بالعربية الفصحى الحديثة كنمط أساسي، مع نبرة سعودية رسمية ودافئة عند الحاجة.&quot;,
+      &quot;خاطب العميل مباشرة وركّز على تلبية احتياجاته اليومية وطموحاته المستقبلية.&quot;,
+      &quot;ابرز سهولة الخدمات الرقمية وأمانها، خاصة التطبيق والخدمات المصرفية اليومية.&quot;,
+      &quot;استخدم عبارات واضحة ومحددة حول المنتجات: الحسابات، البطاقات، التمويل، التأمين، برنامج مكافأة، والعروض.&quot;,
+      &quot;استند إلى أرقام أو حقائق منشورة عند ذكر الحجم أو الإنجازات أو النتائج المالية.&quot;,
+      &quot;وجّه العملاء إلى القنوات الرسمية عند فتح الحساب، طلب البطاقات، تقديم الشكاوى، أو الحصول على الدعم.&quot;,
+      &quot;حافظ على نبرة مطمئنة ومسؤولة تتناسب مع مؤسسة مالية خاضعة لإشراف البنك المركزي السعودي.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;لا تستخدم وعوداً مطلقة مثل الموافقة المضمونة أو الربح المضمون أو انعدام المخاطر.&quot;,
+      &quot;لا تطلب أو تجمع معلومات مصرفية حساسة مثل كلمات المرور، رموز التحقق، أرقام البطاقات الكاملة، أو بيانات الدخول.&quot;,
+      &quot;لا تستخدم لهجة ساخرة أو مبالغاً في عفويتها؛ حافظ على الرسمية والوضوح.&quot;,
+      &quot;لا تذكر رسوماً أو نسباً أو شروط تمويل أو عروضاً غير موثقة أو غير محدثة.&quot;,
+      &quot;لا تقارن بالمنافسين بطريقة انتقاصية أو غير مثبتة.&quot;,
+      &quot;لا توحي بأن كل منتج مناسب لكل العملاء؛ يجب مراعاة الأهلية والشروط والأحكام.&quot;,
+      &quot;لا تستخدم ادعاءات تنظيمية أو شرعية أو استثمارية دون اعتماد واضح من المصادر الرسمية.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;الموافقة على التمويل أو البطاقات مضمونة لكل العملاء.&quot;,
+      &quot;أي منتج استثماري أو تمويلي خالٍ تماماً من المخاطر.&quot;,
+      &quot;عوائد أو أرباح مضمونة دون شروط.&quot;,
+      &quot;لا توجد رسوم أو تكاليف إطلاقاً ما لم تكن منشورة رسمياً للمنتج المحدد.&quot;,
+      &quot;مصرف الراجحي هو الأفضل أو الأكبر في كل فئة مصرفية دون مصدر محدد وحديث.&quot;,
+      &quot;البنك أو منتج معين معتمد أو موصى به من البنك المركزي السعودي بطريقة تسويقية غير مصرح بها.&quot;,
+      &quot;أي مطالبة بأن العميل يجب أن يشارك رموز التحقق أو بيانات الدخول لإتمام خدمة مصرفية.&quot;
+    ],
+    &quot;colors&quot;: [
+      &quot;#ffffff&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;ar&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+              </div>
+              <h3>Field-by-field</h3>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>fetch_only</th><th>full</th><th>Who filled</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>voiceAdjectives</code></td><td class='both'>رسمي, موثوق, مطمئن, عملي, متمحور حول العميل, رقمي ومبتكر (+2)<div class='conf'>0.78</div></td><td class='both'>موثوق, مطمئن, عملي, متمحور حول العميل, رقمي وواثق, طموح (+2)<div class='conf'>0.78</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>doList</code></td><td class='both'>اكتب بالعربية الفصحى/السعودية الرسمية وبأسلوب مهني واضح., ركّز على الراحة وتبسيط المعاملات اليومية مثل: &quot;صُمّمت لك&quot; و&quot;تواكب احتياجات يومك&quot;., أبرز الخدمات الرقمية والتطبيق باعتباره…<div class='conf'>0.74</div></td><td class='both'>اكتب بالعربية الفصحى الحديثة كنمط أساسي، مع نبرة سعودية رسمية ودافئة عند الحاجة., خاطب العميل مباشرة وركّز على تلبية احتياجاته اليومية وطموحاته المستقبلية., ابرز سهولة الخدمات الر…<div class='conf'>0.76</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dontList</code></td><td class='both'>لا تستخدم لهجة عامية زائدة أو نبرة ساخرة؛ العلامة تظهر بنبرة مصرفية رسمية., لا تَعِد بالموافقة الفورية أو التمويل المؤكد أو الأرباح المضمونة ما لم تكن منصوصاً عليها في شروط المنتج…<div class='conf'>0.70</div></td><td class='both'>لا تستخدم وعوداً مطلقة مثل الموافقة المضمونة أو الربح المضمون أو انعدام المخاطر., لا تطلب أو تجمع معلومات مصرفية حساسة مثل كلمات المرور، رموز التحقق، أرقام البطاقات الكاملة، أو بي…<div class='conf'>0.70</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>bannedClaims</code></td><td class='both'>&quot;موافقة مضمونة على التمويل&quot; أو أي صياغة تفيد ضمان القبول., &quot;أرباح/عوائد مضمونة&quot; للمنتجات المالية أو الاستثمارية., &quot;بدون رسوم&quot; أو &quot;مجاني بالكامل&quot; ما لم يكن مثبتاً ضمن شروط المنتج ا…<div class='conf'>0.52</div></td><td class='both'>الموافقة على التمويل أو البطاقات مضمونة لكل العملاء., أي منتج استثماري أو تمويلي خالٍ تماماً من المخاطر., عوائد أو أرباح مضمونة دون شروط., لا توجد رسوم أو تكاليف إطلاقاً ما لم تكن…<div class='conf'>0.66</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>colors</code></td><td class='both'>#ffffff<div class='conf'>0.95</div></td><td class='both'>#ffffff<div class='conf'>0.95</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dialect</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>languages</code></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='both'>ar<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>pillars</code></td><td class='both'>الخدمات المصرفية اليومية للأفراد, التجربة الرقمية الآمنة, التمويل والتأمين, الولاء والعروض (+1)<div class='conf'>0.82</div></td><td class='both'>الخدمات المصرفية اليومية, التحول الرقمي والراحة, التمويل والحلول المالية, الولاء والمكافآت (+2)<div class='conf'>0.82</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>competitors</code></td><td class='both'>@SNBAlahli, @RiyadBank, @saiblive, @BankAlbilad (+1)<div class='conf'>0.38</div></td><td class='both'>@snbalahli, @RiyadBank, @alinma, @BankAlbilad (+1)<div class='conf'>0.45</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>logoUrl</code></td><td class='both'>https://www.alrajhibank.com.sa/default-og-image.jpg<div class='conf'>0.90</div></td><td class='both'>https://www.alrajhibank.com.sa/default-og-image.jpg<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="site">
+              <h2>Albaik
+                <span class="tag fetch_only">pick: fetch_only</span>
+              </h2>
+              <p class="muted"><a href="https://www.albaik.com/">https://www.albaik.com/</a></p>
+              <div class="grid">
+                
+    <div class="card">
+      <h3>fetch_only</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">22.7s ·
+         7 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, languages, pillars, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.albaik.com/</p>
+      <details>
+        <summary>Warnings (7)</summary>
+        <ul><li>dropped colors: null value</li><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>dropped competitors_suggested: null value</li><li>Fetched data did not include explicit brand guidelines, social media links, logo assets, or color tokens; color recommendations were therefore left null.</li><li>Competitors were not listed or linked on the provided page data, so competitor suggestions were not inferred.</li><li>Claims should be validated against current official ALBAIK materials before use in regulated, paid, or location-specific campaigns.</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;Heritage Since 1974&quot;,
+      &quot;description&quot;: &quot;Tell the origin story of Shakour AbuGhazalah founding ALBAIK in Jeddah and introducing the Broast chicken concept in Saudi Arabia.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Customer Love&quot;,
+      &quot;description&quot;: &quot;Create content around the mission of 100% ALBAIK Customer love and the vision of putting “MMMMM’s” and “WOOOW’s” on customers’ lips.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Quality, Value, Speed, Courtesy&quot;,
+      &quot;description&quot;: &quot;Reinforce the founding promise of high-quality affordable food served fast and courteously in a clean, inviting environment.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Values &amp; Responsibility&quot;,
+      &quot;description&quot;: &quot;Express the brand purpose around protecting AMANA and nourishing/spreading goodness responsibly, supported by Quality of life, Ethics, Solidarity, and Excellence.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Menu Favorites&quot;,
+      &quot;description&quot;: &quot;Feature recognizable menu items such as ALBAIK chicken meals, fish fillet meals, tahina sauce, hummus, coleslaw, and corn in a cup.&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;warm&quot;,
+      &quot;courteous&quot;,
+      &quot;quality-focused&quot;,
+      &quot;responsible&quot;,
+      &quot;joyful&quot;,
+      &quot;customer-loving&quot;,
+      &quot;heritage-proud&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;Emphasize ALBAIK’s heritage: founded in 1974 in Jeddah, Saudi Arabia.&quot;,
+      &quot;Highlight high-quality, affordable food served fast and courteously.&quot;,
+      &quot;Use language that feels welcoming, clean, inviting, and service-oriented.&quot;,
+      &quot;Center the customer experience around “MMMMM’s,” “WOOOW’s,” and “100% ALBAIK Customer love.”&quot;,
+      &quot;Reflect the brand’s stated values: Quality of life, Ethics, Solidarity, and Excellence.&quot;,
+      &quot;Treat the brand purpose respectfully, especially references to AMANA and responsibility.&quot;,
+      &quot;Mention menu items only when supported, such as broast chicken meals, fish fillet burger/meal, tahina sauce, hummus, coleslaw, corn in a cup.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;Don’t use a cold, corporate, or overly formal tone that conflicts with the brand’s warm service promise.&quot;,
+      &quot;Don’t overstate global availability; the site states an ambition for everywhere in the world, not proof of current worldwide presence.&quot;,
+      &quot;Don’t make health, nutrition, or ingredient claims not provided on the page.&quot;,
+      &quot;Don’t claim ALBAIK is the first broast chicken brand globally; the page says it was first in the Saudi market to introduce the Broast chicken concept.&quot;,
+      &quot;Don’t ignore the Saudi/Jeddah origin story or the brand’s values-led positioning.&quot;,
+      &quot;Don’t trivialize religious or values-based language such as AMANA.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;“The world’s best fried chicken” or similar superlatives without evidence.&quot;,
+      &quot;“The healthiest fast food” or any unsupported health claim.&quot;,
+      &quot;“Available everywhere worldwide” unless a specific market/location is verified.&quot;,
+      &quot;“First to introduce Broast chicken in the world”; only “in Saudi Arabia” is supported by the page.&quot;,
+      &quot;Any halal, sourcing, sustainability, or nutrition claims not directly substantiated by approved brand materials.&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;en&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+                
+    <div class="card">
+      <h3>full</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">157.6s ·
+         8 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.albaik.com/</p>
+      <details>
+        <summary>Warnings (8)</summary>
+        <ul><li>dropped colors: null value</li><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>Fetched homepage data contains limited brand assets: no usable theme color, Open Graph data, JSON-LD, or social links were present.</li><li>Competitor handles are suggested from the regional/QSR chicken category and should be verified before use.</li><li>Color palette could not be reliably extracted from the provided page data.</li><li>Claims around halal status, nutrition, allergens, pricing, and current availability should be verified against official, current market-specific sources before publication.</li><li>search stage timed out</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;Heritage Since 1974&quot;,
+      &quot;description&quot;: &quot;Tell the origin story from Jeddah and the founder’s goal of serving high-quality, affordable food fast and courteously.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Customer Love&quot;,
+      &quot;description&quot;: &quot;Focus on delighting customers every time, using warm, enthusiastic language tied to the brand vision and mission.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Quality, Cleanliness, and Value&quot;,
+      &quot;description&quot;: &quot;Reinforce affordable meals, fast service, courteous hospitality, and clean, inviting environments.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Values and Responsibility&quot;,
+      &quot;description&quot;: &quot;Communicate the ALBAIK Purpose and values: AMANA, ethics, solidarity, excellence, and responsible growth.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Menu Cravings&quot;,
+      &quot;description&quot;: &quot;Showcase recognizable food items such as ALBAIK chicken meals, fish fillet items, sauces, hummus, coleslaw, and sides.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@KFCArabia&quot;,
+      &quot;platform&quot;: &quot;Instagram/X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@Popeyes&quot;,
+      &quot;platform&quot;: &quot;Instagram/X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@HerfyFood&quot;,
+      &quot;platform&quot;: &quot;Instagram/X&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@McDonaldsKSA&quot;,
+      &quot;platform&quot;: &quot;Instagram/X&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;warm&quot;,
+      &quot;courteous&quot;,
+      &quot;quality-focused&quot;,
+      &quot;values-driven&quot;,
+      &quot;responsible&quot;,
+      &quot;customer-loving&quot;,
+      &quot;enthusiastic&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;Emphasize ALBAIK’s heritage: founded in Jeddah, Saudi Arabia, in 1974.&quot;,
+      &quot;Highlight the brand promise of high-quality, affordable food served fast, courteously, and in a clean, inviting environment.&quot;,
+      &quot;Use customer-centric language around “Customer love” and memorable reactions like “MMMMM’s” and “WOOOW’s.”&quot;,
+      &quot;Reflect the stated values: Quality of life, Ethics, Solidarity, and Excellence.&quot;,
+      &quot;Treat the concept of AMANA/responsibility respectfully; frame the brand as stewardship-oriented and community-minded.&quot;,
+      &quot;Mention menu items only when accurate, such as Broast chicken meals, fish fillet items, tahina sauce, hummus, coleslaw, salad, and corn in a cup.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;Do not use snarky, cynical, or edgy humor that conflicts with the brand’s courteous and values-led positioning.&quot;,
+      &quot;Do not trivialize faith-linked language such as “AMANA” or references to God.&quot;,
+      &quot;Do not position ALBAIK as luxury, expensive, or exclusive; the site emphasizes affordable food for everyone.&quot;,
+      &quot;Do not imply menu availability, delivery coverage, or global presence beyond what is confirmed for the specific market/context.&quot;,
+      &quot;Do not make unsupported nutrition, health, halal, or sustainability claims.&quot;,
+      &quot;Do not claim specific rankings such as “best,” “#1,” or “most loved” unless separately verified.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;“The healthiest fried chicken/fast food option.”&quot;,
+      &quot;“100% halal” unless supported by an approved source for the relevant market.&quot;,
+      &quot;“Available everywhere worldwide” or equivalent universal availability claims.&quot;,
+      &quot;“The cheapest fast food in Saudi Arabia/the region.”&quot;,
+      &quot;“The #1 chicken brand” or “best fried chicken” unless substantiated by current evidence.&quot;,
+      &quot;Any exact nutrition, ingredient, allergen, or sourcing claims not taken from an official menu/nutrition source.&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;en&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+              </div>
+              <h3>Field-by-field</h3>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>fetch_only</th><th>full</th><th>Who filled</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>voiceAdjectives</code></td><td class='both'>warm, courteous, quality-focused, responsible, joyful, customer-loving (+1)<div class='conf'>0.78</div></td><td class='both'>warm, courteous, quality-focused, values-driven, responsible, customer-loving (+1)<div class='conf'>0.82</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>doList</code></td><td class='both'>Emphasize ALBAIK’s heritage: founded in 1974 in Jeddah, Saudi Arabia., Highlight high-quality, affordable food served fast and courteously., Use language that feels welcoming, cle…<div class='conf'>0.86</div></td><td class='both'>Emphasize ALBAIK’s heritage: founded in Jeddah, Saudi Arabia, in 1974., Highlight the brand promise of high-quality, affordable food served fast, courteously, and in a clean, invi…<div class='conf'>0.88</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dontList</code></td><td class='both'>Don’t use a cold, corporate, or overly formal tone that conflicts with the brand’s warm service promise., Don’t overstate global availability; the site states an ambition for ever…<div class='conf'>0.82</div></td><td class='both'>Do not use snarky, cynical, or edgy humor that conflicts with the brand’s courteous and values-led positioning., Do not trivialize faith-linked language such as “AMANA” or referen…<div class='conf'>0.84</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>bannedClaims</code></td><td class='both'>“The world’s best fried chicken” or similar superlatives without evidence., “The healthiest fast food” or any unsupported health claim., “Available everywhere worldwide” unless a …<div class='conf'>0.68</div></td><td class='both'>“The healthiest fried chicken/fast food option.”, “100% halal” unless supported by an approved source for the relevant market., “Available everywhere worldwide” or equivalent univ…<div class='conf'>0.76</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>colors</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>dialect</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>languages</code></td><td class='both'>en<div class='conf'>0.90</div></td><td class='both'>en<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>pillars</code></td><td class='both'>Heritage Since 1974, Customer Love, Quality, Value, Speed, Courtesy, Values &amp; Responsibility (+1)<div class='conf'>0.83</div></td><td class='both'>Heritage Since 1974, Customer Love, Quality, Cleanliness, and Value, Values and Responsibility (+1)<div class='conf'>0.86</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>competitors</code></td><td class='full'>—<div class='conf'>—</div></td><td class='full'>@KFCArabia, @Popeyes, @HerfyFood, @McDonaldsKSA<div class='conf'>0.45</div></td><td class='tag full'>full</td></tr>
+<tr><td><code>logoUrl</code></td><td class='both'>https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png<div class='conf'>0.90</div></td><td class='both'>https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+                </tbody>
+              </table>
+            </section>
+            
+            <section class="site">
+              <h2>Panda
+                <span class="tag fetch_only">pick: fetch_only</span>
+              </h2>
+              <p class="muted"><a href="https://www.panda.sa/">https://www.panda.sa/</a></p>
+              <div class="grid">
+                
+    <div class="card">
+      <h3>fetch_only</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">17.7s ·
+         7 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.panda.sa/en</p>
+      <details>
+        <summary>Warnings (8)</summary>
+        <ul><li>dropped banned_claims: empty list</li><li>dropped colors: null value</li><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>Fetched page data was very limited: only title, OG metadata, locale, and a short text snippet were available.</li><li>No formal brand guidelines, tone-of-voice rules, prohibited claims, or color palette were found in the provided page data.</li><li>Competitor handles are suggested based on the KSA grocery/supermarket category and should be verified before use.</li><li>Colors could not be reliably extracted from the supplied page metadata because no theme color or visible brand palette was provided.</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;Deals &amp; Offers&quot;,
+      &quot;description&quot;: &quot;Promote supermarket deals and value-led shopping across grocery and household categories.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Fresh Food&quot;,
+      &quot;description&quot;: &quot;Feature fresh groceries, meat, bakery, and daily essentials as key purchase drivers.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Convenient Shopping&quot;,
+      &quot;description&quot;: &quot;Communicate online shopping, fast delivery, and in-store pickup options.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Everyday Essentials&quot;,
+      &quot;description&quot;: &quot;Cover beverages, cleaning products, pantry items, and routine household needs.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Local KSA Retail&quot;,
+      &quot;description&quot;: &quot;Keep messaging relevant to shoppers in Saudi Arabia, including local availability and store services.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@carrefourksa&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@danubeco&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@luluksa&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@othaimmarkets&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;http://localhost:3000/assets/images/panda-icon.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;value-driven&quot;,
+      &quot;practical&quot;,
+      &quot;convenient&quot;,
+      &quot;fresh-focused&quot;,
+      &quot;family-friendly&quot;,
+      &quot;straightforward&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;Lead with clear grocery value propositions such as deals, offers, and everyday savings.&quot;,
+      &quot;Highlight core shopping categories: fresh groceries, meat, bakery, beverages, cleaning products, and household essentials.&quot;,
+      &quot;Emphasize convenience options such as fast delivery and in-store pickup.&quot;,
+      &quot;Use simple, direct retail language that helps shoppers find products and offers quickly.&quot;,
+      &quot;Localize messaging for KSA shoppers and refer to the brand as Panda KSA where relevant.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;Do not make unsupported price-superiority claims such as “cheapest” or “lowest prices” unless verified for the specific offer.&quot;,
+      &quot;Do not overpromise delivery speed beyond what the service can fulfill in a customer’s area.&quot;,
+      &quot;Do not use overly abstract or luxury-focused language; the brand context is practical supermarket shopping.&quot;,
+      &quot;Do not imply all items are always available, especially fresh categories or promotional products.&quot;,
+      &quot;Do not ignore local KSA context, currency, store pickup, or delivery availability when writing shopping messages.&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;en&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+                
+    <div class="card">
+      <h3>full</h3>
+      <p><span class="pill warn">partial</span>
+         <span class="meta">106.2s ·
+         8 fields · 1 pages</span></p>
+      
+      <p><strong>Fields:</strong> voiceAdjectives, doList, dontList, bannedClaims, languages, pillars, competitors, logoUrl</p>
+      <p><strong>Sources:</strong> https://www.panda.sa/en</p>
+      <details>
+        <summary>Warnings (8)</summary>
+        <ul><li>dropped colors: null value</li><li>dropped dialect: dialect must be gulf or msa</li><li>dropped languages: no valid languages</li><li>Fetched page data is very limited and appears to contain mostly metadata rather than full website copy.</li><li>No explicit brand guidelines, tone-of-voice rules, color palette, or social links were available in the supplied page data.</li><li>Colors could not be reliably extracted from the fetched data; avoid hard-coding brand colors without verifying official assets.</li><li>Competitors are market-based suggestions for Saudi grocery retail and were not listed on the provided Panda page.</li><li>search stage timed out</li></ul>
+      </details>
+      <details>
+        <summary>Full patch JSON</summary>
+        <pre>{
+  &quot;pillars&quot;: [
+    {
+      &quot;name&quot;: &quot;Everyday Grocery Value&quot;,
+      &quot;description&quot;: &quot;Promote supermarket deals, savings, and accessible prices across daily essentials.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Fresh Food &amp; Quality&quot;,
+      &quot;description&quot;: &quot;Spotlight fresh groceries, meat, bakery items, and products for family meals.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Convenient Shopping&quot;,
+      &quot;description&quot;: &quot;Communicate online shopping, fast delivery, and in-store pickup options.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Household Essentials&quot;,
+      &quot;description&quot;: &quot;Cover beverages, cleaning products, pantry staples, and non-food necessities.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Saudi Family Shopping&quot;,
+      &quot;description&quot;: &quot;Create locally relevant content around family needs, weekly shops, Ramadan/Eid, back-to-school, and seasonal occasions.&quot;
+    }
+  ],
+  &quot;competitors&quot;: [
+    {
+      &quot;handle&quot;: &quot;@carrefourksa&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@danubeco&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@tamimimarkets&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@luluhypermarketsaudi&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    },
+    {
+      &quot;handle&quot;: &quot;@bin_dawood&quot;,
+      &quot;platform&quot;: &quot;Instagram&quot;
+    }
+  ],
+  &quot;logoUrl&quot;: &quot;http://localhost:3000/assets/images/panda-icon.png&quot;,
+  &quot;guidelines&quot;: {
+    &quot;voiceAdjectives&quot;: [
+      &quot;practical&quot;,
+      &quot;family-friendly&quot;,
+      &quot;value-focused&quot;,
+      &quot;fresh&quot;,
+      &quot;convenient&quot;,
+      &quot;straightforward&quot;
+    ],
+    &quot;doList&quot;: [
+      &quot;Emphasize grocery value, offers, and everyday savings.&quot;,
+      &quot;Highlight fresh groceries, meat, bakery, beverages, cleaning products, and household essentials.&quot;,
+      &quot;Mention convenient shopping options such as delivery and in-store pickup when relevant.&quot;,
+      &quot;Use clear, simple retail language focused on product availability, price, freshness, and convenience.&quot;,
+      &quot;Localize messaging for shoppers in Saudi Arabia and reference KSA where appropriate.&quot;
+    ],
+    &quot;dontList&quot;: [
+      &quot;Do not use overly luxury or premium-only positioning; the brand appears value and everyday-shopping focused.&quot;,
+      &quot;Do not make unsupported claims such as being the cheapest, fastest, or best supermarket in Saudi Arabia.&quot;,
+      &quot;Do not imply product availability, pricing, delivery speed, or pickup options unless confirmed for the specific location/order.&quot;,
+      &quot;Do not use complex, formal, or abstract language that makes shopping offers harder to understand.&quot;,
+      &quot;Do not ignore Saudi cultural context, family shopping occasions, and local language expectations.&quot;
+    ],
+    &quot;bannedClaims&quot;: [
+      &quot;Guaranteed lowest prices in KSA&quot;,
+      &quot;Fastest grocery delivery in Saudi Arabia&quot;,
+      &quot;All products are always available&quot;,
+      &quot;All fresh products are organic&quot;,
+      &quot;Health, medical, or nutritional claims not supported by product labeling&quot;,
+      &quot;Any claim that a discount or offer is available without checking current campaign terms&quot;
+    ],
+    &quot;languages&quot;: [
+      &quot;en&quot;
+    ]
+  }
+}</pre>
+      </details>
+    </div>
+    
+              </div>
+              <h3>Field-by-field</h3>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>fetch_only</th><th>full</th><th>Who filled</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>voiceAdjectives</code></td><td class='both'>value-driven, practical, convenient, fresh-focused, family-friendly, straightforward<div class='conf'>0.55</div></td><td class='both'>practical, family-friendly, value-focused, fresh, convenient, straightforward<div class='conf'>0.46</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>doList</code></td><td class='both'>Lead with clear grocery value propositions such as deals, offers, and everyday savings., Highlight core shopping categories: fresh groceries, meat, bakery, beverages, cleaning pro…<div class='conf'>0.70</div></td><td class='both'>Emphasize grocery value, offers, and everyday savings., Highlight fresh groceries, meat, bakery, beverages, cleaning products, and household essentials., Mention convenient shoppi…<div class='conf'>0.61</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>dontList</code></td><td class='both'>Do not make unsupported price-superiority claims such as “cheapest” or “lowest prices” unless verified for the specific offer., Do not overpromise delivery speed beyond what the s…<div class='conf'>0.50</div></td><td class='both'>Do not use overly luxury or premium-only positioning; the brand appears value and everyday-shopping focused., Do not make unsupported claims such as being the cheapest, fastest, o…<div class='conf'>0.52</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>bannedClaims</code></td><td class='full'>—<div class='conf'>—</div></td><td class='full'>Guaranteed lowest prices in KSA, Fastest grocery delivery in Saudi Arabia, All products are always available, All fresh products are organic, Health, medical, or nutritional claim…<div class='conf'>0.47</div></td><td class='tag full'>full</td></tr>
+<tr><td><code>colors</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>dialect</code></td><td class='neither'>—<div class='conf'>—</div></td><td class='neither'>—<div class='conf'>—</div></td><td class='tag neither'>neither</td></tr>
+<tr><td><code>languages</code></td><td class='both'>en<div class='conf'>0.90</div></td><td class='both'>en<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>pillars</code></td><td class='both'>Deals &amp; Offers, Fresh Food, Convenient Shopping, Everyday Essentials (+1)<div class='conf'>0.70</div></td><td class='both'>Everyday Grocery Value, Fresh Food &amp; Quality, Convenient Shopping, Household Essentials (+1)<div class='conf'>0.58</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>competitors</code></td><td class='both'>@carrefourksa, @danubeco, @luluksa, @othaimmarkets<div class='conf'>0.35</div></td><td class='both'>@carrefourksa, @danubeco, @tamimimarkets, @luluhypermarketsaudi (+1)<div class='conf'>0.42</div></td><td class='tag both'>both</td></tr>
+<tr><td><code>logoUrl</code></td><td class='both'>http://localhost:3000/assets/images/panda-icon.png<div class='conf'>0.90</div></td><td class='both'>http://localhost:3000/assets/images/panda-icon.png<div class='conf'>0.90</div></td><td class='tag both'>both</td></tr>
+                </tbody>
+              </table>
+            </section>
+            
+
+    <footer>
+      Heuristic: prefer the approach that fills ≥2 more fields; otherwise prefer the faster one.
+      Open this file in a browser after the script finishes.
+    </footer>
+  </main>
+</body>
+</html>

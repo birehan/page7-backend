@@ -1,0 +1,91 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: pgblank
+      POSTGRES_PASSWORD: pgblank
+      POSTGRES_DB: pgblank
+    ports:
+      - "5544:5432"
+    volumes:
+      # Named volume, not a bind mount: PG18's PGDATA layout is version-specific
+      # (provider-facts.md) — a bind mount reused from an older Postgres breaks in
+      # a way that looks unrelated to the real cause.
+      - pgblank_postgres_data:/var/lib/postgresql/18/docker
+      # Separate DB for pytest (incl. alembic downgrade-to-base). Acceptance /
+      # API data stays in POSTGRES_DB=pgblank and is never wiped by the suite.
+      - ./postgres/init-test-db.sql:/docker-entrypoint-initdb.d/01-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgblank -d pgblank"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  # Named volumes mount as root:root 0755; the api/worker `app` user (uid 999)
+  # must be able to mkdir bucket dirs under STORAGE__LOCAL_ROOT.
+  storage-init:
+    image: busybox:1.37
+    volumes:
+      - pgblank_local_storage:/data
+    command: ["sh", "-c", "chmod -R a+rwX /data"]
+
+  api:
+    build:
+      context: ..
+      target: api
+    env_file:
+      - ../.env
+    environment:
+      # Overrides .env's localhost URL: from inside the compose network the
+      # database is reached by service name, not by the host's published port.
+      DATABASE__URL: postgresql+asyncpg://pgblank:pgblank@postgres:5432/pgblank
+      STORAGE__LOCAL_ROOT: /tmp/pgblank-storage
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../app:/app/app
+      - ../alembic:/app/alembic
+      - pgblank_local_storage:/tmp/pgblank-storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      storage-init:
+        condition: service_completed_successfully
+    command:
+      ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  worker:
+    build:
+      context: ..
+      target: worker
+    env_file:
+      - ../.env
+    environment:
+      DATABASE__URL: postgresql+asyncpg://pgblank:pgblank@postgres:5432/pgblank
+      STORAGE__LOCAL_ROOT: /tmp/pgblank-storage
+    volumes:
+      - ../app:/app/app
+      - pgblank_local_storage:/tmp/pgblank-storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      storage-init:
+        condition: service_completed_successfully
+
+  scheduler:
+    build:
+      context: ..
+      target: scheduler
+    env_file:
+      - ../.env
+    environment:
+      DATABASE__URL: postgresql+asyncpg://pgblank:pgblank@postgres:5432/pgblank
+    volumes:
+      - ../app:/app/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgblank_postgres_data:
+  pgblank_local_storage:

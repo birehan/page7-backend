@@ -1,0 +1,23 @@
+# Secrets — never committed
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.import_linter_cache/
+*.egg-info/
+
+# Editors / OS
+.DS_Store
+*.swp
+
+# Local tooling
+.tmp/
+.cloud-sql-proxy
+cloud-sql-proxy

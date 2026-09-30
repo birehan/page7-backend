@@ -1,0 +1,1469 @@
+[
+  {
+    "system": "new_fetch_only",
+    "site_name": "Obeid Hospitals",
+    "url": "https://obeidhospitals.com/",
+    "status": "partial",
+    "elapsed_seconds": 45.551,
+    "fields": {
+      "display_name": null,
+      "tagline": null,
+      "tone_description": null,
+      "voice": [
+        "إنساني",
+        "مهني",
+        "مطمئن",
+        "موثوق",
+        "متخصص",
+        "يركّز على الجودة والسلامة",
+        "خدوم وسهل الوصول"
+      ],
+      "do_list": [
+        "اكتب بالعربية الفصحى الواضحة وبأسلوب سعودي مفهوم للجمهور المحلي.",
+        "ركّز على الرعاية الإنسانية والاهتمام الحقيقي بكل مريض.",
+        "ابرز الجودة وسلامة المرضى والاحترافية والكفاءة الطبية دون مبالغة.",
+        "استخدم عبارات طمأنة مثل: رعاية صحية شاملة، بيئة آمنة، فريق طبي متكامل، أحدث التقنيات.",
+        "اذكر توفر الفروع في الرياض والأحساء عند الحديث عن الوصول للخدمات.",
+        "ادعُ المستخدمين لإجراءات واضحة مثل: احجز الآن، اعرف المزيد، تواصل معنا، تحقق من أهلية التأمين.",
+        "عند الحديث عن التخصصات، استخدم مسميات طبية دقيقة مثل: القلب، العيون، النساء والولادة، الأطفال، الطوارئ، الأشعة، المختبر.",
+        "حافظ على نبرة محترمة ورسمية عند ذكر الأطباء والاستشاريين والتخصصات.",
+        "شجّع المرضى على تقييم زيارتهم ومشاركة تجربة الخدمة بأسلوب مهذب."
+      ],
+      "dont_list": [
+        "لا تستخدم نبرة ساخرة أو خفيفة بشكل لا يناسب قطاع الرعاية الصحية.",
+        "لا تبالغ في الوعود الطبية أو تعد بنتائج علاجية مضمونة.",
+        "لا تعرض معلومات طبية تشخيصية كبديل عن استشارة الطبيب.",
+        "لا تستخدم لغة تخويف أو ضغط مفرط لدفع المريض للحجز.",
+        "لا تذكر بيانات مرضى أو قصص حالات يمكن أن تكشف الهوية دون موافقة واضحة.",
+        "لا تستخدم مصطلحات طبية معقدة دون تبسيطها للجمهور.",
+        "لا تهاجم مستشفيات أو مقدمي رعاية منافسين.",
+        "لا تنشر أسعار أو عروض علاجية بطريقة قد توحي بأن القرار الطبي مبني فقط على السعر.",
+        "لا تستخدم صور أو عبارات قد تقلل من حساسية الحالات الحرجة أو الطوارئ."
+      ],
+      "banned_claims": [
+        "أي ادعاء بضمان الشفاء أو ضمان نتيجة علاجية محددة.",
+        "عبارات مثل: أفضل مستشفى، رقم 1، الأفضل في المملكة، ما لم تكن مدعومة بجائزة أو مصدر موثق وحديث.",
+        "ادعاءات علاج جميع الحالات أو النجاح بنسبة 100%.",
+        "المقارنات المباشرة غير المثبتة ضد منافسين مثل: أسرع، أرخص، أكثر أماناً من غيرنا.",
+        "الادعاء بأن خدمة أو إجراء طبي بلا مخاطر تماماً.",
+        "أي نص يقدّم تشخيصاً أو وصفة علاجية شخصية دون فحص طبي.",
+        "أي استخدام لشهادات مرضى أو صور قبل/بعد دون موافقات نظامية وإخلاءات مناسبة.",
+        "ادعاءات اعتماد أو جوائز أو تراخيص غير مذكورة أو غير موثقة على الموقع."
+      ],
+      "colors": null,
+      "fonts": null,
+      "color_scheme": null,
+      "dialect": null,
+      "languages": [
+        "ar"
+      ],
+      "logo_url": "https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png",
+      "pillars": [
+        {
+          "name": "الرعاية الإنسانية والجودة",
+          "description": "محتوى يبرز اهتمام المستشفى بالمريض، جودة الخدمة، سلامة المرضى، والبيئة الطبية الآمنة."
+        },
+        {
+          "name": "التخصصات والعيادات",
+          "description": "تعريف مبسط بالخدمات الطبية المتاحة مثل القلب، الأطفال، النساء والولادة، العيون، الطوارئ، الأشعة، المختبر، وغيرها."
+        },
+        {
+          "name": "الأطباء والخبرات الطبية",
+          "description": "تسليط الضوء على الفريق الطبي والاستشاريين والتخصصات مع دعوات للحجز والاستشارة."
+        },
+        {
+          "name": "الوصول والحجز والتأمين",
+          "description": "محتوى عملي عن الفروع، أوقات العمل، الحجز، التواصل، والتحقق من تغطية التأمين."
+        },
+        {
+          "name": "التوعية الصحية",
+          "description": "منشورات تثقيفية عامة وآمنة حول الوقاية، الفحوصات الدورية، وأهمية مراجعة الطبيب دون تقديم تشخيص شخصي."
+        },
+        {
+          "name": "تجربة المريض",
+          "description": "تشجيع تقييم الزيارة، تحسين الخدمة، والإجابة عن الاستفسارات بنبرة مهذبة ومطمئنة."
+        }
+      ],
+      "competitors": [
+        {
+          "handle": "@drsulaimanalhabib",
+          "platform": "Instagram"
+        },
+        {
+          "handle": "@dallahhospital",
+          "platform": "Instagram"
+        },
+        {
+          "handle": "@saudigermanhospital",
+          "platform": "Instagram"
+        },
+        {
+          "handle": "@mouwasat_hospital",
+          "platform": "Instagram"
+        },
+        {
+          "handle": "@care.medical",
+          "platform": "Instagram"
+        }
+      ],
+      "topics": null,
+      "offer_hypotheses": null,
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "partial",
+      "type": "proposal",
+      "patch": {
+        "pillars": [
+          {
+            "name": "الرعاية الإنسانية والجودة",
+            "description": "محتوى يبرز اهتمام المستشفى بالمريض، جودة الخدمة، سلامة المرضى، والبيئة الطبية الآمنة."
+          },
+          {
+            "name": "التخصصات والعيادات",
+            "description": "تعريف مبسط بالخدمات الطبية المتاحة مثل القلب، الأطفال، النساء والولادة، العيون، الطوارئ، الأشعة، المختبر، وغيرها."
+          },
+          {
+            "name": "الأطباء والخبرات الطبية",
+            "description": "تسليط الضوء على الفريق الطبي والاستشاريين والتخصصات مع دعوات للحجز والاستشارة."
+          },
+          {
+            "name": "الوصول والحجز والتأمين",
+            "description": "محتوى عملي عن الفروع، أوقات العمل، الحجز، التواصل، والتحقق من تغطية التأمين."
+          },
+          {
+            "name": "التوعية الصحية",
+            "description": "منشورات تثقيفية عامة وآمنة حول الوقاية، الفحوصات الدورية، وأهمية مراجعة الطبيب دون تقديم تشخيص شخصي."
+          },
+          {
+            "name": "تجربة المريض",
+            "description": "تشجيع تقييم الزيارة، تحسين الخدمة، والإجابة عن الاستفسارات بنبرة مهذبة ومطمئنة."
+          }
+        ],
+        "competitors": [
+          {
+            "handle": "@drsulaimanalhabib",
+            "platform": "Instagram"
+          },
+          {
+            "handle": "@dallahhospital",
+            "platform": "Instagram"
+          },
+          {
+            "handle": "@saudigermanhospital",
+            "platform": "Instagram"
+          },
+          {
+            "handle": "@mouwasat_hospital",
+            "platform": "Instagram"
+          },
+          {
+            "handle": "@care.medical",
+            "platform": "Instagram"
+          }
+        ],
+        "logoUrl": "https://obeidhospitals.com/wp-content/uploads/2023/12/fav-150x150.png",
+        "guidelines": {
+          "voiceAdjectives": [
+            "إنساني",
+            "مهني",
+            "مطمئن",
+            "موثوق",
+            "متخصص",
+            "يركّز على الجودة والسلامة",
+            "خدوم وسهل الوصول"
+          ],
+          "doList": [
+            "اكتب بالعربية الفصحى الواضحة وبأسلوب سعودي مفهوم للجمهور المحلي.",
+            "ركّز على الرعاية الإنسانية والاهتمام الحقيقي بكل مريض.",
+            "ابرز الجودة وسلامة المرضى والاحترافية والكفاءة الطبية دون مبالغة.",
+            "استخدم عبارات طمأنة مثل: رعاية صحية شاملة، بيئة آمنة، فريق طبي متكامل، أحدث التقنيات.",
+            "اذكر توفر الفروع في الرياض والأحساء عند الحديث عن الوصول للخدمات.",
+            "ادعُ المستخدمين لإجراءات واضحة مثل: احجز الآن، اعرف المزيد، تواصل معنا، تحقق من أهلية التأمين.",
+            "عند الحديث عن التخصصات، استخدم مسميات طبية دقيقة مثل: القلب، العيون، النساء والولادة، الأطفال، الطوارئ، الأشعة، المختبر.",
+            "حافظ على نبرة محترمة ورسمية عند ذكر الأطباء والاستشاريين والتخصصات.",
+            "شجّع المرضى على تقييم زيارتهم ومشاركة تجربة الخدمة بأسلوب مهذب."
+          ],
+          "dontList": [
+            "لا تستخدم نبرة ساخرة أو خفيفة بشكل لا يناسب قطاع الرعاية الصحية.",
+            "لا تبالغ في الوعود الطبية أو تعد بنتائج علاجية مضمونة.",
+            "لا تعرض معلومات طبية تشخيصية كبديل عن استشارة الطبيب.",
+            "لا تستخدم لغة تخويف أو ضغط مفرط لدفع المريض للحجز.",
+            "لا تذكر بيانات مرضى أو قصص حالات يمكن أن تكشف الهوية دون موافقة واضحة.",
+            "لا تستخدم مصطلحات طبية معقدة دون تبسيطها للجمهور.",
+            "لا تهاجم مستشفيات أو مقدمي رعاية منافسين.",
+            "لا تنشر أسعار أو عروض علاجية بطريقة قد توحي بأن القرار الطبي مبني فقط على السعر.",
+            "لا تستخدم صور أو عبارات قد تقلل من حساسية الحالات الحرجة أو الطوارئ."
+          ],
+          "bannedClaims": [
+            "أي ادعاء بضمان الشفاء أو ضمان نتيجة علاجية محددة.",
+            "عبارات مثل: أفضل مستشفى، رقم 1، الأفضل في المملكة، ما لم تكن مدعومة بجائزة أو مصدر موثق وحديث.",
+            "ادعاءات علاج جميع الحالات أو النجاح بنسبة 100%.",
+            "المقارنات المباشرة غير المثبتة ضد منافسين مثل: أسرع، أرخص، أكثر أماناً من غيرنا.",
+            "الادعاء بأن خدمة أو إجراء طبي بلا مخاطر تماماً.",
+            "أي نص يقدّم تشخيصاً أو وصفة علاجية شخصية دون فحص طبي.",
+            "أي استخدام لشهادات مرضى أو صور قبل/بعد دون موافقات نظامية وإخلاءات مناسبة.",
+            "ادعاءات اعتماد أو جوائز أو تراخيص غير مذكورة أو غير موثقة على الموقع."
+          ],
+          "languages": [
+            "ar"
+          ]
+        }
+      },
+      "confidence": {
+        "voiceAdjectives": 0.86,
+        "doList": 0.88,
+        "dontList": 0.78,
+        "bannedClaims": 0.74,
+        "languages": 0.9,
+        "pillars": 0.87,
+        "competitors": 0.45,
+        "logoUrl": 0.9
+      },
+      "sources": [
+        "https://obeidhospitals.com/",
+        "https://obeidhospitals.com/about-us/",
+        "https://obeidhospitals.com/contact-us/"
+      ],
+      "warnings": [
+        "dropped dialect: dialect must be gulf or msa",
+        "لم يتم العثور على ألوان العلامة التجارية صراحة في البيانات المتاحة؛ يُفضّل استخراجها من الشعار أو دليل الهوية إن توفر.",
+        "الموقع يستخدم أحياناً صياغة مثل \"أفضل مستشفى\"؛ في المحتوى الإعلاني الطبي يُفضّل تجنب هذا النوع من الادعاءات ما لم يكن موثقاً بمصدر رسمي.",
+        "بيانات المنافسين مقترحة بناءً على القطاع والسوق المحلي وليست مذكورة في صفحات الموقع المقدمة.",
+        "يوجد اختلافات إملائية ظاهرة في البيانات الوصفية مثل \"مستشفي عبيد الخصصي\"؛ يُنصح بتوحيد الاسم الرسمي: \"مستشفيات عبيد التخصصية\"."
+      ],
+      "crawled_pages": 3,
+      "content_hash": "8104a1f17bf0ede56f0c4b799eea91b8409914ee7bb1d827fbf41c45b726c2af",
+      "approach": "fetch_only",
+      "elapsed_seconds": 45.551,
+      "timing": {
+        "fetch_extract_seconds": 45.476,
+        "search_seconds": null
+      }
+    },
+    "warnings": [
+      "dropped dialect: dialect must be gulf or msa",
+      "لم يتم العثور على ألوان العلامة التجارية صراحة في البيانات المتاحة؛ يُفضّل استخراجها من الشعار أو دليل الهوية إن توفر.",
+      "الموقع يستخدم أحياناً صياغة مثل \"أفضل مستشفى\"؛ في المحتوى الإعلاني الطبي يُفضّل تجنب هذا النوع من الادعاءات ما لم يكن موثقاً بمصدر رسمي.",
+      "بيانات المنافسين مقترحة بناءً على القطاع والسوق المحلي وليست مذكورة في صفحات الموقع المقدمة.",
+      "يوجد اختلافات إملائية ظاهرة في البيانات الوصفية مثل \"مستشفي عبيد الخصصي\"؛ يُنصح بتوحيد الاسم الرسمي: \"مستشفيات عبيد التخصصية\"."
+    ],
+    "error": null
+  },
+  {
+    "system": "pgblank_measured_llm",
+    "site_name": "Obeid Hospitals",
+    "url": "https://obeidhospitals.com/",
+    "status": "ok",
+    "elapsed_seconds": 100.931,
+    "fields": {
+      "display_name": "مستشفيات عبيد التخصصية",
+      "tagline": "الجودة وسلامة المرضى والأداء المتميز في قمة أولوياتنا.",
+      "tone_description": "مهنية وموثوقة ومطمئنة، تركّز على المريض أولاً وتبسط المعلومة الطبية بلغة عربية واضحة وإنجليزية سلسة، مع دعوات عملية للحجز والاستفسار.",
+      "voice": [
+        "رحيمة ومطمئنة",
+        "احترافية وموثوقة",
+        "تعليمية وواضحة",
+        "ثنائية اللغة (عربي/English)",
+        "قريبة من المجتمع"
+      ],
+      "do_list": null,
+      "dont_list": null,
+      "banned_claims": null,
+      "colors": [
+        "#334155",
+        "#004F8A",
+        "#FFFFFF",
+        "#5A5A5A",
+        "#71B427",
+        "#000000",
+        "#ADB6BE",
+        "#25D366",
+        "#2288D5",
+        "#414141",
+        "#FAFAFA",
+        "#69727D"
+      ],
+      "fonts": [
+        "Tajawal"
+      ],
+      "color_scheme": null,
+      "dialect": null,
+      "languages": null,
+      "logo_url": "https://obeidhospitals.com/wp-content/uploads/2023/12/Obeid-logo.webp",
+      "pillars": [
+        {
+          "name_en": "Specialty Clinics & Departments",
+          "name_ar": "الأقسام والعيادات",
+          "description": "تعريف بخدمات العيادات المتخصصة والأقسام مثل الطوارئ، العناية المركزة (أطفال وحديثي الولادة)، النساء والولادة، القلب، الأسنان، العظام، الجلدية، الباطنية، المسالك، العلاج الطبيعي وغيرها، مع روابط اعرف المزيد والحجز."
+        },
+        {
+          "name_en": "Our Doctors & Expertise",
+          "name_ar": "أطباؤنا وخبراتنا",
+          "description": "إبراز نخبة الأطباء في الرياض والأحساء، التخصصات المتاحة، نبذات تعريفية وروابط الحجز لكل طبيب."
+        },
+        {
+          "name_en": "Patient Safety & Quality of Care",
+          "name_ar": "سلامة المرضى وجودة الرعاية",
+          "description": "تأكيد معايير الجودة وسلامة المرضى داخل المستشفى، وشرح مسار الرعاية المتكاملة وتنوع التخصصات والعمل الجماعي الطبي."
+        },
+        {
+          "name_en": "Access, Insurance & Offers",
+          "name_ar": "سهولة الوصول والتأمين والعروض",
+          "description": "إرشاد حول حجز المواعيد، التحقق الفوري من تغطية التأمين، عروض الفروع، وطرق التواصل مع الفروع."
+        },
+        {
+          "name_en": "Community, News & Health Awareness",
+          "name_ar": "المجتمع والأخبار والتوعية الصحية",
+          "description": "مشاركات من المركز الإعلامي والفيديوهات، حملات التوعية وخدمة المجتمع، ومقالات تثقيفية عن الرعاية المتكاملة متعددة التخصصات."
+        }
+      ],
+      "competitors": null,
+      "topics": [
+        "Branch highlights: Riyadh & Al-Ahsa clinics and timings",
+        "التحقق من تغطية التأمين وكيفية الاستفادة منه",
+        "Meet our doctors: تخصصات وخبرات أطبائنا وروابط الحجز",
+        "Emergency Department: what to expect عند الحاجة للطوارئ",
+        "NICU & PICU: العناية بحديثي الولادة والأطفال",
+        "Women’s Health: عيادة النساء والولادة ونصائح ما قبل وبعد الولادة",
+        "Heart Health: عيادة القلب وفحوصات شائعة",
+        "ENT basics: مشكلات الأنف والأذن والحنجرة الشائعة",
+        "Dermatology tips: العناية بالبشرة ومتى تزور العيادة",
+        "Pediatrics: نمو الأطفال ومراجعات التطعيم والفحوصات الدورية",
+        "Orthopedics: الوقاية من الإصابات وإرشادات ما بعد الجبس/الجراحة",
+        "Urology awareness: المسالك البولية وأعراض تستدعي الاستشارة",
+        "Internal Medicine: أمراض مزمنة وإدارة المتابعة",
+        "Radiology & Lab: لماذا نطلب الفحوصات التشخيصية",
+        "Physical Therapy: إعادة التأهيل وخطط العلاج",
+        "Offers & promotions: عروض فرع الرياض وعروض فرع الأحساء",
+        "News & Events: آخر الأخبار والحملات الصحية",
+        "How to book: خطوات الحجز عبر الموقع وروابط مباشرة"
+      ],
+      "offer_hypotheses": [
+        "مستشفى تخصصي متعدد الأقسام يقدم رعاية طبية عالية الجودة في الرياض والأحساء.",
+        "عيادات متخصصة تشمل: القلب، النساء والولادة، الأطفال، الأسنان، العظام، الجلدية، الباطنية، الصدرية، الكلى، المسالك البولية، الروماتيزم، الأورام، جراحة التجميل، الجراحة العامة، جراحة/عيادة المخ والأعصاب.",
+        "أقسام حرجة وتشخيصية: الطوارئ، العناية المركزة (للبالغين والأطفال وحديثي الولادة)، الأشعة، المختبر.",
+        "خدمات ميسّرة: حجز المواعيد إلكترونياً وخدمة التحقق الفوري من تغطية التأمين.",
+        "عروض وخدمات ترويجية خاصة بكل فرع (الرياض والأحساء).",
+        "خدمات توعوية وإعلامية عبر الأخبار والفيديوهات والمقالات الطبية.",
+        "خدمة تباليغ الولادة عبر الموقع."
+      ],
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "ok",
+      "approach": "pgblank_measured_llm",
+      "url": "https://obeidhospitals.com/",
+      "crawler": "FailoverCrawler",
+      "branding_extractor": "DembrandtExtractor",
+      "firecrawl_base_url": "http://127.0.0.1:3002",
+      "crawl": {
+        "title": "مستشفيات عبيد التخصصية",
+        "markdown_len": 42815,
+        "markdown_preview": "[ تخطي إلى المحتوى](https://obeidhospitals.com/#content)\n[ ![](https://obeidhospitals.com/wp-content/uploads/2023/12/Obeid-logo.webp) ](https://obeidhospitals.com)\n  * [الرئيسية](https://obeidhospitals.com/)\n  * [من نحن](https://obeidhospitals.com/about-us/)\n    * [شركاء النجاح](https://obeidhospitals.com/partners/)\n    * [تغطية التأمين](https://obeidhospitals.com/insurance-coverage/)\n  * [فروعنا](https://obeidhospitals.com/)\n    * [فرع الرياض](https://obeidhospitals.com/riyadh-branch/)\n    * [ف",
+        "metadata": {
+          "title": "مستشفيات عبيد التخصصية",
+          "description": "مرحباً بكم في مستشفى عبيد التخصصي. ملتزمون بتوفيرخدمة استثنائية حيث الجودة و سلامة المرضى و الأداء المتميز هم في قمة أولوياتنا.",
+          "og:locale": "ar_AR",
+          "og:type": "website",
+          "og:title": "مستشفيات عبيد التخصصية",
+          "og:description": "مرحباً بكم في مستشفى عبيد التخصصي. ملتزمون بتوفيرخدمة استثنائية حيث الجودة و سلامة المرضى و الأداء المتميز هم في قمة أولوياتنا.",
+          "og:url": "https://obeidhospitals.com/",
+          "og:site_name": "مستشفي عبيد الخصصي",
+          "og:updated_time": "2026-05-11T15:27:36+03:00",
+          "twitter:card": "summary_large_image",
+          "twitter:title": "مستشفيات عبيد التخصصية",
+          "twitter:description": "مرحباً بكم في مستشفى عبيد التخصصي. ملتزمون بتوفيرخدمة استثنائية حيث الجودة و سلامة المرضى و الأداء المتميز هم في قمة أولوياتنا.",
+          "twitter:label1": "كُتب بواسطة",
+          "twitter:data1": "obeid-admin",
+          "twitter:label2": "مدة القراءة",
+          "twitter:data2": "أقل من دقيقة",
+          "article:published_time": "2023-12-28T14:21:29+03:00",
+          "article:modified_time": "2026-05-11T15:27:36+03:00"
+        }
+      },
+      "measured": {
+        "colors": [
+          "#334155",
+          "#004F8A",
+          "#FFFFFF",
+          "#5A5A5A",
+          "#71B427",
+          "#000000",
+          "#ADB6BE",
+          "#25D366",
+          "#2288D5",
+          "#414141",
+          "#FAFAFA",
+          "#69727D"
+        ],
+        "logo_url": "https://obeidhospitals.com/wp-content/uploads/2023/12/Obeid-logo.webp",
+        "fonts": [
+          "Tajawal"
+        ],
+        "color_scheme": null
+      },
+      "draft": {
+        "display_name": "مستشفيات عبيد التخصصية",
+        "tagline": "الجودة وسلامة المرضى والأداء المتميز في قمة أولوياتنا.",
+        "tone_description": "مهنية وموثوقة ومطمئنة، تركّز على المريض أولاً وتبسط المعلومة الطبية بلغة عربية واضحة وإنجليزية سلسة، مع دعوات عملية للحجز والاستفسار.",
+        "voice_traits": [
+          "رحيمة ومطمئنة",
+          "احترافية وموثوقة",
+          "تعليمية وواضحة",
+          "ثنائية اللغة (عربي/English)",
+          "قريبة من المجتمع"
+        ],
+        "color_palette": [
+          "#334155",
+          "#004F8A",
+          "#FFFFFF",
+          "#5A5A5A",
+          "#71B427",
+          "#000000",
+          "#ADB6BE",
+          "#25D366",
+          "#2288D5",
+          "#414141",
+          "#FAFAFA",
+          "#69727D"
+        ],
+        "logo_url": "https://obeidhospitals.com/wp-content/uploads/2023/12/Obeid-logo.webp",
+        "pillars": [
+          {
+            "name_en": "Specialty Clinics & Departments",
+            "name_ar": "الأقسام والعيادات",
+            "description": "تعريف بخدمات العيادات المتخصصة والأقسام مثل الطوارئ، العناية المركزة (أطفال وحديثي الولادة)، النساء والولادة، القلب، الأسنان، العظام، الجلدية، الباطنية، المسالك، العلاج الطبيعي وغيرها، مع روابط اعرف المزيد والحجز."
+          },
+          {
+            "name_en": "Our Doctors & Expertise",
+            "name_ar": "أطباؤنا وخبراتنا",
+            "description": "إبراز نخبة الأطباء في الرياض والأحساء، التخصصات المتاحة، نبذات تعريفية وروابط الحجز لكل طبيب."
+          },
+          {
+            "name_en": "Patient Safety & Quality of Care",
+            "name_ar": "سلامة المرضى وجودة الرعاية",
+            "description": "تأكيد معايير الجودة وسلامة المرضى داخل المستشفى، وشرح مسار الرعاية المتكاملة وتنوع التخصصات والعمل الجماعي الطبي."
+          },
+          {
+            "name_en": "Access, Insurance & Offers",
+            "name_ar": "سهولة الوصول والتأمين والعروض",
+            "description": "إرشاد حول حجز المواعيد، التحقق الفوري من تغطية التأمين، عروض الفروع، وطرق التواصل مع الفروع."
+          },
+          {
+            "name_en": "Community, News & Health Awareness",
+            "name_ar": "المجتمع والأخبار والتوعية الصحية",
+            "description": "مشاركات من المركز الإعلامي والفيديوهات، حملات التوعية وخدمة المجتمع، ومقالات تثقيفية عن الرعاية المتكاملة متعددة التخصصات."
+          }
+        ],
+        "topics": [
+          "Branch highlights: Riyadh & Al-Ahsa clinics and timings",
+          "التحقق من تغطية التأمين وكيفية الاستفادة منه",
+          "Meet our doctors: تخصصات وخبرات أطبائنا وروابط الحجز",
+          "Emergency Department: what to expect عند الحاجة للطوارئ",
+          "NICU & PICU: العناية بحديثي الولادة والأطفال",
+          "Women’s Health: عيادة النساء والولادة ونصائح ما قبل وبعد الولادة",
+          "Heart Health: عيادة القلب وفحوصات شائعة",
+          "ENT basics: مشكلات الأنف والأذن والحنجرة الشائعة",
+          "Dermatology tips: العناية بالبشرة ومتى تزور العيادة",
+          "Pediatrics: نمو الأطفال ومراجعات التطعيم والفحوصات الدورية",
+          "Orthopedics: الوقاية من الإصابات وإرشادات ما بعد الجبس/الجراحة",
+          "Urology awareness: المسالك البولية وأعراض تستدعي الاستشارة",
+          "Internal Medicine: أمراض مزمنة وإدارة المتابعة",
+          "Radiology & Lab: لماذا نطلب الفحوصات التشخيصية",
+          "Physical Therapy: إعادة التأهيل وخطط العلاج",
+          "Offers & promotions: عروض فرع الرياض وعروض فرع الأحساء",
+          "News & Events: آخر الأخبار والحملات الصحية",
+          "How to book: خطوات الحجز عبر الموقع وروابط مباشرة"
+        ],
+        "offer_hypotheses": [
+          "مستشفى تخصصي متعدد الأقسام يقدم رعاية طبية عالية الجودة في الرياض والأحساء.",
+          "عيادات متخصصة تشمل: القلب، النساء والولادة، الأطفال، الأسنان، العظام، الجلدية، الباطنية، الصدرية، الكلى، المسالك البولية، الروماتيزم، الأورام، جراحة التجميل، الجراحة العامة، جراحة/عيادة المخ والأعصاب.",
+          "أقسام حرجة وتشخيصية: الطوارئ، العناية المركزة (للبالغين والأطفال وحديثي الولادة)، الأشعة، المختبر.",
+          "خدمات ميسّرة: حجز المواعيد إلكترونياً وخدمة التحقق الفوري من تغطية التأمين.",
+          "عروض وخدمات ترويجية خاصة بكل فرع (الرياض والأحساء).",
+          "خدمات توعوية وإعلامية عبر الأخبار والفيديوهات والمقالات الطبية.",
+          "خدمة تباليغ الولادة عبر الموقع."
+        ],
+        "dropped": []
+      },
+      "timing": {
+        "crawl_and_measure_seconds": 50.189,
+        "draft_seconds": 49.746,
+        "elapsed_seconds": 100.931
+      },
+      "warnings": [],
+      "text_generator": "OpenAiTextGenerator"
+    },
+    "warnings": [],
+    "error": null
+  },
+  {
+    "system": "new_fetch_only",
+    "site_name": "Extra",
+    "url": "https://www.extra.com/",
+    "status": "partial",
+    "elapsed_seconds": 48.57,
+    "fields": {
+      "display_name": null,
+      "tagline": null,
+      "tone_description": null,
+      "voice": [
+        "موثوق",
+        "خدوم",
+        "عملي",
+        "ترويجي",
+        "مريح",
+        "خبير/احترافي"
+      ],
+      "do_list": [
+        "استخدم لغة عربية واضحة ومباشرة موجهة للسوق السعودي.",
+        "ابرز الثقة والاطمئنان في الشراء، مثل فكرة “اشترِ بثقة”.",
+        "ركز على الراحة وخدمة العميل: التوصيل السريع، الحجز أونلاين، واتساب، وخدمة العملاء.",
+        "اذكر الخدمات الداعمة بعد الشراء عند ملاءمتها: ضمان إكسترا، حماية إكسترا، صيانة إكسترا، وتجهيز الأجهزة.",
+        "استخدم رسائل ترويجية واضحة للعروض والخصومات مع تحديد المدة أو الشرط عند توفره.",
+        "ادعم الرسائل الخدمية بمفردات مثل: فنيون خبراء، مركز صيانة معتمد، دعم فني، حماية، خصوصية، أمان.",
+        "وجّه المستخدم لاتخاذ إجراء واضح: تصفّح، اكتشف، احجز الآن، اطلب الخدمة أونلاين، تواصل معنا."
+      ],
+      "dont_list": [
+        "لا تستخدم لهجة عامية ثقيلة؛ النصوص الظاهرة تعتمد العربية الفصحى/الرسمية المبسطة.",
+        "لا تقدّم وعوداً مطلقة غير موثقة مثل “الأرخص دائماً” أو “الأفضل في المملكة” ما لم تكن مثبتة في حملة أو صفحة رسمية.",
+        "لا تبالغ في الوعود الفنية أو الضمانية خارج ما توضحه صفحات الخدمة.",
+        "لا تهمل تفاصيل الخدمة المهمة مثل نطاق الخدمة، ساعات التواصل، أو شروط العرض عند ذكرها.",
+        "لا تستخدم نبرة ساخرة أو عاطفية مفرطة؛ العلامة تبدو عملية وخدمية وترويجية.",
+        "لا تخلط بين خدمات إكسترا المختلفة؛ ميّز بين الضمان، الحماية، الصيانة، وتجهيز الأجهزة."
+      ],
+      "banned_claims": [
+        "الأرخص دائماً أو أقل سعر مضمون، ما لم يوجد إثبات/عرض رسمي محدد.",
+        "أفضل متجر إلكترونيات في السعودية، ما لم يكن مدعوماً بجائزة أو مصدر رسمي.",
+        "توصيل فوري لكل الطلبات أو لكل المناطق؛ الصفحة تشير إلى توصيل سريع فقط.",
+        "ضمان شامل لكل المنتجات أو مدى الحياة؛ الموقع يذكر ضمان المصنع الرسمي وخدمات ضمان إكسترا دون تعميم شامل.",
+        "فنيون معتمدون لكل أنواع الخدمات والعلامات التجارية، إلا عندما تكون الخدمة/العلامة مذكورة صراحة.",
+        "خصم 50% على جميع خدمات الصيانة أو في كل المدن؛ الصفحة الملتقطة تشير إلى صيانة منازل الخبر والدمام فقط."
+      ],
+      "colors": [
+        "#0065A4"
+      ],
+      "fonts": null,
+      "color_scheme": null,
+      "dialect": null,
+      "languages": [
+        "ar"
+      ],
+      "logo_url": "https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png",
+      "pillars": [
+        {
+          "name": "تسوق الإلكترونيات بثقة",
+          "description": "رسائل تركز على شراء الإلكترونيات والأجهزة من علامات تجارية معروفة مع ضمان المصنع الرسمي وتجربة تسوق مطمئنة."
+        },
+        {
+          "name": "العروض والقيمة",
+          "description": "إبراز الخصومات والعروض محدودة المدة والفئات الرائجة مثل الجوالات، الأجهزة المنزلية، التلفزيونات، واللابتوبات."
+        },
+        {
+          "name": "الراحة وسهولة الخدمة",
+          "description": "التوصيل السريع، الحجز أونلاين، واتساب، وقنوات التواصل التي تجعل تجربة العميل أسهل."
+        },
+        {
+          "name": "خدمات ما بعد البيع",
+          "description": "ضمان إكسترا، حماية إكسترا، تجهيز الأجهزة، وصيانة إكسترا كامتداد لتجربة الشراء."
+        },
+        {
+          "name": "الصيانة والدعم الفني",
+          "description": "محتوى حول مراكز الصيانة المعتمدة، الفنيين الخبراء، وتنظيف/غسيل المكيفات وخدمات المنزل."
+        }
+      ],
+      "competitors": [
+        {
+          "handle": "@jarirbookstore",
+          "platform": "Instagram/X"
+        },
+        {
+          "handle": "@noon",
+          "platform": "Instagram/X"
+        },
+        {
+          "handle": "@amazon.sa",
+          "platform": "Instagram"
+        },
+        {
+          "handle": "@xciteksa",
+          "platform": "Instagram/X"
+        },
+        {
+          "handle": "@alhaddadshop",
+          "platform": "Instagram/X"
+        }
+      ],
+      "topics": null,
+      "offer_hypotheses": null,
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "partial",
+      "type": "proposal",
+      "patch": {
+        "pillars": [
+          {
+            "name": "تسوق الإلكترونيات بثقة",
+            "description": "رسائل تركز على شراء الإلكترونيات والأجهزة من علامات تجارية معروفة مع ضمان المصنع الرسمي وتجربة تسوق مطمئنة."
+          },
+          {
+            "name": "العروض والقيمة",
+            "description": "إبراز الخصومات والعروض محدودة المدة والفئات الرائجة مثل الجوالات، الأجهزة المنزلية، التلفزيونات، واللابتوبات."
+          },
+          {
+            "name": "الراحة وسهولة الخدمة",
+            "description": "التوصيل السريع، الحجز أونلاين، واتساب، وقنوات التواصل التي تجعل تجربة العميل أسهل."
+          },
+          {
+            "name": "خدمات ما بعد البيع",
+            "description": "ضمان إكسترا، حماية إكسترا، تجهيز الأجهزة، وصيانة إكسترا كامتداد لتجربة الشراء."
+          },
+          {
+            "name": "الصيانة والدعم الفني",
+            "description": "محتوى حول مراكز الصيانة المعتمدة، الفنيين الخبراء، وتنظيف/غسيل المكيفات وخدمات المنزل."
+          }
+        ],
+        "competitors": [
+          {
+            "handle": "@jarirbookstore",
+            "platform": "Instagram/X"
+          },
+          {
+            "handle": "@noon",
+            "platform": "Instagram/X"
+          },
+          {
+            "handle": "@amazon.sa",
+            "platform": "Instagram"
+          },
+          {
+            "handle": "@xciteksa",
+            "platform": "Instagram/X"
+          },
+          {
+            "handle": "@alhaddadshop",
+            "platform": "Instagram/X"
+          }
+        ],
+        "logoUrl": "https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png",
+        "guidelines": {
+          "voiceAdjectives": [
+            "موثوق",
+            "خدوم",
+            "عملي",
+            "ترويجي",
+            "مريح",
+            "خبير/احترافي"
+          ],
+          "doList": [
+            "استخدم لغة عربية واضحة ومباشرة موجهة للسوق السعودي.",
+            "ابرز الثقة والاطمئنان في الشراء، مثل فكرة “اشترِ بثقة”.",
+            "ركز على الراحة وخدمة العميل: التوصيل السريع، الحجز أونلاين، واتساب، وخدمة العملاء.",
+            "اذكر الخدمات الداعمة بعد الشراء عند ملاءمتها: ضمان إكسترا، حماية إكسترا، صيانة إكسترا، وتجهيز الأجهزة.",
+            "استخدم رسائل ترويجية واضحة للعروض والخصومات مع تحديد المدة أو الشرط عند توفره.",
+            "ادعم الرسائل الخدمية بمفردات مثل: فنيون خبراء، مركز صيانة معتمد، دعم فني، حماية، خصوصية، أمان.",
+            "وجّه المستخدم لاتخاذ إجراء واضح: تصفّح، اكتشف، احجز الآن، اطلب الخدمة أونلاين، تواصل معنا."
+          ],
+          "dontList": [
+            "لا تستخدم لهجة عامية ثقيلة؛ النصوص الظاهرة تعتمد العربية الفصحى/الرسمية المبسطة.",
+            "لا تقدّم وعوداً مطلقة غير موثقة مثل “الأرخص دائماً” أو “الأفضل في المملكة” ما لم تكن مثبتة في حملة أو صفحة رسمية.",
+            "لا تبالغ في الوعود الفنية أو الضمانية خارج ما توضحه صفحات الخدمة.",
+            "لا تهمل تفاصيل الخدمة المهمة مثل نطاق الخدمة، ساعات التواصل، أو شروط العرض عند ذكرها.",
+            "لا تستخدم نبرة ساخرة أو عاطفية مفرطة؛ العلامة تبدو عملية وخدمية وترويجية.",
+            "لا تخلط بين خدمات إكسترا المختلفة؛ ميّز بين الضمان، الحماية، الصيانة، وتجهيز الأجهزة."
+          ],
+          "bannedClaims": [
+            "الأرخص دائماً أو أقل سعر مضمون، ما لم يوجد إثبات/عرض رسمي محدد.",
+            "أفضل متجر إلكترونيات في السعودية، ما لم يكن مدعوماً بجائزة أو مصدر رسمي.",
+            "توصيل فوري لكل الطلبات أو لكل المناطق؛ الصفحة تشير إلى توصيل سريع فقط.",
+            "ضمان شامل لكل المنتجات أو مدى الحياة؛ الموقع يذكر ضمان المصنع الرسمي وخدمات ضمان إكسترا دون تعميم شامل.",
+            "فنيون معتمدون لكل أنواع الخدمات والعلامات التجارية، إلا عندما تكون الخدمة/العلامة مذكورة صراحة.",
+            "خصم 50% على جميع خدمات الصيانة أو في كل المدن؛ الصفحة الملتقطة تشير إلى صيانة منازل الخبر والدمام فقط."
+          ],
+          "colors": [
+            "#0065A4"
+          ],
+          "languages": [
+            "ar"
+          ]
+        }
+      },
+      "confidence": {
+        "voiceAdjectives": 0.72,
+        "doList": 0.78,
+        "dontList": 0.65,
+        "bannedClaims": 0.54,
+        "colors": 0.95,
+        "languages": 0.9,
+        "pillars": 0.76,
+        "competitors": 0.32,
+        "logoUrl": 0.9
+      },
+      "sources": [
+        "https://www.extra.com/ar-sa",
+        "https://www.extra.com/ar-sa/contactus",
+        "https://www.extra.com/ar-sa/extraservices",
+        "https://www.extra.com/ar-sa/homemaintenance",
+        "https://www.extra.com/ar-sa/mri/air-conditioner/ac-cleaning-service-/c/20-2001-1"
+      ],
+      "warnings": [
+        "dropped dialect: dialect must be gulf or msa",
+        "dropped languages: no valid languages",
+        "لم يتم العثور في الصفحات الملتقطة على دليل رسمي لنبرة العلامة أو إرشادات هوية كاملة؛ معظم الاستنتاجات مبنية على نصوص الموقع والميتا داتا.",
+        "الألوان محدودة بما ظهر كـ theme_color فقط؛ لم يتم استخراج لوحة ألوان كاملة من الشعار أو ملفات الهوية.",
+        "قائمة المنافسين مقترحة بالاستدلال من فئة تجارة الإلكترونيات في السعودية وليست مذكورة في الموقع.",
+        "الادعاءات المحظورة ليست منشورة كسياسة رسمية؛ هي احترازات لتجنب وعود تسويقية غير مثبتة.",
+        "البيانات الملتقطة من النسخة العربية السعودية فقط، لذلك لا يمكن الجزم بجميع اللغات المدعومة من العلامة."
+      ],
+      "crawled_pages": 5,
+      "content_hash": "50353a530b79ace05df7036877c82c1dbc973c4304a735141a30c1796e18452c",
+      "approach": "fetch_only",
+      "elapsed_seconds": 48.57,
+      "timing": {
+        "fetch_extract_seconds": 48.567,
+        "search_seconds": null
+      }
+    },
+    "warnings": [
+      "dropped dialect: dialect must be gulf or msa",
+      "dropped languages: no valid languages",
+      "لم يتم العثور في الصفحات الملتقطة على دليل رسمي لنبرة العلامة أو إرشادات هوية كاملة؛ معظم الاستنتاجات مبنية على نصوص الموقع والميتا داتا.",
+      "الألوان محدودة بما ظهر كـ theme_color فقط؛ لم يتم استخراج لوحة ألوان كاملة من الشعار أو ملفات الهوية.",
+      "قائمة المنافسين مقترحة بالاستدلال من فئة تجارة الإلكترونيات في السعودية وليست مذكورة في الموقع.",
+      "الادعاءات المحظورة ليست منشورة كسياسة رسمية؛ هي احترازات لتجنب وعود تسويقية غير مثبتة.",
+      "البيانات الملتقطة من النسخة العربية السعودية فقط، لذلك لا يمكن الجزم بجميع اللغات المدعومة من العلامة."
+    ],
+    "error": null
+  },
+  {
+    "system": "pgblank_measured_llm",
+    "site_name": "Extra",
+    "url": "https://www.extra.com/",
+    "status": "ok",
+    "elapsed_seconds": 96.832,
+    "fields": {
+      "display_name": "إكسترا السعودية | eXtra KSA",
+      "tagline": "اشترِ الإلكترونيات بثقة",
+      "tone_description": "Helpful, trustworthy, Arabic‑first bilingual voice that’s clear, service‑led, and deal‑driven. Highlights benefits (fast delivery, official warranty, price match), explains choices with simple buying guides, and invites action with friendly CTAs.",
+      "voice": [
+        "Trustworthy",
+        "Helpful & service-led",
+        "Deal-driven & timely",
+        "Clear & concise",
+        "Expert yet simple",
+        "Arabic-first bilingual (AR/EN)"
+      ],
+      "do_list": null,
+      "dont_list": null,
+      "banned_claims": null,
+      "colors": [
+        "#0065A4",
+        "#051F2F",
+        "#EF7E2C",
+        "#000000",
+        "#FFFFFF",
+        "#53616A",
+        "#81939E",
+        "#FFECA1",
+        "#C0D0DA",
+        "#F4CA24",
+        "#FCE700",
+        "#FFF200"
+      ],
+      "fonts": [
+        "Dubai",
+        "icon-font"
+      ],
+      "color_scheme": null,
+      "dialect": null,
+      "languages": null,
+      "logo_url": "https://cdn.extra.com/hybris/new_ui_ux/logo/eXtra-logo.svg",
+      "pillars": [
+        {
+          "name_en": "Deals & New Arrivals",
+          "name_ar": "العروض والجديد",
+          "description": "Spotlight today’s Hot Deals, Last‑Piece offers, new products, and price‑match highlights. Encourage app‑exclusive and seasonal promotions. | إبراز أقوى العروض، آخر القطع، المنتجات الجديدة، ونطابق أقل سعر مع دعوات واضحة للاستفادة."
+        },
+        {
+          "name_en": "Mobiles & Gadgets",
+          "name_ar": "الجوالات والأجهزة اللوحية والإكسسوارات",
+          "description": "Cover flagship launches (Apple, Samsung, Huawei, HONOR), comparisons and buying tips, plus must‑have accessories and trade‑in. | تغطية الإطلاقات، المقارنات، نصائح الشراء، والإكسسوارات الضرورية مع الاستبدال بالقديم."
+        },
+        {
+          "name_en": "Home Appliances",
+          "name_ar": "الأجهزة المنزلية الكبيرة والصغيرة",
+          "description": "From ACs, washers, and refrigerators to small kitchen appliances—buying guides, setup, delivery & installation, and care tips. | من المكيفات والغسالات إلى أجهزة المطبخ الصغيرة مع أدلة شراء وتركيب وتوصيل."
+        },
+        {
+          "name_en": "Computing & Gaming",
+          "name_ar": "الكمبيوترات والألعاب",
+          "description": "Laptops, desktops, monitors, printers, networking, and gaming gear—guides, setups, and performance tips. | لابتوبات، شاشات، طابعات، شبكات، وإكسسوارات الألعاب مع نصائح وأدلة."
+        },
+        {
+          "name_en": "Extra Services & Benefits",
+          "name_ar": "خدمات اكسترا ومزايا التسوق",
+          "description": "Promote ExtraSetup, Safeguard warranty, ExtraCare protection, ExtraRepair, Home Maintenance, fast delivery, Click & Collect, returns, and flexible payments (Baseeta, Tamara, Tabby). | إبراز الخدمات والمزايا وخيارات الدفع الميسرة."
+        }
+      ],
+      "competitors": null,
+      "topics": [
+        "Hot Deals and Last‑Piece offers",
+        "New arrivals across mobiles, TVs, and appliances",
+        "iPhone 17 Pro | Pro Max highlights and availability",
+        "Samsung Galaxy Z Fold updates and Unpacked news",
+        "Smartwatches buying guide and comparisons",
+        "Best loudspeakers and home audio tips",
+        "Foldables vs tablets explainer",
+        "Laptop buying guides (work, study, gaming)",
+        "Gaming setups: monitors, headsets, keyboards, chairs",
+        "AC choosing guide and fast installation options",
+        "Washing machine sizing + professional cleaning service",
+        "Refrigerator and dishwasher buying guides",
+        "Coffee makers: espresso, Arabic, Turkish; kettles & grinders",
+        "Robot vacuums and home cleaning essentials",
+        "Smart home security and lighting tips",
+        "Digital gift cards: PlayStation, Xbox, iTunes, Google Play",
+        "Price Match policy: how it works and where to save",
+        "Trade‑in: upgrade your smartphone",
+        "Delivery, installation, and Click & Collect how‑to",
+        "Flexible payments: Baseeta, Tamara, Tabby",
+        "App download CTA and exclusive app deals",
+        "Store/showroom highlights and store finder reminders",
+        "Returns & exchange policy tips",
+        "Jood membership benefits and perks"
+      ],
+      "offer_hypotheses": [
+        "Saudi omnichannel electronics and home‑appliances retailer (online + showrooms)",
+        "Sells mobiles, tablets, wearables, audio, accessories; computers, printers, networking; TVs and home entertainment; large and small home appliances; smart home; gaming; musical instruments; homeware and household essentials",
+        "Services include delivery & installation, ExtraSetup, extended warranty (Safeguard), device protection (ExtraCare), repairs (ExtraRepair), and home maintenance",
+        "Flexible payments and installments via Baseeta, Tamara, and Tabby; supports Apple Pay, Mada, Visa, MasterCard, AmEx",
+        "Price Match policy on selected products",
+        "Click & Collect and fast delivery options",
+        "Trade‑in program to replace old with new",
+        "Digital gift cards and e‑vouchers for major platforms",
+        "Corporate sales and support"
+      ],
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "ok",
+      "approach": "pgblank_measured_llm",
+      "url": "https://www.extra.com/",
+      "crawler": "FailoverCrawler",
+      "branding_extractor": "DembrandtExtractor",
+      "firecrawl_base_url": "http://127.0.0.1:3002",
+      "crawl": {
+        "title": "إكسترا السعودية | اشترِ الإلكترونيات بثقة",
+        "markdown_len": 119576,
+        "markdown_preview": "[text.skipToContent](https://www.extra.com/ar-sa#skip-to-content) [text.skipToNavigation](https://www.extra.com/ar-sa#skiptonavigation)\n[ تتبع الطلب ](https://www.extra.com/ar-sa/account/trackorder%20) [ الاستبدال والاسترجاع ](https://www.extra.com/ar-sa/returnexchange) [ الدعم و المساعدة ](https://www.extra.com/ar-sa/contactus)\n[ ![extra.com](https://cdn.extra.com/hybris/new_ui_ux/logo/eXtra-logo.svg) ](https://www.extra.com/ar-sa/)\nالمنتجات\nماركات مشهورة\n[ أبل ](https://www.extra.com/ar-sa/app",
+        "metadata": {
+          "title": "إكسترا السعودية | اشترِ الإلكترونيات بثقة",
+          "description": "تصفّح أفضل العروض من إكسترا السعودية. اكتشف أرقى العلامات التجارية في مجالات الهواتف المحمولة، والأجهزة المنزلية، وأجهزة التلفزيون، وأجهزة الكمبيوتر المحمولة. استمتع بخدمة توصيل سريعة وضمان المصنع الرسمي!",
+          "keywords": "",
+          "og:title": "إكسترا السعودية | اشترِ الإلكترونيات بثقة",
+          "og:type": "website",
+          "og:image": "https://www.extra.com/_ui/responsive/theme-extra/images/logo-extra.png",
+          "og:url": "https://www.extra.com/ar-sa",
+          "og:image:width": "1200",
+          "og:image:height": "630",
+          "og:description": "تصفّح أفضل العروض من إكسترا السعودية. اكتشف أرقى العلامات التجارية في مجالات الهواتف المحمولة، والأجهزة المنزلية، وأجهزة التلفزيون، وأجهزة الكمبيوتر المحمولة. استمتع بخدمة توصيل سريعة وضمان المصنع الرسمي!",
+          "og:locale": "ar-sa",
+          "og:site_name": "إكسترا السعودية | اشترِ الإلكترونيات بثقة"
+        }
+      },
+      "measured": {
+        "colors": [
+          "#0065A4",
+          "#051F2F",
+          "#EF7E2C",
+          "#000000",
+          "#FFFFFF",
+          "#53616A",
+          "#81939E",
+          "#FFECA1",
+          "#C0D0DA",
+          "#F4CA24",
+          "#FCE700",
+          "#FFF200"
+        ],
+        "logo_url": "https://cdn.extra.com/hybris/new_ui_ux/logo/eXtra-logo.svg",
+        "fonts": [
+          "Dubai",
+          "icon-font"
+        ],
+        "color_scheme": null
+      },
+      "draft": {
+        "display_name": "إكسترا السعودية | eXtra KSA",
+        "tagline": "اشترِ الإلكترونيات بثقة",
+        "tone_description": "Helpful, trustworthy, Arabic‑first bilingual voice that’s clear, service‑led, and deal‑driven. Highlights benefits (fast delivery, official warranty, price match), explains choices with simple buying guides, and invites action with friendly CTAs.",
+        "voice_traits": [
+          "Trustworthy",
+          "Helpful & service-led",
+          "Deal-driven & timely",
+          "Clear & concise",
+          "Expert yet simple",
+          "Arabic-first bilingual (AR/EN)"
+        ],
+        "color_palette": [
+          "#0065A4",
+          "#051F2F",
+          "#EF7E2C",
+          "#000000",
+          "#FFFFFF",
+          "#53616A",
+          "#81939E",
+          "#FFECA1",
+          "#C0D0DA",
+          "#F4CA24",
+          "#FCE700",
+          "#FFF200"
+        ],
+        "logo_url": "https://cdn.extra.com/hybris/new_ui_ux/logo/eXtra-logo.svg",
+        "pillars": [
+          {
+            "name_en": "Deals & New Arrivals",
+            "name_ar": "العروض والجديد",
+            "description": "Spotlight today’s Hot Deals, Last‑Piece offers, new products, and price‑match highlights. Encourage app‑exclusive and seasonal promotions. | إبراز أقوى العروض، آخر القطع، المنتجات الجديدة، ونطابق أقل سعر مع دعوات واضحة للاستفادة."
+          },
+          {
+            "name_en": "Mobiles & Gadgets",
+            "name_ar": "الجوالات والأجهزة اللوحية والإكسسوارات",
+            "description": "Cover flagship launches (Apple, Samsung, Huawei, HONOR), comparisons and buying tips, plus must‑have accessories and trade‑in. | تغطية الإطلاقات، المقارنات، نصائح الشراء، والإكسسوارات الضرورية مع الاستبدال بالقديم."
+          },
+          {
+            "name_en": "Home Appliances",
+            "name_ar": "الأجهزة المنزلية الكبيرة والصغيرة",
+            "description": "From ACs, washers, and refrigerators to small kitchen appliances—buying guides, setup, delivery & installation, and care tips. | من المكيفات والغسالات إلى أجهزة المطبخ الصغيرة مع أدلة شراء وتركيب وتوصيل."
+          },
+          {
+            "name_en": "Computing & Gaming",
+            "name_ar": "الكمبيوترات والألعاب",
+            "description": "Laptops, desktops, monitors, printers, networking, and gaming gear—guides, setups, and performance tips. | لابتوبات، شاشات، طابعات، شبكات، وإكسسوارات الألعاب مع نصائح وأدلة."
+          },
+          {
+            "name_en": "Extra Services & Benefits",
+            "name_ar": "خدمات اكسترا ومزايا التسوق",
+            "description": "Promote ExtraSetup, Safeguard warranty, ExtraCare protection, ExtraRepair, Home Maintenance, fast delivery, Click & Collect, returns, and flexible payments (Baseeta, Tamara, Tabby). | إبراز الخدمات والمزايا وخيارات الدفع الميسرة."
+          }
+        ],
+        "topics": [
+          "Hot Deals and Last‑Piece offers",
+          "New arrivals across mobiles, TVs, and appliances",
+          "iPhone 17 Pro | Pro Max highlights and availability",
+          "Samsung Galaxy Z Fold updates and Unpacked news",
+          "Smartwatches buying guide and comparisons",
+          "Best loudspeakers and home audio tips",
+          "Foldables vs tablets explainer",
+          "Laptop buying guides (work, study, gaming)",
+          "Gaming setups: monitors, headsets, keyboards, chairs",
+          "AC choosing guide and fast installation options",
+          "Washing machine sizing + professional cleaning service",
+          "Refrigerator and dishwasher buying guides",
+          "Coffee makers: espresso, Arabic, Turkish; kettles & grinders",
+          "Robot vacuums and home cleaning essentials",
+          "Smart home security and lighting tips",
+          "Digital gift cards: PlayStation, Xbox, iTunes, Google Play",
+          "Price Match policy: how it works and where to save",
+          "Trade‑in: upgrade your smartphone",
+          "Delivery, installation, and Click & Collect how‑to",
+          "Flexible payments: Baseeta, Tamara, Tabby",
+          "App download CTA and exclusive app deals",
+          "Store/showroom highlights and store finder reminders",
+          "Returns & exchange policy tips",
+          "Jood membership benefits and perks"
+        ],
+        "offer_hypotheses": [
+          "Saudi omnichannel electronics and home‑appliances retailer (online + showrooms)",
+          "Sells mobiles, tablets, wearables, audio, accessories; computers, printers, networking; TVs and home entertainment; large and small home appliances; smart home; gaming; musical instruments; homeware and household essentials",
+          "Services include delivery & installation, ExtraSetup, extended warranty (Safeguard), device protection (ExtraCare), repairs (ExtraRepair), and home maintenance",
+          "Flexible payments and installments via Baseeta, Tamara, and Tabby; supports Apple Pay, Mada, Visa, MasterCard, AmEx",
+          "Price Match policy on selected products",
+          "Click & Collect and fast delivery options",
+          "Trade‑in program to replace old with new",
+          "Digital gift cards and e‑vouchers for major platforms",
+          "Corporate sales and support"
+        ],
+        "dropped": []
+      },
+      "timing": {
+        "crawl_and_measure_seconds": 38.602,
+        "draft_seconds": 57.261,
+        "elapsed_seconds": 96.832
+      },
+      "warnings": [],
+      "text_generator": "OpenAiTextGenerator"
+    },
+    "warnings": [],
+    "error": null
+  },
+  {
+    "system": "new_fetch_only",
+    "site_name": "Albaik",
+    "url": "https://www.albaik.com/",
+    "status": "partial",
+    "elapsed_seconds": 26.601,
+    "fields": {
+      "display_name": null,
+      "tagline": null,
+      "tone_description": null,
+      "voice": [
+        "warm",
+        "courteous",
+        "value-driven",
+        "community-minded",
+        "responsible",
+        "enthusiastic",
+        "customer-loving",
+        "approachable"
+      ],
+      "do_list": [
+        "Emphasize ALBAIK’s heritage: founded in Jeddah, Saudi Arabia, in 1974.",
+        "Highlight the brand promise of high-quality, affordable food served fast and courteously.",
+        "Use customer-centric language focused on love, satisfaction, and memorable reactions such as “MMMMM’s” and “WOOOW’s.”",
+        "Reference cleanliness, inviting environments, and responsible nourishment when discussing the restaurant experience.",
+        "Keep the tone welcoming, respectful, and family/community oriented.",
+        "Reflect the stated core values: Quality of Life, Ethics, Solidarity, and Excellence.",
+        "Use both English and Arabic brand recognition where appropriate: ALBAIK / البيك."
+      ],
+      "dont_list": [
+        "Do not use a luxury, exclusive, or elitist tone; the brand positions itself around affordability and accessibility.",
+        "Do not frame ALBAIK as only a fried chicken brand; the fetched menu also includes fish, sauces, sides, hummus, salad, corn, and other items.",
+        "Do not ignore the Saudi/Jeddah origin story when describing the brand’s heritage.",
+        "Do not make the brand voice sarcastic, edgy, irreverent, or overly corporate; the stated values are ethical, courteous, and customer-loving.",
+        "Do not overpromise global availability beyond the brand’s vision language unless locations are verified."
+      ],
+      "banned_claims": [
+        "Do not claim ALBAIK is halal-certified unless citing a verified halal certification source.",
+        "Do not claim ALBAIK is the healthiest, lowest-calorie, organic, or diet-friendly option unless supported by nutrition data.",
+        "Do not claim specific ingredient sourcing, antibiotic-free poultry, sustainability certifications, or animal-welfare standards unless verified.",
+        "Do not claim exact current store counts, country presence, delivery coverage, or franchise availability unless checked against current official sources.",
+        "Do not claim ALBAIK invented broasted chicken globally; the site only states it was first in the Saudi market to introduce the Broast chicken concept."
+      ],
+      "colors": [
+        "red",
+        "yellow",
+        "white"
+      ],
+      "fonts": null,
+      "color_scheme": null,
+      "dialect": null,
+      "languages": [
+        "en"
+      ],
+      "logo_url": "https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png",
+      "pillars": [
+        {
+          "name": "Heritage Since 1974",
+          "description": "Tell the founding story of Shakour AbuGhazalah in Jeddah and the introduction of the Broast chicken concept in Saudi Arabia."
+        },
+        {
+          "name": "Customer Love",
+          "description": "Center content on ALBAIK’s mission of “100% ALBAIK Customer love at all times” and memorable customer delight."
+        },
+        {
+          "name": "Quality, Value, Speed",
+          "description": "Communicate high-quality affordable food served fast, courteously, and in a clean, inviting environment."
+        },
+        {
+          "name": "Purpose and Responsibility",
+          "description": "Reflect the stated purpose of protecting the AMANA and nourishing/spreading its goodness responsibly."
+        },
+        {
+          "name": "Menu Cravings",
+          "description": "Showcase signature meals and sides such as chicken meals, fish fillet items, tahina sauce, hummus, coleslaw, and corn."
+        },
+        {
+          "name": "Core Values in Action",
+          "description": "Create content around Quality of Life, Ethics, Solidarity, and Excellence as operating principles."
+        }
+      ],
+      "competitors": [
+        {
+          "handle": "KFC Saudi Arabia",
+          "platform": "website/social search suggestion"
+        },
+        {
+          "handle": "Herfy",
+          "platform": "website/social search suggestion"
+        },
+        {
+          "handle": "Al Tazaj",
+          "platform": "website/social search suggestion"
+        },
+        {
+          "handle": "Popeyes Saudi Arabia",
+          "platform": "website/social search suggestion"
+        },
+        {
+          "handle": "Texas Chicken Saudi Arabia",
+          "platform": "website/social search suggestion"
+        }
+      ],
+      "topics": null,
+      "offer_hypotheses": null,
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "partial",
+      "type": "proposal",
+      "patch": {
+        "pillars": [
+          {
+            "name": "Heritage Since 1974",
+            "description": "Tell the founding story of Shakour AbuGhazalah in Jeddah and the introduction of the Broast chicken concept in Saudi Arabia."
+          },
+          {
+            "name": "Customer Love",
+            "description": "Center content on ALBAIK’s mission of “100% ALBAIK Customer love at all times” and memorable customer delight."
+          },
+          {
+            "name": "Quality, Value, Speed",
+            "description": "Communicate high-quality affordable food served fast, courteously, and in a clean, inviting environment."
+          },
+          {
+            "name": "Purpose and Responsibility",
+            "description": "Reflect the stated purpose of protecting the AMANA and nourishing/spreading its goodness responsibly."
+          },
+          {
+            "name": "Menu Cravings",
+            "description": "Showcase signature meals and sides such as chicken meals, fish fillet items, tahina sauce, hummus, coleslaw, and corn."
+          },
+          {
+            "name": "Core Values in Action",
+            "description": "Create content around Quality of Life, Ethics, Solidarity, and Excellence as operating principles."
+          }
+        ],
+        "competitors": [
+          {
+            "handle": "KFC Saudi Arabia",
+            "platform": "website/social search suggestion"
+          },
+          {
+            "handle": "Herfy",
+            "platform": "website/social search suggestion"
+          },
+          {
+            "handle": "Al Tazaj",
+            "platform": "website/social search suggestion"
+          },
+          {
+            "handle": "Popeyes Saudi Arabia",
+            "platform": "website/social search suggestion"
+          },
+          {
+            "handle": "Texas Chicken Saudi Arabia",
+            "platform": "website/social search suggestion"
+          }
+        ],
+        "logoUrl": "https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png",
+        "guidelines": {
+          "voiceAdjectives": [
+            "warm",
+            "courteous",
+            "value-driven",
+            "community-minded",
+            "responsible",
+            "enthusiastic",
+            "customer-loving",
+            "approachable"
+          ],
+          "doList": [
+            "Emphasize ALBAIK’s heritage: founded in Jeddah, Saudi Arabia, in 1974.",
+            "Highlight the brand promise of high-quality, affordable food served fast and courteously.",
+            "Use customer-centric language focused on love, satisfaction, and memorable reactions such as “MMMMM’s” and “WOOOW’s.”",
+            "Reference cleanliness, inviting environments, and responsible nourishment when discussing the restaurant experience.",
+            "Keep the tone welcoming, respectful, and family/community oriented.",
+            "Reflect the stated core values: Quality of Life, Ethics, Solidarity, and Excellence.",
+            "Use both English and Arabic brand recognition where appropriate: ALBAIK / البيك."
+          ],
+          "dontList": [
+            "Do not use a luxury, exclusive, or elitist tone; the brand positions itself around affordability and accessibility.",
+            "Do not frame ALBAIK as only a fried chicken brand; the fetched menu also includes fish, sauces, sides, hummus, salad, corn, and other items.",
+            "Do not ignore the Saudi/Jeddah origin story when describing the brand’s heritage.",
+            "Do not make the brand voice sarcastic, edgy, irreverent, or overly corporate; the stated values are ethical, courteous, and customer-loving.",
+            "Do not overpromise global availability beyond the brand’s vision language unless locations are verified."
+          ],
+          "bannedClaims": [
+            "Do not claim ALBAIK is halal-certified unless citing a verified halal certification source.",
+            "Do not claim ALBAIK is the healthiest, lowest-calorie, organic, or diet-friendly option unless supported by nutrition data.",
+            "Do not claim specific ingredient sourcing, antibiotic-free poultry, sustainability certifications, or animal-welfare standards unless verified.",
+            "Do not claim exact current store counts, country presence, delivery coverage, or franchise availability unless checked against current official sources.",
+            "Do not claim ALBAIK invented broasted chicken globally; the site only states it was first in the Saudi market to introduce the Broast chicken concept."
+          ],
+          "colors": [
+            "red",
+            "yellow",
+            "white"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      },
+      "confidence": {
+        "voiceAdjectives": 0.78,
+        "doList": 0.86,
+        "dontList": 0.76,
+        "bannedClaims": 0.8,
+        "colors": 0.45,
+        "languages": 0.9,
+        "pillars": 0.83,
+        "competitors": 0.42,
+        "logoUrl": 0.9
+      },
+      "sources": [
+        "https://www.albaik.com/"
+      ],
+      "warnings": [
+        "dropped dialect: dialect must be gulf or msa",
+        "dropped languages: no valid languages",
+        "No dedicated brand guidelines, press kit, logo/color system, or social profiles were present in the fetched page data.",
+        "Color recommendations are inferred from common ALBAIK brand recognition and should be verified against official assets before production use.",
+        "Competitors are category-based suggestions from the fast-food/fried-chicken/QSR space, not brands named on the fetched ALBAIK page.",
+        "Fetched data covers only the homepage, so claims about current locations, nutrition, certifications, and social handles should be independently verified."
+      ],
+      "crawled_pages": 1,
+      "content_hash": "db3ea1581b437a3432ec6ca320a9144ceec87335fa2c12037675ffdc7eb7b05a",
+      "approach": "fetch_only",
+      "elapsed_seconds": 26.601,
+      "timing": {
+        "fetch_extract_seconds": 26.596,
+        "search_seconds": null
+      }
+    },
+    "warnings": [
+      "dropped dialect: dialect must be gulf or msa",
+      "dropped languages: no valid languages",
+      "No dedicated brand guidelines, press kit, logo/color system, or social profiles were present in the fetched page data.",
+      "Color recommendations are inferred from common ALBAIK brand recognition and should be verified against official assets before production use.",
+      "Competitors are category-based suggestions from the fast-food/fried-chicken/QSR space, not brands named on the fetched ALBAIK page.",
+      "Fetched data covers only the homepage, so claims about current locations, nutrition, certifications, and social handles should be independently verified."
+    ],
+    "error": null
+  },
+  {
+    "system": "pgblank_measured_llm",
+    "site_name": "Albaik",
+    "url": "https://www.albaik.com/",
+    "status": "ok",
+    "elapsed_seconds": 102.892,
+    "fields": {
+      "display_name": "ALBAIK | البيك",
+      "tagline": "Putting MMMMM's and WOOOW's on our customers' lips every time, everywhere in the world.",
+      "tone_description": "Friendly, courteous, and family-oriented with proud Saudi roots. Joyful and appetizing (think MMMMM & WOOOW), focused on quality, affordability, and delight. Respectful, community-minded, and values-driven.",
+      "voice": [
+        "Courteous and welcoming",
+        "Warm & family-friendly",
+        "Proudly Saudi & community-minded",
+        "Appetizing and playful (MMMMM & WOOOW)",
+        "Trustworthy and ethical"
+      ],
+      "do_list": null,
+      "dont_list": null,
+      "banned_claims": null,
+      "colors": [
+        "#FFFFFF",
+        "#F34D39",
+        "#F8E931",
+        "#CE3737",
+        "#EE7623",
+        "#631B02",
+        "#F7AD28",
+        "#101010"
+      ],
+      "fonts": [
+        "helvetica neue",
+        "Albaik"
+      ],
+      "color_scheme": null,
+      "dialect": null,
+      "languages": null,
+      "logo_url": "https://www.albaik.com/assets/logo_en-4bbf33854ea7afd49a4f426871af04b642becbab3bd4487267047144d176b80c.png",
+      "pillars": [
+        {
+          "name_en": "Heritage & Values",
+          "name_ar": "القصة والقيم",
+          "description": "Share the ALBAIK story since 1974 in Jeddah, the first to introduce broast chicken in Saudi Arabia, and spotlight the Purpose (AMANA), Vision, Mission, and Core Values: Quality of life, Ethics, Solidarity, Excellence."
+        },
+        {
+          "name_en": "Menu Favorites & Quality",
+          "name_ar": "القائمة والجودة",
+          "description": "Showcase signature items and quality: ALBAIK 4- & 8-Piece Chicken Meals, Fish Fillet Burger/Meal, and beloved sauces and sides (Tahina, Hummus, Coleslaw, Corn in a Cup). Emphasize taste, consistency, and value."
+        },
+        {
+          "name_en": "Customer Love & Experience",
+          "name_ar": "حب العملاء والتجربة",
+          "description": "Bring “100% ALBAIK Customer love” to life—courteous service, fast and friendly experiences, and clean, inviting restaurants. Tips and moments that make visits memorable."
+        },
+        {
+          "name_en": "Community & Responsibility",
+          "name_ar": "المجتمع والمسؤولية",
+          "description": "Reflect ALBAIK’s Purpose to protect and spread the AMANA responsibly so its goodness reaches everyone. Highlight ethics, solidarity, and doing good the right way."
+        },
+        {
+          "name_en": "App & Convenience",
+          "name_ar": "التطبيق والراحة",
+          "description": "Guide fans to the ALBAIK app on iOS, Android, and Huawei to explore the menu and stay connected. Simple how‑tos, updates, and helpful reminders."
+        }
+      ],
+      "competitors": null,
+      "topics": [
+        "Founding story: 1974 beginnings in Jeddah and the vision of Shakour AbuGhazalah",
+        "Broast chicken heritage and what makes it special at ALBAIK",
+        "Spotlights on ALBAIK 4-Piece and 8-Piece Chicken Meals",
+        "Fish Fillet Burger and Fish Fillet Meal features",
+        "Sauces and sides highlights: Tahina, Hummus, Coleslaw, Corn in a Cup",
+        "Purpose and values content: AMANA, Ethics, Solidarity, Excellence, Quality of life",
+        "Customer love moments and courteous service culture",
+        "Clean, inviting restaurant experience and family-friendly dining",
+        "Vision-led messages using MMMMM’s & WOOOW’s",
+        "App posts: download links and simple how-tos for iOS, Android, and Huawei"
+      ],
+      "offer_hypotheses": [
+        "Saudi quick-service restaurant brand founded in 1974 in Jeddah.",
+        "Specializes in broast chicken meals.",
+        "Also offers seafood items (e.g., Fish Fillet Burger/Meal), sauces, and classic sides.",
+        "Has a mobile app presence on iOS, Android, and Huawei for exploring the menu and staying connected with the brand.",
+        "Delivers affordable, high-quality food served fast and courteously in a clean, inviting environment.",
+        "Guided by a clear purpose (AMANA), mission, and core values focused on quality, ethics, solidarity, and excellence."
+      ],
+      "social_links": null,
+      "contact_links": null
+    },
+    "raw": {
+      "status": "ok",
+      "approach": "pgblank_measured_llm",
+      "url": "https://www.albaik.com/",
+      "crawler": "FailoverCrawler",
+      "branding_extractor": "DembrandtExtractor",
+      "firecrawl_base_url": "http://127.0.0.1:3002",
+      "crawl": {
+        "title": "ALBAIK | البيك",
+        "markdown_len": 2382,
+        "markdown_preview": "![](https://www.albaik.com/assets/logo_hero-22f8269bfae8d26b36272ad215550e9a160ddf817ef3c0967beb95f31efeab31.png)\n\n![](https://www.albaik.com/assets/hero/home_hero_new_1400-d5bb20bf4a5a8eaa19d22379497bd57b11272c75d0efab0f86dd34248072a596.jpg)\n\nSince 1974\n\nOur Story\n---------\n\nThe ALBAIK story began in 1974 in the city of Jeddah in the Kingdom of Saudi Arabia when the late Shakour AbuGhazalah saw there was a need for high quality affordable food, served fast and courteously, in a clean and inviti",
+        "metadata": {
+          "language": "en",
+          "title": "ALBAIK | البيك",
+          "csrf-param": "authenticity_token",
+          "csrf-token": "OIi2VwnkiCFKMF05i5ZMxxo65jzYvoMiFiP5yTuL-0FzZjDuoIVpX0lD98qLupLlaJVblQcYjEwIKmUTyknSuw",
+          "viewport": "width=device-width,initial-scale=1",
+          "favicon": "https://www.albaik.com/assets/favicons/production-b5f9e8d4ae28c920ba612bacc5358925fc80363d0e7c117b3bccd73777c438bf.png",
+          "scrapeId": "01a07dc1-9e78-74cb-9ac6-6fb894e7dc6d",
+          "sourceURL": "https://www.albaik.com/",
+          "url": "https://www.albaik.com/",
+          "statusCode": 200,
+          "contentType": "text/html; charset=utf-8",
+          "proxyUsed": "basic",
+          "creditsUsed": 1,
+          "concurrencyLimited": false
+        }
+      },
+      "measured": {
+        "colors": [
+          "#FFFFFF",
+          "#F34D39",
+          "#F8E931",
+          "#CE3737",
+          "#EE7623",
+          "#631B02",
+          "#F7AD28",
+          "#101010"
+        ],
+        "logo_url": "https://www.albaik.com/assets/logo_en-4bbf33854ea7afd49a4f426871af04b642becbab3bd4487267047144d176b80c.png",
+        "fonts": [
+          "helvetica neue",
+          "Albaik"
+        ],
+        "color_scheme": null
+      },
+      "draft": {
+        "display_name": "ALBAIK | البيك",
+        "tagline": "Putting MMMMM's and WOOOW's on our customers' lips every time, everywhere in the world.",
+        "tone_description": "Friendly, courteous, and family-oriented with proud Saudi roots. Joyful and appetizing (think MMMMM & WOOOW), focused on quality, affordability, and delight. Respectful, community-minded, and values-driven.",
+        "voice_traits": [
+          "Courteous and welcoming",
+          "Warm & family-friendly",
+          "Proudly Saudi & community-minded",
+          "Appetizing and playful (MMMMM & WOOOW)",
+          "Trustworthy and ethical"
+        ],
+        "color_palette": [
+          "#FFFFFF",
+          "#F34D39",
+          "#F8E931",
+          "#CE3737",
+          "#EE7623",
+          "#631B02",
+          "#F7AD28",
+          "#101010"
+        ],
+        "logo_url": "https://www.albaik.com/assets/logo_en-4bbf33854ea7afd49a4f426871af04b642becbab3bd4487267047144d176b80c.png",
+        "pillars": [
+          {
+            "name_en": "Heritage & Values",
+            "name_ar": "القصة والقيم",
+            "description": "Share the ALBAIK story since 1974 in Jeddah, the first to introduce broast chicken in Saudi Arabia, and spotlight the Purpose (AMANA), Vision, Mission, and Core Values: Quality of life, Ethics, Solidarity, Excellence."
+          },
+          {
+            "name_en": "Menu Favorites & Quality",
+            "name_ar": "القائمة والجودة",
+            "description": "Showcase signature items and quality: ALBAIK 4- & 8-Piece Chicken Meals, Fish Fillet Burger/Meal, and beloved sauces and sides (Tahina, Hummus, Coleslaw, Corn in a Cup). Emphasize taste, consistency, and value."
+          },
+          {
+            "name_en": "Customer Love & Experience",
+            "name_ar": "حب العملاء والتجربة",
+            "description": "Bring “100% ALBAIK Customer love” to life—courteous service, fast and friendly experiences, and clean, inviting restaurants. Tips and moments that make visits memorable."
+          },
+          {
+            "name_en": "Community & Responsibility",
+            "name_ar": "المجتمع والمسؤولية",
+            "description": "Reflect ALBAIK’s Purpose to protect and spread the AMANA responsibly so its goodness reaches everyone. Highlight ethics, solidarity, and doing good the right way."
+          },
+          {
+            "name_en": "App & Convenience",
+            "name_ar": "التطبيق والراحة",
+            "description": "Guide fans to the ALBAIK app on iOS, Android, and Huawei to explore the menu and stay connected. Simple how‑tos, updates, and helpful reminders."
+          }
+        ],
+        "topics": [
+          "Founding story: 1974 beginnings in Jeddah and the vision of Shakour AbuGhazalah",
+          "Broast chicken heritage and what makes it special at ALBAIK",
+          "Spotlights on ALBAIK 4-Piece and 8-Piece Chicken Meals",
+          "Fish Fillet Burger and Fish Fillet Meal features",
+          "Sauces and sides highlights: Tahina, Hummus, Coleslaw, Corn in a Cup",
+          "Purpose and values content: AMANA, Ethics, Solidarity, Excellence, Quality of life",
+          "Customer love moments and courteous service culture",
+          "Clean, inviting restaurant experience and family-friendly dining",
+          "Vision-led messages using MMMMM’s & WOOOW’s",
+          "App posts: download links and simple how-tos for iOS, Android, and Huawei"
+        ],
+        "offer_hypotheses": [
+          "Saudi quick-service restaurant brand founded in 1974 in Jeddah.",
+          "Specializes in broast chicken meals.",
+          "Also offers seafood items (e.g., Fish Fillet Burger/Meal), sauces, and classic sides.",
+          "Has a mobile app presence on iOS, Android, and Huawei for exploring the menu and staying connected with the brand.",
+          "Delivers affordable, high-quality food served fast and courteously in a clean, inviting environment.",
+          "Guided by a clear purpose (AMANA), mission, and core values focused on quality, ethics, solidarity, and excellence."
+        ],
+        "dropped": []
+      },
+      "timing": {
+        "crawl_and_measure_seconds": 19.229,
+        "draft_seconds": 82.736,
+        "elapsed_seconds": 102.892
+      },
+      "warnings": [],
+      "text_generator": "OpenAiTextGenerator"
+    },
+    "warnings": [],
+    "error": null
+  }
+]

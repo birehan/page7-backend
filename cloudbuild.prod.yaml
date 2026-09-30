@@ -1,0 +1,112 @@
+# Production CD: git tag v* → promote images → migrate prod → deploy.
+# Trigger: tag ^v[0-9]+.*
+substitutions:
+  _REGION: me-central1
+  _AR_REPO: page7
+  _SQL_INSTANCE: page7
+  _FRONTEND_ORIGIN: https://page7.io
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: check-sha-images
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        NEED=0
+        for t in api worker scheduler; do
+          IMAGE="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/$$t:${SHORT_SHA}"
+          if gcloud artifacts docker images describe "$$IMAGE" --project="${PROJECT_ID}" &>/dev/null; then
+            echo "==> Found $$IMAGE"
+          else
+            echo "==> Missing $$IMAGE"
+            NEED=1
+          fi
+        done
+        if [[ "$$NEED" == "1" ]]; then
+          touch /workspace/.need_image_build
+        else
+          rm -f /workspace/.need_image_build
+        fi
+
+  - name: gcr.io/cloud-builders/docker
+    id: build-if-missing
+    entrypoint: bash
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - -ceu
+      - |
+        if [[ ! -f /workspace/.need_image_build ]]; then
+          echo "==> Skipping docker build; promote sources exist"
+          exit 0
+        fi
+        for t in api worker scheduler; do
+          BASE="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/$$t"
+          docker pull "$${BASE}:staging" || true
+          docker build \
+            --target="$$t" \
+            --build-arg=BUILDKIT_INLINE_CACHE=1 \
+            --cache-from="$${BASE}:staging" \
+            -t "$${BASE}:${SHORT_SHA}" .
+          docker push "$${BASE}:${SHORT_SHA}"
+        done
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: retag-release
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        if [[ -z "${TAG_NAME}" ]]; then
+          echo "TAG_NAME is empty; tag triggers must set it" >&2
+          exit 1
+        fi
+        for t in api worker scheduler; do
+          BASE="${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/$$t"
+          SHA_IMAGE="$${BASE}:${SHORT_SHA}"
+          TAG_IMAGE="$${BASE}:${TAG_NAME}"
+          if gcloud artifacts docker images describe "$${TAG_IMAGE}" --project="${PROJECT_ID}" &>/dev/null; then
+            echo "==> Release tag already exists: $${TAG_IMAGE}"
+          else
+            echo "==> Tagging $${SHA_IMAGE} as $${TAG_IMAGE}"
+            gcloud artifacts docker tags add "$${SHA_IMAGE}" "$${TAG_IMAGE}" --project="${PROJECT_ID}"
+          fi
+        done
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: migrate
+    entrypoint: bash
+    env:
+      - PROJECT=$PROJECT_ID
+      - REGION=${_REGION}
+      - SQL_INSTANCE=${_SQL_INSTANCE}
+      - DATABASE_URL_SECRET=DATABASE_URL_PROD
+    args:
+      - -ceu
+      - |
+        apt-get update -qq && apt-get install -y -qq curl ca-certificates python3 >/dev/null
+        curl -LsSf https://astral.sh/uv/0.12.9/install.sh | sh
+        export PATH="$HOME/.local/bin:$PATH"
+        bash deploy/migrate-cloudsql.sh
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: deploy
+    entrypoint: bash
+    env:
+      - PROJECT=$PROJECT_ID
+      - REGION=${_REGION}
+      - AR_REPO=${_AR_REPO}
+      - IMAGE_TAG=$TAG_NAME
+      - FRONTEND_ORIGIN=${_FRONTEND_ORIGIN}
+    args:
+      - -ceu
+      - |
+        chmod +x deploy/deploy-api-prod.sh deploy/deploy-workers-prod.sh
+        ./deploy/deploy-api-prod.sh
+        ./deploy/deploy-workers-prod.sh
+
+timeout: 2400s

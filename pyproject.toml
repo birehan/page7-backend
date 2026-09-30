@@ -1,0 +1,625 @@
+[project]
+name = "pgblank-backend"
+version = "0.1.0"
+description = "pgblank.ai API — FastAPI backend"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi==0.141.1",
+    "starlette==1.6.0",
+    "uvicorn[standard]==0.52.4",
+    "sqlalchemy[asyncio]==2.0.52",
+    "asyncpg==0.31.0",
+    "alembic==1.19.1",
+    "pydantic[email]==2.13.5",
+    "pydantic-settings==2.15.0",
+    "structlog==26.1.0",
+    "httpx==0.28.1",
+    "opentelemetry-sdk==1.44.0",
+    "opentelemetry-instrumentation-fastapi==0.65b0",
+    "sentry-sdk[fastapi]==2.68.1",
+    "argon2-cffi==25.1.0",
+    "pyotp==2.10.0",
+    "cryptography==50.0.1",
+    "resend==2.42.0",
+    "aioboto3>=15.0.0",
+    "pillow==12.3.0",
+    "botocore>=1.35.0",
+    "openai==3.8.0",
+    "anthropic==1.3.0",
+    "fal-client==1.0.1",
+    "beautifulsoup4>=4.15.0",
+    "aiosmtplib==5.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff==0.16.6",
+    "mypy==2.3.1",
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "import-linter==2.6",
+    "jsonschema==4.25.1",
+    "types-jsonschema==4.25.1.20251009",
+    "types-aiobotocore[s3]>=2.0.0",
+    "types-beautifulsoup4>=4.12.0.20250516",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC", "S"]
+ignore = ["S101"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+# Experimental bake-off scripts under scripts/brand_approaches are not part of
+# the production type surface; keep them out of `just lint` until stabilized.
+exclude = [
+    "scripts/brand_approaches/",
+    "scripts/extract_brand_via_pgblank\\.py",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# One event loop for the whole session, matching the one process-global,
+# lru_cache'd engine/session-factory in app/db — a fresh loop per test (pytest-
+# asyncio's own default) breaks asyncpg's connections, which are bound to
+# whichever loop was running when the pool was first created.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+markers = [
+    "live: hits real external services (R2, Unsplash, OpenAI, Anthropic); skipped unless RUN_LIVE_TESTS=1",
+]
+
+[tool.importlinter]
+root_package = "app"
+include_external_packages = true
+# A type-only import (behind `if TYPE_CHECKING:`) never executes — it exists
+# purely to name a type for mypy, e.g. a dataclass field whose real values
+# only ever arrive via a barrel call. Counting it as a real dependency would
+# make the feature-boundary contracts below unsatisfiable for exactly the
+# legitimate case they're meant to allow.
+exclude_type_checking_imports = true
+
+# Vendor isolation (architecture/06 §2): a provider SDK may only be imported by
+# its own adapter module. No adapter code exists yet in Phase 1 — these contracts
+# forbid the vendor import *anywhere* in `app` for now; once each adapter lands
+# (Phase 7+), its own module is added to `ignore_imports` as the one permitted
+# exception. import-linter refuses an `ignore_imports` entry that matches nothing,
+# so adding the exception now, before the adapter exists, would fail lint on its
+# own — see the smoke test below for how this was verified to actually fire.
+[[tool.importlinter.contracts]]
+name = "llm integration is the only importer of llm vendor SDKs"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["openai", "anthropic"]
+ignore_imports = [
+    "app.integrations.llm.openai -> openai",
+    "app.integrations.llm.anthropic -> anthropic",
+]
+
+[[tool.importlinter.contracts]]
+name = "imagegen integration is the only importer of the fal SDK"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["fal_client"]
+ignore_imports = [
+    "app.integrations.imagegen.fal -> fal_client",
+]
+
+[[tool.importlinter.contracts]]
+name = "storage integration is the only importer of boto3/aioboto3"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["boto3", "aioboto3", "botocore"]
+ignore_imports = [
+    "app.integrations.storage.r2 -> aioboto3",
+    "app.integrations.storage.r2 -> botocore",
+]
+
+[[tool.importlinter.contracts]]
+name = "email integration is the only importer of resend"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["resend"]
+ignore_imports = ["app.integrations.email.resend -> resend"]
+
+[[tool.importlinter.contracts]]
+name = "email SMTP adapter is the only importer of aiosmtplib"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["aiosmtplib"]
+ignore_imports = ["app.integrations.email.smtp -> aiosmtplib"]
+
+[[tool.importlinter.contracts]]
+name = "webfetch extract is the only importer of beautifulsoup4"
+type = "forbidden"
+source_modules = ["app"]
+forbidden_modules = ["bs4"]
+ignore_imports = ["app.integrations.webfetch.extract -> bs4"]
+
+# Feature boundary (architecture/01 §4): a feature may only reach another feature
+# through its public __init__.py barrel, never by importing its models/repository
+# directly. Only `health` exists in Phase 1 and it has neither file, so there is
+# nothing to isolate it from yet — the first per-feature forbidden-modules contract
+# (naming app.features.<x>.models / .repository) is added in Phase 2 once a second
+# feature with real persistence exists.
+#
+# One contract per feature, not a single shared one: import-linter's `forbidden`
+# type rejects a source module that is an ancestor of one of its own forbidden
+# modules ("modules have shared descendants"). `allow_indirect_imports = true`
+# is the field's own (confusingly-named) way of saying "only flag a DIRECT
+# import" — without it, `forbidden` walks the graph transitively, and every
+# legitimate barrel call would falsely register as reaching that feature's own
+# internal models/repository through it.
+[[tool.importlinter.contracts]]
+name = "features may only reach audit through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.audit.models", "app.features.audit.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach auth through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.auth.models", "app.features.auth.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach organizations through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.organizations.models",
+    "app.features.organizations.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach team through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.team.models", "app.features.team.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach brands through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.brands.models", "app.features.brands.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach strategy through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.strategy.models", "app.features.strategy.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach cultural_events through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.media",
+    "app.features.posts",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.cultural_events.models",
+    "app.features.cultural_events.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach media through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.media.models", "app.features.media.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach posts through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = ["app.features.posts.models", "app.features.posts.repository"]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach content_ai through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.content_ai.models",
+    "app.features.content_ai.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach review_links through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.review_links.models",
+    "app.features.review_links.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach brand_research through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.brand_research.models",
+    "app.features.brand_research.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach social_accounts through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.social_accounts.models",
+    "app.features.social_accounts.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach publishing through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.publishing.models",
+    "app.features.publishing.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach visuals through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.analytics",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.visuals.models",
+    "app.features.visuals.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach analytics through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.visuals",
+    "app.features.inbox",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.analytics.models",
+    "app.features.analytics.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach inbox through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.review_links",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.visuals",
+    "app.features.analytics",
+    "app.features.billing",
+]
+forbidden_modules = [
+    "app.features.inbox.models",
+    "app.features.inbox.repository",
+]
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "features may only reach billing through its __init__.py barrel"
+type = "forbidden"
+source_modules = [
+    "app.features.audit",
+    "app.features.auth",
+    "app.features.brands",
+    "app.features.content_ai",
+    "app.features.brand_research",
+    "app.features.cultural_events",
+    "app.features.media",
+    "app.features.organizations",
+    "app.features.posts",
+    "app.features.review_links",
+    "app.features.strategy",
+    "app.features.team",
+    "app.features.social_accounts",
+    "app.features.publishing",
+    "app.features.visuals",
+    "app.features.analytics",
+    "app.features.inbox",
+]
+forbidden_modules = [
+    "app.features.billing.models",
+    "app.features.billing.repository",
+]
+allow_indirect_imports = true

@@ -1,0 +1,1874 @@
+{
+  "generated_at": "20260911T193354Z",
+  "approach": "fast_curl_llm_v2",
+  "sites": [
+    {
+      "site_name": "Jarir Bookstore",
+      "url": "https://www.jarir.com/",
+      "status": "failed",
+      "elapsed_seconds": 10.2,
+      "timing": {},
+      "fields_present": [],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "field_count": 0,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing",
+        "dont_list:missing",
+        "banned_claims:missing",
+        "colors:missing",
+        "dialect:missing",
+        "languages:missing",
+        "pillars_suggested:missing",
+        "competitors_suggested:missing",
+        "logo_url:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "banned_claims": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "colors": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dialect": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "languages": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "pillars_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        }
+      },
+      "warnings": [],
+      "error": {
+        "code": "FETCH_FAILED",
+        "message": "Homepage returned 4xx/5xx or timed out"
+      },
+      "raw_fields": {}
+    },
+    {
+      "site_name": "Nahdi Pharmacy",
+      "url": "https://www.nahdi.sa/",
+      "status": "failed",
+      "elapsed_seconds": 10.153,
+      "timing": {},
+      "fields_present": [],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "field_count": 0,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing",
+        "dont_list:missing",
+        "banned_claims:missing",
+        "colors:missing",
+        "dialect:missing",
+        "languages:missing",
+        "pillars_suggested:missing",
+        "competitors_suggested:missing",
+        "logo_url:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "banned_claims": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "colors": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dialect": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "languages": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "pillars_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        }
+      },
+      "warnings": [],
+      "error": {
+        "code": "FETCH_FAILED",
+        "message": "Homepage returned 4xx/5xx or timed out"
+      },
+      "raw_fields": {}
+    },
+    {
+      "site_name": "Jahez",
+      "url": "https://www.jahez.net/",
+      "status": "failed",
+      "elapsed_seconds": 9.081,
+      "timing": {},
+      "fields_present": [],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "field_count": 0,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing",
+        "dont_list:missing",
+        "banned_claims:missing",
+        "colors:missing",
+        "dialect:missing",
+        "languages:missing",
+        "pillars_suggested:missing",
+        "competitors_suggested:missing",
+        "logo_url:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "banned_claims": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "colors": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dialect": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "languages": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "pillars_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        }
+      },
+      "warnings": [],
+      "error": {
+        "code": "FETCH_FAILED",
+        "message": "Homepage returned 4xx/5xx or timed out"
+      },
+      "raw_fields": {}
+    },
+    {
+      "site_name": "STC",
+      "url": "https://www.stc.com.sa/",
+      "status": "succeeded",
+      "elapsed_seconds": 28.13,
+      "timing": {
+        "fetch_homepage_seconds": 7.837,
+        "llm_seconds": 20.157,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list"
+      ],
+      "field_count": 8,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFFFFF",
+            "#4F008C",
+            "#5BBAD5",
+            "#DA532C"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "باقات الجوال والاتصالات",
+              "description": "عروض وباقات الجوال المفوترة ومسبقة الدفع، التجوال، والمكالمات الدولية."
+            },
+            {
+              "name": "الإنترنت المنزلي والفايبر",
+              "description": "باقات بيتي وحلول الإنترنت المنزلي عالي السرعة والفايبر."
+            },
+            {
+              "name": "الأجهزة والتقنية",
+              "description": "عروض الهواتف الذكية، الأجهزة اللوحية، الإكسسوارات، وأجهزة المنزل الذكي."
+            },
+            {
+              "name": "حلول الأعمال والمؤسسات",
+              "description": "خدمات الاتصالات والحلول الرقمية والسحابية للشركات والمنشآت."
+            },
+            {
+              "name": "برامج الولاء وأسلوب الحياة",
+              "description": "برنامج قطاف، تطبيقات stc TV وmystc، وخدمات الحياة الرقمية."
+            },
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            {
+              "handle": "@MobilyNews",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@ZainKSA",
+              "platform": "twitter"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.stc.com.sa/content/dam/stc/footer-icons/stc-badge-purple.svg",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "Only homepage content was available; no dedicated brand guideline, tone-of-voice, or press pages were crawled.",
+        "No explicit voice adjectives, do/don't lists, or banned claims found on the provided page.",
+        "Color extracted only from logo asset, not a verified brand palette.",
+        "Competitor suggestions are inferred from known Saudi telecom market, not sourced from page content.",
+        "Social media links were empty on the crawled page, limiting verification of brand tone and channels."
+      ],
+      "error": null,
+      "raw_fields": {
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FFFFFF",
+            "#4F008C",
+            "#5BBAD5",
+            "#DA532C"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.5
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "باقات الجوال والاتصالات",
+              "description": "عروض وباقات الجوال المفوترة ومسبقة الدفع، التجوال، والمكالمات الدولية."
+            },
+            {
+              "name": "الإنترنت المنزلي والفايبر",
+              "description": "باقات بيتي وحلول الإنترنت المنزلي عالي السرعة والفايبر."
+            },
+            {
+              "name": "الأجهزة والتقنية",
+              "description": "عروض الهواتف الذكية، الأجهزة اللوحية، الإكسسوارات، وأجهزة المنزل الذكي."
+            },
+            {
+              "name": "حلول الأعمال والمؤسسات",
+              "description": "خدمات الاتصالات والحلول الرقمية والسحابية للشركات والمنشآت."
+            },
+            {
+              "name": "برامج الولاء وأسلوب الحياة",
+              "description": "برنامج قطاف، تطبيقات stc TV وmystc، وخدمات الحياة الرقمية."
+            },
+            {
+              "name": "الأمن السيبراني والحلول الرقمية",
+              "description": "خدمات الحماية من الهجمات الإلكترونية وإدارة الأمن السيبراني للشركات."
+            }
+          ],
+          "confidence": 0.4
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "@MobilyNews",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@ZainKSA",
+              "platform": "twitter"
+            }
+          ],
+          "confidence": 0.2
+        },
+        "logo_url": {
+          "value": "https://www.stc.com.sa/content/dam/stc/footer-icons/stc-badge-purple.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Tamimi Markets",
+      "url": "https://www.tamimimarkets.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 19.958,
+      "timing": {
+        "fetch_homepage_seconds": 5.715,
+        "llm_seconds": 14.215,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "dialect"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "dialect:empty_value"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "Friendly",
+            "Community-oriented",
+            "Helpful",
+            "Wholesome"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Highlight recipes and healthy living content",
+            "Promote weekly offers and deals",
+            "Encourage online and in-store shopping",
+            "Engage with local community and family-oriented messaging"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Avoid overly technical or corporate jargon",
+            "Avoid negative or divisive topics unrelated to food and family life"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFB9B9",
+            "#E3000E",
+            "#1BC5BD",
+            "#212121",
+            "#FF0000"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": false,
+          "confidence": 0.4,
+          "value_preview": "",
+          "issues": [
+            "empty_value"
+          ]
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "Recipes & Cooking Inspiration",
+              "description": "Sharing recipes and meal ideas using products available at Tamimi Markets."
+            },
+            {
+              "name": "Healthy Living",
+              "description": "Tips and content promoting healthy lifestyle choices and nutrition."
+            },
+            {
+              "name": "Offers & Promotions",
+              "description": "Highlighting weekly deals, discounts, and special promotions."
+            },
+            {
+              "name": "Community & Careers",
+              "description": "Showcasing community engagement, store locations, and career opportunities."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            {
+              "handle": "@panda_ksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@Carrefourksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@Danube_KSA",
+              "platform": "twitter"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.tamimimarkets.com/__template/images/logo-01a.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "Limited page data available; only homepage content was provided.",
+        "No explicit brand voice, color, or claim guidelines found on the page.",
+        "Competitor suggestions are inferred from general market knowledge, not from page data."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "Friendly",
+            "Community-oriented",
+            "Helpful",
+            "Wholesome"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "Highlight recipes and healthy living content",
+            "Promote weekly offers and deals",
+            "Encourage online and in-store shopping",
+            "Engage with local community and family-oriented messaging"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "Avoid overly technical or corporate jargon",
+            "Avoid negative or divisive topics unrelated to food and family life"
+          ],
+          "confidence": 0.2
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FFB9B9",
+            "#E3000E",
+            "#1BC5BD",
+            "#212121",
+            "#FF0000"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "",
+          "confidence": 0.4
+        },
+        "languages": {
+          "value": [
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Recipes & Cooking Inspiration",
+              "description": "Sharing recipes and meal ideas using products available at Tamimi Markets."
+            },
+            {
+              "name": "Healthy Living",
+              "description": "Tips and content promoting healthy lifestyle choices and nutrition."
+            },
+            {
+              "name": "Offers & Promotions",
+              "description": "Highlighting weekly deals, discounts, and special promotions."
+            },
+            {
+              "name": "Community & Careers",
+              "description": "Showcasing community engagement, store locations, and career opportunities."
+            }
+          ],
+          "confidence": 0.4
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "@panda_ksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@Carrefourksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@Danube_KSA",
+              "platform": "twitter"
+            }
+          ],
+          "confidence": 0.2
+        },
+        "logo_url": {
+          "value": "https://www.tamimimarkets.com/__template/images/logo-01a.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Almarai",
+      "url": "https://www.almarai.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 29.358,
+      "timing": {
+        "fetch_homepage_seconds": 4.025,
+        "llm_seconds": 25.298,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "competitors_suggested"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.45,
+          "value_preview": [
+            "warm",
+            "family-oriented",
+            "caring",
+            "trustworthy",
+            "wholesome",
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            "Emphasize freshness, quality and nutritional value of dairy, juice, bakery and poultry products",
+            "Highlight family togetherness and shared meals",
+            "Showcase community and social responsibility initiatives (training, healthy living, community care)",
+            "Use recipe-driven content to inspire meal preparation",
+            "Highlight 'no added sugar' and natural ingredient messaging for juices"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Avoid casual or slang dialect; maintain formal, trustworthy tone",
+            "Avoid unverified or exaggerated health claims",
+            "Avoid negative or comparative statements about competitors"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#AAAAAA",
+            "#FFFFFF",
+            "#E6E6E6",
+            "#2265AD",
+            "#ffffff"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": [
+            {
+              "name": "Dairy & Milk Products",
+              "description": "Core product line including milk and related dairy items, emphasizing quality and daily freshness."
+            },
+            {
+              "name": "Juices",
+              "description": "Natural fruit juices with no added sugar, positioned as healthy family options."
+            },
+            {
+              "name": "Bakery (Lusine)",
+              "description": "Fresh, nutritious baked goods under the Lusine brand."
+            },
+            {
+              "name": "Poultry (Today's Chicken)",
+              "description": "Fresh and healthy chicken products for family meals."
+            },
+            {
+              "name": "Recipes & Meal Inspiration",
+              "description": "Recipe content encouraging use of Almarai products in family meals."
+            },
+            "…(+2)"
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://almmedia.almarai.com/Brands/logo_Almarai8102022104604AM-(1)12112023100520AM.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "Page data only available for Arabic homepage; English content and dedicated brand guideline pages were not provided.",
+        "No explicit brand color palette found in the provided data; Almarai's known brand colors (blue/red) are not confirmed by this source.",
+        "No competitor information found in the provided page data.",
+        "No explicit banned claims or legal disclaimers were present in the scraped content.",
+        "The 'lang' attribute is marked as 'en' despite the content being in Arabic, suggesting possible metadata inconsistency."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "warm",
+            "family-oriented",
+            "caring",
+            "trustworthy",
+            "wholesome",
+            "proud/heritage-driven"
+          ],
+          "confidence": 0.45
+        },
+        "do_list": {
+          "value": [
+            "Emphasize freshness, quality and nutritional value of dairy, juice, bakery and poultry products",
+            "Highlight family togetherness and shared meals",
+            "Showcase community and social responsibility initiatives (training, healthy living, community care)",
+            "Use recipe-driven content to inspire meal preparation",
+            "Highlight 'no added sugar' and natural ingredient messaging for juices"
+          ],
+          "confidence": 0.4
+        },
+        "dont_list": {
+          "value": [
+            "Avoid casual or slang dialect; maintain formal, trustworthy tone",
+            "Avoid unverified or exaggerated health claims",
+            "Avoid negative or comparative statements about competitors"
+          ],
+          "confidence": 0.3
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#AAAAAA",
+            "#FFFFFF",
+            "#E6E6E6",
+            "#2265AD",
+            "#ffffff"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.5
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Dairy & Milk Products",
+              "description": "Core product line including milk and related dairy items, emphasizing quality and daily freshness."
+            },
+            {
+              "name": "Juices",
+              "description": "Natural fruit juices with no added sugar, positioned as healthy family options."
+            },
+            {
+              "name": "Bakery (Lusine)",
+              "description": "Fresh, nutritious baked goods under the Lusine brand."
+            },
+            {
+              "name": "Poultry (Today's Chicken)",
+              "description": "Fresh and healthy chicken products for family meals."
+            },
+            {
+              "name": "Recipes & Meal Inspiration",
+              "description": "Recipe content encouraging use of Almarai products in family meals."
+            },
+            {
+              "name": "Corporate Social Responsibility - Almarai Cares",
+              "description": "Programs focused on training & development, healthy living promotion, and community care."
+            },
+            {
+              "name": "Corporate & Financial Updates",
+              "description": "Information about the company, financial reports, and corporate scale (production, distribution, quality testing)."
+            }
+          ],
+          "confidence": 0.5
+        },
+        "logo_url": {
+          "value": "https://almmedia.almarai.com/Brands/logo_Almarai8102022104604AM-(1)12112023100520AM.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "SACO",
+      "url": "https://www.saco.sa/",
+      "status": "succeeded",
+      "elapsed_seconds": 15.79,
+      "timing": {
+        "fetch_homepage_seconds": 2.4,
+        "llm_seconds": 13.295,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "competitors_suggested"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "ودود",
+            "عصري",
+            "موثوق",
+            "عملي"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "استخدام اللهجة السعودية العامية القريبة من العملاء (مثل 'يلا'، 'هلا'، 'بيتك')",
+            "التركيز على التوصيل السريع والعروض الحصرية لأعضاء ساكو كلوب",
+            "إبراز الثقة والموثوقية (100% أصلي، موزع معتمد، منذ 1985)"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "تجنب اللغة الرسمية الجافة",
+            "تجنب المبالغة في الوعود غير المدعومة بالسياسة الرسمية"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#191970",
+            "#E7E7EE",
+            "#6B6F7E",
+            "#292E38",
+            "#5C5C68"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.6,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "أدوات المنزل والمطبخ",
+              "description": "منتجات متنوعة للمطبخ والمنزل بجودة عالية"
+            },
+            {
+              "name": "الأثاث الداخلي والخارجي",
+              "description": "تشكيلة واسعة من الأثاث للمنزل والحدائق"
+            },
+            {
+              "name": "التخييم والأنشطة الخارجية",
+              "description": "معدات ومستلزمات للتخييم والأنشطة الخارجية"
+            },
+            {
+              "name": "الإنارة والكهرباء",
+              "description": "منتجات إنارة وكهربائية متنوعة"
+            },
+            {
+              "name": "العروض وساكو كلوب",
+              "description": "عروض أسبوعية وأسعار حصرية لأعضاء النادي"
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.saco.sa/layouts/logo.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "لا توجد بيانات كافية عن الألوان الرسمية للعلامة التجارية",
+        "لم يتم العثور على قوائم محددة بالممنوعات أو الادعاءات المحظورة بشكل صريح",
+        "لا توجد معلومات عن المنافسين بشكل مباشر من الصفحة الرئيسية",
+        "صوت العلامة التجارية استُنتج من النص العام وقد يحتاج إلى تأكيد إضافي من صفحات أخرى مثل 'قصتنا' أو 'عن الشركة'"
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "ودود",
+            "عصري",
+            "موثوق",
+            "عملي"
+          ],
+          "confidence": 0.3
+        },
+        "do_list": {
+          "value": [
+            "استخدام اللهجة السعودية العامية القريبة من العملاء (مثل 'يلا'، 'هلا'، 'بيتك')",
+            "التركيز على التوصيل السريع والعروض الحصرية لأعضاء ساكو كلوب",
+            "إبراز الثقة والموثوقية (100% أصلي، موزع معتمد، منذ 1985)"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "تجنب اللغة الرسمية الجافة",
+            "تجنب المبالغة في الوعود غير المدعومة بالسياسة الرسمية"
+          ],
+          "confidence": 0.2
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#191970",
+            "#E7E7EE",
+            "#6B6F7E",
+            "#292E38",
+            "#5C5C68"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.6
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "أدوات المنزل والمطبخ",
+              "description": "منتجات متنوعة للمطبخ والمنزل بجودة عالية"
+            },
+            {
+              "name": "الأثاث الداخلي والخارجي",
+              "description": "تشكيلة واسعة من الأثاث للمنزل والحدائق"
+            },
+            {
+              "name": "التخييم والأنشطة الخارجية",
+              "description": "معدات ومستلزمات للتخييم والأنشطة الخارجية"
+            },
+            {
+              "name": "الإنارة والكهرباء",
+              "description": "منتجات إنارة وكهربائية متنوعة"
+            },
+            {
+              "name": "العروض وساكو كلوب",
+              "description": "عروض أسبوعية وأسعار حصرية لأعضاء النادي"
+            }
+          ],
+          "confidence": 0.4
+        },
+        "logo_url": {
+          "value": "https://www.saco.sa/layouts/logo.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Lulu Hypermarket",
+      "url": "https://www.luluhypermarket.com/en-sa",
+      "status": "failed",
+      "elapsed_seconds": 5.619,
+      "timing": {},
+      "fields_present": [],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "field_count": 0,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing",
+        "dont_list:missing",
+        "banned_claims:missing",
+        "colors:missing",
+        "dialect:missing",
+        "languages:missing",
+        "pillars_suggested:missing",
+        "competitors_suggested:missing",
+        "logo_url:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "banned_claims": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "colors": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dialect": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "languages": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "pillars_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        }
+      },
+      "warnings": [],
+      "error": {
+        "code": "FETCH_FAILED",
+        "message": "Homepage returned 4xx/5xx or timed out"
+      },
+      "raw_fields": {}
+    },
+    {
+      "site_name": "Noon",
+      "url": "https://www.noon.com/saudi-en/",
+      "status": "succeeded",
+      "elapsed_seconds": 37.627,
+      "timing": {
+        "fetch_homepage_seconds": 8.253,
+        "llm_seconds": 29.141,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "do_list",
+        "dialect"
+      ],
+      "field_count": 8,
+      "quality_issues": [
+        "do_list:missing",
+        "dialect:empty_value"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.25,
+          "value_preview": [
+            "friendly",
+            "helpful",
+            "broad-ranging",
+            "customer-centric"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FEEE00"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": false,
+          "confidence": 0.3,
+          "value_preview": "",
+          "issues": [
+            "empty_value"
+          ]
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": [
+            {
+              "name": "Electronics & Mobiles",
+              "description": "Smartphones, laptops, gaming, TVs, cameras and accessories."
+            },
+            {
+              "name": "Fashion (Men, Women, Kids)",
+              "description": "Clothing, footwear, bags, jewelry and accessories for all ages."
+            },
+            {
+              "name": "Beauty & Fragrance",
+              "description": "Makeup, skincare, haircare, personal care and perfumes."
+            },
+            {
+              "name": "Home & Kitchen",
+              "description": "Furniture, home decor, appliances, kitchenware and bath essentials."
+            },
+            {
+              "name": "Grocery & Household",
+              "description": "Food, beverages, cleaning supplies and everyday essentials."
+            },
+            "…(+2)"
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            {
+              "handle": "amazon.ae",
+              "platform": "website"
+            },
+            {
+              "handle": "namshi",
+              "platform": "instagram"
+            },
+            {
+              "handle": "extra_ksa",
+              "platform": "instagram"
+            },
+            {
+              "handle": "jarirbookstore",
+              "platform": "instagram"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://f.nooncdn.com/s/app/com/common/images/logos/app-store.svg",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "The provided page data is for the UAE version (uae-en) of the site, not the requested Saudi (saudi-en) version, so some details like dialect, currency, and regional promotions may not match.",
+        "No explicit brand style guide, tone-of-voice, or do's/don'ts content was found on the crawled page; voice adjectives and lists are inferred with low confidence from general e-commerce tone.",
+        "No brand color palette or theme_color was found on the page.",
+        "Competitor suggestions are inferred from known Middle East e-commerce market players, not explicitly mentioned on the site.",
+        "Social media handles were only available at a generic brand level (facebook.com/noon, twitter.com/noon, instagram.com/noon, linkedin.com/company/noon), not verified for Saudi-specific accounts."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "friendly",
+            "helpful",
+            "broad-ranging",
+            "customer-centric"
+          ],
+          "confidence": 0.25
+        },
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FEEE00"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "",
+          "confidence": 0.3
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Electronics & Mobiles",
+              "description": "Smartphones, laptops, gaming, TVs, cameras and accessories."
+            },
+            {
+              "name": "Fashion (Men, Women, Kids)",
+              "description": "Clothing, footwear, bags, jewelry and accessories for all ages."
+            },
+            {
+              "name": "Beauty & Fragrance",
+              "description": "Makeup, skincare, haircare, personal care and perfumes."
+            },
+            {
+              "name": "Home & Kitchen",
+              "description": "Furniture, home decor, appliances, kitchenware and bath essentials."
+            },
+            {
+              "name": "Grocery & Household",
+              "description": "Food, beverages, cleaning supplies and everyday essentials."
+            },
+            {
+              "name": "Mom & Baby",
+              "description": "Baby care, feeding, nursery and travel gear."
+            },
+            {
+              "name": "Toys & Games",
+              "description": "Educational, outdoor and indoor toys for children."
+            }
+          ],
+          "confidence": 0.5
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "amazon.ae",
+              "platform": "website"
+            },
+            {
+              "handle": "namshi",
+              "platform": "instagram"
+            },
+            {
+              "handle": "extra_ksa",
+              "platform": "instagram"
+            },
+            {
+              "handle": "jarirbookstore",
+              "platform": "instagram"
+            }
+          ],
+          "confidence": 0.3
+        },
+        "logo_url": {
+          "value": "https://f.nooncdn.com/s/app/com/common/images/logos/app-store.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Riyadh Air",
+      "url": "https://www.riyadhair.com/",
+      "status": "failed",
+      "elapsed_seconds": 10.026,
+      "timing": {},
+      "fields_present": [],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "field_count": 0,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing",
+        "dont_list:missing",
+        "banned_claims:missing",
+        "colors:missing",
+        "dialect:missing",
+        "languages:missing",
+        "pillars_suggested:missing",
+        "competitors_suggested:missing",
+        "logo_url:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "banned_claims": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "colors": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dialect": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "languages": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "pillars_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        }
+      },
+      "warnings": [],
+      "error": {
+        "code": "FETCH_FAILED",
+        "message": "Homepage returned 4xx/5xx or timed out"
+      },
+      "raw_fields": {}
+    }
+  ],
+  "summary": {
+    "site_count": 10,
+    "ok_count": 5,
+    "full_field_count": 0,
+    "avg_fields": 4.3,
+    "avg_elapsed_seconds": 17.594,
+    "field_fill_rates": {
+      "voice_adjectives": 4,
+      "do_list": 3,
+      "dont_list": 5,
+      "banned_claims": 5,
+      "colors": 5,
+      "dialect": 3,
+      "languages": 5,
+      "pillars_suggested": 5,
+      "competitors_suggested": 3,
+      "logo_url": 5
+    }
+  }
+}

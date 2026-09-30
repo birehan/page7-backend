@@ -1,0 +1,2507 @@
+{
+  "generated_at": "20260911T194050Z",
+  "approach": "fast_curl_llm_v2",
+  "sites": [
+    {
+      "site_name": "Alinma Bank",
+      "url": "https://www.alinma.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 30.105,
+      "timing": {
+        "fetch_homepage_seconds": 10.033,
+        "llm_seconds": 20.049,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [],
+      "field_count": 10,
+      "quality_issues": [],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "innovative",
+            "progressive",
+            "customer-focused",
+            "trustworthy",
+            "modern",
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Emphasize innovation and forward progress (tagline: نبتكر لنتقدم - 'We innovate to progress')",
+            "Highlight digital and mobile-first banking convenience",
+            "Promote fraud awareness and safe transaction practices",
+            "Showcase rewards, cashback, and card benefits clearly",
+            "Provide quick-access calls to action (open account, apply for financing, book appointment)"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Do not omit security/fraud warnings when discussing transfers or large transactions",
+            "Avoid overly casual tone given formal financial services context"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#012134",
+            "#002134",
+            "#D6D6D6",
+            "#023956"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.6,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "Accounts",
+              "description": "Personal and family current, savings, and education accounts, including digital account opening."
+            },
+            {
+              "name": "Financing",
+              "description": "Personal, real estate (mortgage), and auto leasing financing products."
+            },
+            {
+              "name": "Cards",
+              "description": "Credit, prepaid, travel, and co-branded cards (e.g., Aktar, Fursan) offering rewards and lifestyle benefits."
+            },
+            {
+              "name": "Investment & Savings",
+              "description": "Investment products (Namaa), instant savings, protection and savings programs, and generational savings plans."
+            },
+            {
+              "name": "Digital Banking",
+              "description": "Mobile app, internet banking, international transfers, and API/digital store services for individuals and businesses."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.15,
+          "value_preview": [
+            {
+              "handle": "Al Rajhi Bank",
+              "platform": "website"
+            },
+            {
+              "handle": "Saudi National Bank (SNB)",
+              "platform": "website"
+            },
+            {
+              "handle": "Riyad Bank",
+              "platform": "website"
+            },
+            {
+              "handle": "Bank AlJazira",
+              "platform": "website"
+            },
+            {
+              "handle": "SABB",
+              "platform": "website"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.alinma.com/-/media/Project/AlinmaRevamp/shared/alinma-logo.svg?h=69&amp;iar=0&amp;w=180&amp;hash=5D06888C59…",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "Only homepage navigation and promotional snippet text was available; no dedicated brand guideline, tone-of-voice, or press pages were provided.",
+        "No color palette or theme_color data was present in the extracted page data.",
+        "Competitors were inferred from general knowledge of the Saudi banking market, not sourced from the provided page content.",
+        "Voice adjectives and do/don't lists are inferred from promotional copy and site structure rather than explicit brand guidelines.",
+        "No social media links were found in the provided data."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "innovative",
+            "progressive",
+            "customer-focused",
+            "trustworthy",
+            "modern",
+            "security-conscious"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "Emphasize innovation and forward progress (tagline: نبتكر لنتقدم - 'We innovate to progress')",
+            "Highlight digital and mobile-first banking convenience",
+            "Promote fraud awareness and safe transaction practices",
+            "Showcase rewards, cashback, and card benefits clearly",
+            "Provide quick-access calls to action (open account, apply for financing, book appointment)"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "Do not omit security/fraud warnings when discussing transfers or large transactions",
+            "Avoid overly casual tone given formal financial services context"
+          ],
+          "confidence": 0.2
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#012134",
+            "#002134",
+            "#D6D6D6",
+            "#023956"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.6
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Accounts",
+              "description": "Personal and family current, savings, and education accounts, including digital account opening."
+            },
+            {
+              "name": "Financing",
+              "description": "Personal, real estate (mortgage), and auto leasing financing products."
+            },
+            {
+              "name": "Cards",
+              "description": "Credit, prepaid, travel, and co-branded cards (e.g., Aktar, Fursan) offering rewards and lifestyle benefits."
+            },
+            {
+              "name": "Investment & Savings",
+              "description": "Investment products (Namaa), instant savings, protection and savings programs, and generational savings plans."
+            },
+            {
+              "name": "Digital Banking",
+              "description": "Mobile app, internet banking, international transfers, and API/digital store services for individuals and businesses."
+            }
+          ],
+          "confidence": 0.4
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "Al Rajhi Bank",
+              "platform": "website"
+            },
+            {
+              "handle": "Saudi National Bank (SNB)",
+              "platform": "website"
+            },
+            {
+              "handle": "Riyad Bank",
+              "platform": "website"
+            },
+            {
+              "handle": "Bank AlJazira",
+              "platform": "website"
+            },
+            {
+              "handle": "SABB",
+              "platform": "website"
+            }
+          ],
+          "confidence": 0.15
+        },
+        "logo_url": {
+          "value": "https://www.alinma.com/-/media/Project/AlinmaRevamp/shared/alinma-logo.svg?h=69&amp;iar=0&amp;w=180&amp;hash=5D06888C5975205F54D7F2385B411DC7",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Danube",
+      "url": "https://www.danube.sa/",
+      "status": "succeeded",
+      "elapsed_seconds": 21.703,
+      "timing": {
+        "fetch_homepage_seconds": 5.241,
+        "llm_seconds": 16.423,
+        "pages_fetched": 1
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [],
+      "field_count": 10,
+      "quality_issues": [],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "ودود",
+            "محترف",
+            "مهتم بالعملاء",
+            "تجاري مباشر"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "استخدام اللهجة العربية الفصحى الواضحة في المحتوى",
+            "إبراز العروض والخصومات الحصرية أونلاين",
+            "تسليط الضوء على تنوع المنتجات (أكثر من 10,000 منتج)",
+            "إظهار شهادات وتقييمات العملاء الإيجابية",
+            "التركيز على خدمة العملاء والتوصيل السريع"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.15,
+          "value_preview": [
+            "تجنب استخدام لغة غير رسمية جدًا لا تناسب صورة العلامة التجارية للسوبرماركت"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFFFFF"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            {
+              "name": "العروض والخصومات",
+              "description": "محتوى يبرز الخصومات الأسبوعية والعروض الحصرية على المنتجات الغذائية وغير الغذائية."
+            },
+            {
+              "name": "تنوع المنتجات",
+              "description": "محتوى يعرض تشكيلة واسعة من المنتجات المتوفرة في المتاجر وأونلاين مثل الشاي والقهوة والعناية الشخصية."
+            },
+            {
+              "name": "خدمة العملاء والثقة",
+              "description": "محتوى يبرز تجارب العملاء الإيجابية وجودة خدمة التوصيل والدعم."
+            },
+            {
+              "name": "الفروع والتواجد المحلي",
+              "description": "محتوى يسلط الضوء على الفروع المنتشرة في مناطق المملكة المختلفة (الغربية، الوسطى، الشرقية، الجنوبية، تبوك)."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.15,
+          "value_preview": [
+            {
+              "handle": "@panda_ksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@CarrefourKSA",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@luluhypermarket",
+              "platform": "instagram"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://danube.sa/assets/logo/danube-logo-sa-ar-white-f2a6fbcf255c9fefca96c69d67b7d61a89abdf2c6c2f5f0e86ac055056d76ca3.…",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "لا توجد بيانات كافية عن الألوان الرسمية للعلامة التجارية أو المطالبات المحظورة (banned_claims) في الصفحة المزودة.",
+        "لم يتم العثور على JSON-LD أو theme_color لدعم استخراج الألوان.",
+        "قائمة المنافسين مقترحة بناءً على معرفة عامة بالسوق وليست مستخرجة من الصفحة مباشرة.",
+        "الثقة العامة منخفضة إلى متوسطة بسبب محدودية البيانات النصية المتاحة من صفحة واحدة فقط."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "ودود",
+            "محترف",
+            "مهتم بالعملاء",
+            "تجاري مباشر"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "استخدام اللهجة العربية الفصحى الواضحة في المحتوى",
+            "إبراز العروض والخصومات الحصرية أونلاين",
+            "تسليط الضوء على تنوع المنتجات (أكثر من 10,000 منتج)",
+            "إظهار شهادات وتقييمات العملاء الإيجابية",
+            "التركيز على خدمة العملاء والتوصيل السريع"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "تجنب استخدام لغة غير رسمية جدًا لا تناسب صورة العلامة التجارية للسوبرماركت"
+          ],
+          "confidence": 0.15
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FFFFFF"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.4
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "العروض والخصومات",
+              "description": "محتوى يبرز الخصومات الأسبوعية والعروض الحصرية على المنتجات الغذائية وغير الغذائية."
+            },
+            {
+              "name": "تنوع المنتجات",
+              "description": "محتوى يعرض تشكيلة واسعة من المنتجات المتوفرة في المتاجر وأونلاين مثل الشاي والقهوة والعناية الشخصية."
+            },
+            {
+              "name": "خدمة العملاء والثقة",
+              "description": "محتوى يبرز تجارب العملاء الإيجابية وجودة خدمة التوصيل والدعم."
+            },
+            {
+              "name": "الفروع والتواجد المحلي",
+              "description": "محتوى يسلط الضوء على الفروع المنتشرة في مناطق المملكة المختلفة (الغربية، الوسطى، الشرقية، الجنوبية، تبوك)."
+            }
+          ],
+          "confidence": 0.3
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "@panda_ksa",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@CarrefourKSA",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@luluhypermarket",
+              "platform": "instagram"
+            }
+          ],
+          "confidence": 0.15
+        },
+        "logo_url": {
+          "value": "https://danube.sa/assets/logo/danube-logo-sa-ar-white-f2a6fbcf255c9fefca96c69d67b7d61a89abdf2c6c2f5f0e86ac055056d76ca3.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Tamara",
+      "url": "https://www.tamara.co/",
+      "status": "succeeded",
+      "elapsed_seconds": 68.548,
+      "timing": {
+        "fetch_homepage_seconds": 4.448,
+        "llm_seconds": 64.055,
+        "pages_fetched": 1
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "dialect",
+        "competitors_suggested"
+      ],
+      "field_count": 8,
+      "quality_issues": [
+        "dialect:empty_value",
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": [
+            "Trustworthy",
+            "Simple",
+            "Empowering",
+            "Friendly",
+            "Reassuring"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": [
+            "Emphasize Sharia compliance and ethical, interest-free payment structure",
+            "Highlight 'No Late Fees' as a core differentiator",
+            "Promote flexibility: 'Pay in up to 24 months'",
+            "Reference security, encryption, and buyer protection",
+            "Use encouraging, aspirational language around 'dreams' and control over shopping",
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "Avoid language implying interest, debt, or credit in a negative sense",
+            "Do not suggest late fees or penalties are charged",
+            "Avoid complex or technical financial jargon; keep messaging simple and approachable"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Guaranteed returns or profits",
+            "Zero-risk investment",
+            "Insured against all losses"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#370A56",
+            "#7121AF",
+            "#8B00EF",
+            "#F933A1"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": false,
+          "confidence": 0.6,
+          "value_preview": "",
+          "issues": [
+            "empty_value"
+          ]
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": [
+            {
+              "name": "Pay Later",
+              "description": "Flexible payment plans allowing customers to pay in up to 24 months with no late fees."
+            },
+            {
+              "name": "Tamara Smart / Smart+",
+              "description": "Subscription-based rewards program offering cashback and exclusive shopping benefits."
+            },
+            {
+              "name": "Tamara Deals",
+              "description": "Exclusive discounts and offers from partner brands and stores."
+            },
+            {
+              "name": "Buyer Protection & Security",
+              "description": "Ensuring secure, monitored transactions and data protection for shoppers."
+            },
+            {
+              "name": "Business Solutions",
+              "description": "Tools and integrations (Tamara for Business, Tamara Ads) to help merchants grow sales."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://cdn.prod.website-files.com/67c184892f7a84b971ff49d9/68931b49f2808979578bdc64_tamara-text-logo-black-en.svg",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "Limited structured brand data (no explicit color palette, tone-of-voice guidelines, or banned claims found on page).",
+        "No competitor mentions found in provided page data; suggestions omitted to avoid fabrication.",
+        "Language and dialect inferred primarily from URL locale (en-SA) and UI toggle, not explicit statements.",
+        "Voice adjectives and do/don't lists are inferred from marketing copy tone rather than an explicit brand guide."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "Trustworthy",
+            "Simple",
+            "Empowering",
+            "Friendly",
+            "Reassuring"
+          ],
+          "confidence": 0.55
+        },
+        "do_list": {
+          "value": [
+            "Emphasize Sharia compliance and ethical, interest-free payment structure",
+            "Highlight 'No Late Fees' as a core differentiator",
+            "Promote flexibility: 'Pay in up to 24 months'",
+            "Reference security, encryption, and buyer protection",
+            "Use encouraging, aspirational language around 'dreams' and control over shopping",
+            "Mention both online and in-store availability across Saudi Arabia and UAE"
+          ],
+          "confidence": 0.5
+        },
+        "dont_list": {
+          "value": [
+            "Avoid language implying interest, debt, or credit in a negative sense",
+            "Do not suggest late fees or penalties are charged",
+            "Avoid complex or technical financial jargon; keep messaging simple and approachable"
+          ],
+          "confidence": 0.35
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed returns or profits",
+            "Zero-risk investment",
+            "Insured against all losses"
+          ],
+          "confidence": 0.2
+        },
+        "colors": {
+          "value": [
+            "#370A56",
+            "#7121AF",
+            "#8B00EF",
+            "#F933A1"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "",
+          "confidence": 0.6
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Pay Later",
+              "description": "Flexible payment plans allowing customers to pay in up to 24 months with no late fees."
+            },
+            {
+              "name": "Tamara Smart / Smart+",
+              "description": "Subscription-based rewards program offering cashback and exclusive shopping benefits."
+            },
+            {
+              "name": "Tamara Deals",
+              "description": "Exclusive discounts and offers from partner brands and stores."
+            },
+            {
+              "name": "Buyer Protection & Security",
+              "description": "Ensuring secure, monitored transactions and data protection for shoppers."
+            },
+            {
+              "name": "Business Solutions",
+              "description": "Tools and integrations (Tamara for Business, Tamara Ads) to help merchants grow sales."
+            }
+          ],
+          "confidence": 0.55
+        },
+        "logo_url": {
+          "value": "https://cdn.prod.website-files.com/67c184892f7a84b971ff49d9/68931b49f2808979578bdc64_tamara-text-logo-black-en.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Tabby",
+      "url": "https://www.tabby.ai/",
+      "status": "succeeded",
+      "elapsed_seconds": 36.364,
+      "timing": {
+        "fetch_homepage_seconds": 4.932,
+        "llm_seconds": 31.369,
+        "pages_fetched": 1
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "competitors_suggested"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "empowering",
+            "friendly",
+            "modern",
+            "flexible",
+            "trustworthy"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            "Emphasize flexible payment options (e.g., split into 4 payments, no interest/fees, up to 12 monthly installments)",
+            "Highlight regulatory compliance and safety (regulated by UAE Central Bank)",
+            "Showcase tangible benefits like cashback percentages and reward tiers",
+            "Use empowering, personal language such as 'your way' (بطريقتك إنت) to emphasize user control over money",
+            "Promote convenience features like one-tap Apple Pay integration"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#1A1919",
+            "#FFFFFF",
+            "#6CFF93",
+            "#3D3B3A",
+            "#65ED89"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.45,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": [
+            {
+              "name": "Pay Later / BNPL",
+              "description": "Flexible installment payment plans (4 payments, up to 12 months) with no interest or fees, allowing users to control payment schedules."
+            },
+            {
+              "name": "Tabby Card",
+              "description": "A physical/digital card offering cashback (up to 5%) on favorite categories, no down payment, and repayment terms up to 40 days or plans up to 8 months."
+            },
+            {
+              "name": "Tabby Cash",
+              "description": "A cash account enabling free international money transfers, transfers to phone numbers or UAE bank accounts, and cashback up to 3% on everyday spending like groceries and food."
+            },
+            {
+              "name": "Deals & Offers",
+              "description": "Exclusive discount codes, price comparisons, and price-drop alerts for favorite products, helping users save while shopping."
+            },
+            {
+              "name": "Buyer Protection & Security",
+              "description": "High security standards, regulation by the UAE Central Bank, and safe processing of billions of transactions annually."
+            },
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://tabby.ai/icon-v2.svg",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "Only a single Arabic-language page (https://tabby.ai/ar-AE) was provided; no dedicated brand guideline, style guide, or press kit page was scraped.",
+        "No explicit brand color palette, banned claims list, or 'don't' guidelines were found in the provided data.",
+        "No competitor mentions or handles were present on the scraped page, so competitor suggestions could not be grounded in source data.",
+        "Language and dialect values are inferred from URL locale and page 'lang' attribute rather than explicit brand documentation.",
+        "Voice adjectives and do-list items are inferred from marketing copy tone rather than an explicit brand voice guide."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "empowering",
+            "friendly",
+            "modern",
+            "flexible",
+            "trustworthy"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "Emphasize flexible payment options (e.g., split into 4 payments, no interest/fees, up to 12 monthly installments)",
+            "Highlight regulatory compliance and safety (regulated by UAE Central Bank)",
+            "Showcase tangible benefits like cashback percentages and reward tiers",
+            "Use empowering, personal language such as 'your way' (بطريقتك إنت) to emphasize user control over money",
+            "Promote convenience features like one-tap Apple Pay integration"
+          ],
+          "confidence": 0.4
+        },
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#1A1919",
+            "#FFFFFF",
+            "#6CFF93",
+            "#3D3B3A",
+            "#65ED89"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.45
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Pay Later / BNPL",
+              "description": "Flexible installment payment plans (4 payments, up to 12 months) with no interest or fees, allowing users to control payment schedules."
+            },
+            {
+              "name": "Tabby Card",
+              "description": "A physical/digital card offering cashback (up to 5%) on favorite categories, no down payment, and repayment terms up to 40 days or plans up to 8 months."
+            },
+            {
+              "name": "Tabby Cash",
+              "description": "A cash account enabling free international money transfers, transfers to phone numbers or UAE bank accounts, and cashback up to 3% on everyday spending like groceries and food."
+            },
+            {
+              "name": "Deals & Offers",
+              "description": "Exclusive discount codes, price comparisons, and price-drop alerts for favorite products, helping users save while shopping."
+            },
+            {
+              "name": "Buyer Protection & Security",
+              "description": "High security standards, regulation by the UAE Central Bank, and safe processing of billions of transactions annually."
+            },
+            {
+              "name": "Tabby for Business/Partners",
+              "description": "Solutions for merchants to convert browsers into buyers, increase average order value, and grow their customer base."
+            }
+          ],
+          "confidence": 0.55
+        },
+        "logo_url": {
+          "value": "https://tabby.ai/icon-v2.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Mrsool",
+      "url": "https://www.mrsool.co/",
+      "status": "succeeded",
+      "elapsed_seconds": 17.13,
+      "timing": {
+        "fetch_homepage_seconds": 4.811,
+        "llm_seconds": 12.258,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "dialect",
+        "competitors_suggested"
+      ],
+      "field_count": 8,
+      "quality_issues": [
+        "dialect:empty_value",
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.6,
+          "value_preview": [
+            "Friendly",
+            "Trustworthy",
+            "Warm",
+            "Reliable",
+            "Humble",
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": [
+            "Emphasize the 'brother in every corner of the city' concept and human connection",
+            "Highlight speed and convenience ('delivered within minutes')",
+            "Focus on customer-first messaging",
+            "Showcase breadth of services (food, groceries, pharmacy, send it, get me, moaaqeb, battery jump, furniture transfer, gas delivery)",
+            "Celebrate couriers and partners as part of the community",
+            "…(+1)"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            "Don't use titles to demand respect or control",
+            "Don't overcomplicate the service offering",
+            "Don't ignore the customer's needs in favor of internal convenience"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFFFFF",
+            "#9B51E0",
+            "#ffffff",
+            "#32373C",
+            "#FFC600"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": false,
+          "confidence": 0.5,
+          "value_preview": "",
+          "issues": [
+            "empty_value"
+          ]
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.6,
+          "value_preview": [
+            {
+              "name": "Trusted Brother",
+              "description": "Positioning Mrsool as a reliable, personal helper in every corner of the city, inspired by the idea of having a trusted brother nearby."
+            },
+            {
+              "name": "Order Anything",
+              "description": "Highlighting the breadth of delivery services beyond food, including groceries, pharmacy, beauty, and car parts."
+            },
+            {
+              "name": "Send or Receive Anything",
+              "description": "Showcasing the 'Send It' service for peer-to-peer item delivery within minutes."
+            },
+            {
+              "name": "Everyday Solutions",
+              "description": "Positioning Mrsool as a platform born from everyday hassles and built to solve them, including services like Moaaqeb, Battery Jump, Gas Delivery, and Furniture Transfer."
+            },
+            {
+              "name": "Community & Couriers",
+              "description": "Celebrating the couriers and partners who make Mrsool possible, emphasizing dignity, flexibility, and community values."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://mrsool.co/wp-content/uploads/2024/09/Default-logo.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "No explicit brand voice guidelines, banned claims, or color palette were found on the provided page; values are inferred from general site tone and content.",
+        "No competitor information was available on the provided page.",
+        "Language data inferred from site structure (Arabic text present) and lang attribute; not explicitly confirmed as multi-language site-wide."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "Friendly",
+            "Trustworthy",
+            "Warm",
+            "Reliable",
+            "Humble",
+            "Community-driven"
+          ],
+          "confidence": 0.6
+        },
+        "do_list": {
+          "value": [
+            "Emphasize the 'brother in every corner of the city' concept and human connection",
+            "Highlight speed and convenience ('delivered within minutes')",
+            "Focus on customer-first messaging",
+            "Showcase breadth of services (food, groceries, pharmacy, send it, get me, moaaqeb, battery jump, furniture transfer, gas delivery)",
+            "Celebrate couriers and partners as part of the community",
+            "Use simple, warm, conversational language"
+          ],
+          "confidence": 0.55
+        },
+        "dont_list": {
+          "value": [
+            "Don't use titles to demand respect or control",
+            "Don't overcomplicate the service offering",
+            "Don't ignore the customer's needs in favor of internal convenience"
+          ],
+          "confidence": 0.4
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.2
+        },
+        "colors": {
+          "value": [
+            "#FFFFFF",
+            "#9B51E0",
+            "#ffffff",
+            "#32373C",
+            "#FFC600"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "",
+          "confidence": 0.5
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Trusted Brother",
+              "description": "Positioning Mrsool as a reliable, personal helper in every corner of the city, inspired by the idea of having a trusted brother nearby."
+            },
+            {
+              "name": "Order Anything",
+              "description": "Highlighting the breadth of delivery services beyond food, including groceries, pharmacy, beauty, and car parts."
+            },
+            {
+              "name": "Send or Receive Anything",
+              "description": "Showcasing the 'Send It' service for peer-to-peer item delivery within minutes."
+            },
+            {
+              "name": "Everyday Solutions",
+              "description": "Positioning Mrsool as a platform born from everyday hassles and built to solve them, including services like Moaaqeb, Battery Jump, Gas Delivery, and Furniture Transfer."
+            },
+            {
+              "name": "Community & Couriers",
+              "description": "Celebrating the couriers and partners who make Mrsool possible, emphasizing dignity, flexibility, and community values."
+            }
+          ],
+          "confidence": 0.6
+        },
+        "logo_url": {
+          "value": "https://mrsool.co/wp-content/uploads/2024/09/Default-logo.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Sary",
+      "url": "https://www.sary.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 23.01,
+      "timing": {
+        "fetch_homepage_seconds": 3.116,
+        "llm_seconds": 19.799,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [],
+      "field_count": 10,
+      "quality_issues": [],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": [
+            "واثق",
+            "عملي",
+            "داعم",
+            "قريب من العميل",
+            "حماسي"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": [
+            "التركيز على الأسعار التنافسية والتوصيل السريع",
+            "استخدام لهجة سعودية/خليجية قريبة من التجار وأصحاب الأعمال",
+            "إبراز الأرقام والإنجازات (عدد العملاء، البائعين، المنتجات)",
+            "التحدث بلغة الفرص والنمو التجاري (تخطى مداك، غيّر معادلة نموك)",
+            "دعوة العملاء للانضمام والتجربة (انضم لأكثر من 60 ألف عميل)"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "تجنب اللغة الرسمية الجافة البعيدة عن العامية الخليجية",
+            "تجنب التركيز فقط على المنتج دون إبراز الحلول المتكاملة (تمويل، نقاط بيع)",
+            "تجنب تجاهل قطاعي الهوريكا والتجزئة كجمهور رئيسي"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#F5F5F5",
+            "#1A1A1A",
+            "#D2FAE8",
+            "#424242",
+            "#ffffff"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.75,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": [
+            {
+              "name": "سوق الجملة الرقمي",
+              "description": "عرض مزايا المنصة كسوق B2B يجمع آلاف العلامات التجارية والمنتجات بأسعار تنافسية"
+            },
+            {
+              "name": "حلول التمويل والدفع",
+              "description": "إبراز خيارات الدفع الآجل وتمويل رأس المال العامل لعملاء الهوريكا والتجزئة"
+            },
+            {
+              "name": "أنظمة نقاط البيع",
+              "description": "شرح كيف تساعد أنظمة نقاط البيع المتطورة في إدارة المخزون والمبيعات"
+            },
+            {
+              "name": "قصص نجاح العملاء",
+              "description": "مشاركة تجارب وشهادات عملاء حقيقيين من قطاع الهوريكا والتجزئة"
+            },
+            {
+              "name": "التوصيل والخدمات اللوجستية",
+              "description": "التركيز على سرعة التوصيل وتغطية المدن وموثوقية سلسلة التوريد"
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            {
+              "handle": "shopup",
+              "platform": "website"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.sary.com/assets/images/testimonial-logos/TUXEDO_CAFE.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "لا توجد بيانات صريحة عن الألوان الرسمية للعلامة التجارية (colors) في الصفحة المصدر",
+        "لم يتم العثور على قائمة صريحة بالادعاءات الممنوعة (banned_claims)",
+        "معلومات المنافسين محدودة جدًا واعتمدت فقط على ذكر شركة ShopUp في خبر الاندماج",
+        "voice_adjectives و do/dont lists مستنتجة من نبرة النص العام وليست مذكورة صراحة كإرشادات علامة تجارية رسمية"
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "واثق",
+            "عملي",
+            "داعم",
+            "قريب من العميل",
+            "حماسي"
+          ],
+          "confidence": 0.55
+        },
+        "do_list": {
+          "value": [
+            "التركيز على الأسعار التنافسية والتوصيل السريع",
+            "استخدام لهجة سعودية/خليجية قريبة من التجار وأصحاب الأعمال",
+            "إبراز الأرقام والإنجازات (عدد العملاء، البائعين، المنتجات)",
+            "التحدث بلغة الفرص والنمو التجاري (تخطى مداك، غيّر معادلة نموك)",
+            "دعوة العملاء للانضمام والتجربة (انضم لأكثر من 60 ألف عميل)"
+          ],
+          "confidence": 0.5
+        },
+        "dont_list": {
+          "value": [
+            "تجنب اللغة الرسمية الجافة البعيدة عن العامية الخليجية",
+            "تجنب التركيز فقط على المنتج دون إبراز الحلول المتكاملة (تمويل، نقاط بيع)",
+            "تجنب تجاهل قطاعي الهوريكا والتجزئة كجمهور رئيسي"
+          ],
+          "confidence": 0.35
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.2
+        },
+        "colors": {
+          "value": [
+            "#F5F5F5",
+            "#1A1A1A",
+            "#D2FAE8",
+            "#424242",
+            "#ffffff"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.75
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "سوق الجملة الرقمي",
+              "description": "عرض مزايا المنصة كسوق B2B يجمع آلاف العلامات التجارية والمنتجات بأسعار تنافسية"
+            },
+            {
+              "name": "حلول التمويل والدفع",
+              "description": "إبراز خيارات الدفع الآجل وتمويل رأس المال العامل لعملاء الهوريكا والتجزئة"
+            },
+            {
+              "name": "أنظمة نقاط البيع",
+              "description": "شرح كيف تساعد أنظمة نقاط البيع المتطورة في إدارة المخزون والمبيعات"
+            },
+            {
+              "name": "قصص نجاح العملاء",
+              "description": "مشاركة تجارب وشهادات عملاء حقيقيين من قطاع الهوريكا والتجزئة"
+            },
+            {
+              "name": "التوصيل والخدمات اللوجستية",
+              "description": "التركيز على سرعة التوصيل وتغطية المدن وموثوقية سلسلة التوريد"
+            }
+          ],
+          "confidence": 0.5
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "shopup",
+              "platform": "website"
+            }
+          ],
+          "confidence": 0.2
+        },
+        "logo_url": {
+          "value": "https://www.sary.com/assets/images/testimonial-logos/TUXEDO_CAFE.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Maaden",
+      "url": "https://www.maaden.com.sa/",
+      "status": "succeeded",
+      "elapsed_seconds": 20.06,
+      "timing": {
+        "fetch_homepage_seconds": 5.304,
+        "llm_seconds": 14.71,
+        "pages_fetched": 1
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [],
+      "field_count": 10,
+      "quality_issues": [],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "ambitious",
+            "visionary",
+            "committed",
+            "nationalistic",
+            "forward-looking"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Align messaging with Saudi Vision 2030 and mining as the 'third pillar' of the economy",
+            "Highlight scale and growth metrics (employees, mineral wealth value, profit growth, export reach)",
+            "Emphasize national leadership and global competitiveness in mining",
+            "Reference sustainability, diversity & inclusion, and human rights policies"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            "Avoid unverified or exaggerated financial/growth claims without source backing"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed returns or profits",
+            "Zero-risk investment",
+            "Insured against all losses"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#BDBAB5",
+            "#B8A567",
+            "#6B634B",
+            "#343631"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            {
+              "name": "Vision 2030 & Economic Diversification",
+              "description": "Positioning mining as the third pillar of the Saudi economy supporting Vision 2030 goals."
+            },
+            {
+              "name": "Innovation in Mining",
+              "description": "Showcasing technological and operational innovations within the mining and metals sector."
+            },
+            {
+              "name": "Community & Social Impact",
+              "description": "Highlighting Maaden's contributions to local communities and social development."
+            },
+            {
+              "name": "Sustainability & Governance",
+              "description": "Communicating sustainability, diversity & inclusion, and human rights commitments."
+            },
+            {
+              "name": "Investor Relations & Growth",
+              "description": "Sharing financial performance, growth projections, and investment opportunities."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.15,
+          "value_preview": [
+            {
+              "handle": "@saudiaramco",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@sabic",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@RioTinto",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@GlencoreOfficial",
+              "platform": "twitter"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://axvpvthrjz64.compat.objectstorage.me-jeddah-1.oraclecloud.com/maaden-website-assets/globals/maaden_english_seco…",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "Provided URL (maaden.com.sa) differs from crawled domain (maaden.com/ar); data may reflect a different or mirrored site.",
+        "Limited page content available (single homepage in Arabic) restricts confidence in tone, voice, and detailed guidelines.",
+        "No explicit brand color palette, do/don't list, or banned claims found in source text; values are inferred with low confidence.",
+        "Competitor list is speculative, based on industry sector rather than explicit brand mentions."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "ambitious",
+            "visionary",
+            "committed",
+            "nationalistic",
+            "forward-looking"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "Align messaging with Saudi Vision 2030 and mining as the 'third pillar' of the economy",
+            "Highlight scale and growth metrics (employees, mineral wealth value, profit growth, export reach)",
+            "Emphasize national leadership and global competitiveness in mining",
+            "Reference sustainability, diversity & inclusion, and human rights policies"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "Avoid unverified or exaggerated financial/growth claims without source backing"
+          ],
+          "confidence": 0.2
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed returns or profits",
+            "Zero-risk investment",
+            "Insured against all losses"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#BDBAB5",
+            "#B8A567",
+            "#6B634B",
+            "#343631"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.4
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Vision 2030 & Economic Diversification",
+              "description": "Positioning mining as the third pillar of the Saudi economy supporting Vision 2030 goals."
+            },
+            {
+              "name": "Innovation in Mining",
+              "description": "Showcasing technological and operational innovations within the mining and metals sector."
+            },
+            {
+              "name": "Community & Social Impact",
+              "description": "Highlighting Maaden's contributions to local communities and social development."
+            },
+            {
+              "name": "Sustainability & Governance",
+              "description": "Communicating sustainability, diversity & inclusion, and human rights commitments."
+            },
+            {
+              "name": "Investor Relations & Growth",
+              "description": "Sharing financial performance, growth projections, and investment opportunities."
+            }
+          ],
+          "confidence": 0.35
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "@saudiaramco",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@sabic",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@RioTinto",
+              "platform": "twitter"
+            },
+            {
+              "handle": "@GlencoreOfficial",
+              "platform": "twitter"
+            }
+          ],
+          "confidence": 0.15
+        },
+        "logo_url": {
+          "value": "https://axvpvthrjz64.compat.objectstorage.me-jeddah-1.oraclecloud.com/maaden-website-assets/globals/maaden_english_secondary_logo_rgb_white-gold.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "STC",
+      "url": "https://www.stc.com.sa/",
+      "status": "succeeded",
+      "elapsed_seconds": 13.455,
+      "timing": {
+        "fetch_homepage_seconds": 2.511,
+        "llm_seconds": 10.82,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "voice_adjectives",
+        "do_list"
+      ],
+      "field_count": 8,
+      "quality_issues": [
+        "voice_adjectives:missing",
+        "do_list:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "do_list": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFFFFF",
+            "#4F008C",
+            "#5BBAD5",
+            "#DA532C"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.5,
+          "value_preview": "gulf",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "باقات الجوال",
+              "description": "خدمات ما قبل الدفع، الفوترة، والتجوال للأفراد"
+            },
+            {
+              "name": "الإنترنت المنزلي",
+              "description": "باقات بيتي وحلول الفايبر والإنترنت المباشر للمنازل"
+            },
+            {
+              "name": "الأجهزة والتطبيقات",
+              "description": "هواتف، أجهزة لوحية، إكسسوارات وتطبيقات مثل stc pay وstc tv"
+            },
+            {
+              "name": "حلول الأعمال والمؤسسات",
+              "description": "خدمات اتصال، حوسبة سحابية، أمن سيبراني وحلول رقمية للشركات"
+            },
+            {
+              "name": "برامج الولاء والمكافآت",
+              "description": "برنامج قطاف ومكافآته للعملاء الأفراد والشركات"
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            {
+              "handle": "Mobily",
+              "platform": "website"
+            },
+            {
+              "handle": "Zain KSA",
+              "platform": "website"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.stc.com.sa/content/dam/stc/footer-icons/stc-badge-purple.svg",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "Only homepage data available; no explicit brand voice, tone, or do/don't guidelines found on the page.",
+        "No social media links or brand color palette explicitly provided; color inferred from logo asset name.",
+        "Competitor suggestions are based on general market knowledge, not sourced from page content.",
+        "No banned claims or compliance restrictions were found in the provided page text."
+      ],
+      "error": null,
+      "raw_fields": {
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FFFFFF",
+            "#4F008C",
+            "#5BBAD5",
+            "#DA532C"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "gulf",
+          "confidence": 0.5
+        },
+        "languages": {
+          "value": [
+            "ar"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "باقات الجوال",
+              "description": "خدمات ما قبل الدفع، الفوترة، والتجوال للأفراد"
+            },
+            {
+              "name": "الإنترنت المنزلي",
+              "description": "باقات بيتي وحلول الفايبر والإنترنت المباشر للمنازل"
+            },
+            {
+              "name": "الأجهزة والتطبيقات",
+              "description": "هواتف، أجهزة لوحية، إكسسوارات وتطبيقات مثل stc pay وstc tv"
+            },
+            {
+              "name": "حلول الأعمال والمؤسسات",
+              "description": "خدمات اتصال، حوسبة سحابية، أمن سيبراني وحلول رقمية للشركات"
+            },
+            {
+              "name": "برامج الولاء والمكافآت",
+              "description": "برنامج قطاف ومكافآته للعملاء الأفراد والشركات"
+            }
+          ],
+          "confidence": 0.4
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "Mobily",
+              "platform": "website"
+            },
+            {
+              "handle": "Zain KSA",
+              "platform": "website"
+            }
+          ],
+          "confidence": 0.2
+        },
+        "logo_url": {
+          "value": "https://www.stc.com.sa/content/dam/stc/footer-icons/stc-badge-purple.svg",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Tamimi Markets",
+      "url": "https://www.tamimimarkets.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 11.996,
+      "timing": {
+        "fetch_homepage_seconds": 2.06,
+        "llm_seconds": 9.91,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "languages",
+        "pillars_suggested",
+        "competitors_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "dialect"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "dialect:empty_value"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "friendly",
+            "helpful",
+            "family-oriented"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Share recipes and healthy living content",
+            "Highlight best deals and offers",
+            "Provide store locator and customer service info"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#FFB9B9",
+            "#E3000E",
+            "#1BC5BD",
+            "#212121",
+            "#FF0000"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": false,
+          "confidence": 0.4,
+          "value_preview": "",
+          "issues": [
+            "empty_value"
+          ]
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "Recipes & Healthy Living",
+              "description": "Recipe library and healthy living tips for customers to cook at home"
+            },
+            {
+              "name": "Offers & Best Deals",
+              "description": "Promotions and special offers available online and in stores"
+            },
+            {
+              "name": "Community & Convenience",
+              "description": "Store locator, customer service, and newsletter engagement for Saudi and expat shoppers"
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": true,
+          "confidence": 0.2,
+          "value_preview": [
+            {
+              "handle": "panda",
+              "platform": "instagram"
+            },
+            {
+              "handle": "carrefourksa",
+              "platform": "instagram"
+            },
+            {
+              "handle": "othaimmarkets",
+              "platform": "instagram"
+            }
+          ],
+          "issues": []
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://www.tamimimarkets.com/__template/images/logo-01a.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "Limited page data available; only homepage content was provided.",
+        "No explicit brand voice, tone, or visual identity guidelines found on the page.",
+        "Colors, banned claims, and do/don't lists are not explicitly stated in the source content and are largely inferred or left empty.",
+        "Competitors suggested are based on general market knowledge of Saudi supermarket chains, not confirmed from source data.",
+        "Dialect and language inferred from site language toggle (Ar/En) and Saudi market context."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "friendly",
+            "helpful",
+            "family-oriented"
+          ],
+          "confidence": 0.3
+        },
+        "do_list": {
+          "value": [
+            "Share recipes and healthy living content",
+            "Highlight best deals and offers",
+            "Provide store locator and customer service info"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#FFB9B9",
+            "#E3000E",
+            "#1BC5BD",
+            "#212121",
+            "#FF0000"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "",
+          "confidence": 0.4
+        },
+        "languages": {
+          "value": [
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Recipes & Healthy Living",
+              "description": "Recipe library and healthy living tips for customers to cook at home"
+            },
+            {
+              "name": "Offers & Best Deals",
+              "description": "Promotions and special offers available online and in stores"
+            },
+            {
+              "name": "Community & Convenience",
+              "description": "Store locator, customer service, and newsletter engagement for Saudi and expat shoppers"
+            }
+          ],
+          "confidence": 0.4
+        },
+        "competitors_suggested": {
+          "value": [
+            {
+              "handle": "panda",
+              "platform": "instagram"
+            },
+            {
+              "handle": "carrefourksa",
+              "platform": "instagram"
+            },
+            {
+              "handle": "othaimmarkets",
+              "platform": "instagram"
+            }
+          ],
+          "confidence": 0.2
+        },
+        "logo_url": {
+          "value": "https://www.tamimimarkets.com/__template/images/logo-01a.png",
+          "confidence": 0.85
+        }
+      }
+    },
+    {
+      "site_name": "Almarai",
+      "url": "https://www.almarai.com/",
+      "status": "succeeded",
+      "elapsed_seconds": 24.271,
+      "timing": {
+        "fetch_homepage_seconds": 1.997,
+        "llm_seconds": 22.222,
+        "pages_fetched": 2
+      },
+      "fields_present": [
+        "voice_adjectives",
+        "do_list",
+        "dont_list",
+        "banned_claims",
+        "colors",
+        "dialect",
+        "languages",
+        "pillars_suggested",
+        "logo_url"
+      ],
+      "fields_missing": [
+        "competitors_suggested"
+      ],
+      "field_count": 9,
+      "quality_issues": [
+        "competitors_suggested:missing"
+      ],
+      "field_detail": {
+        "voice_adjectives": {
+          "present": true,
+          "confidence": 0.35,
+          "value_preview": [
+            "Caring",
+            "Family-oriented",
+            "Trustworthy",
+            "Wholesome",
+            "Warm"
+          ],
+          "issues": []
+        },
+        "do_list": {
+          "present": true,
+          "confidence": 0.3,
+          "value_preview": [
+            "Emphasize freshness and quality of dairy, juice, bakery and poultry products",
+            "Highlight family-friendly recipes and meal ideas",
+            "Showcase corporate social responsibility (training & development, healthy living promotion, community care) under the 'Almarai Cares' program",
+            "Use warm, inviting language that appeals to all family members",
+            "Reference scale and trust metrics (e.g., daily milk production, quality tests) to build credibility"
+          ],
+          "issues": []
+        },
+        "dont_list": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "issues": []
+        },
+        "banned_claims": {
+          "present": true,
+          "confidence": 0.18,
+          "value_preview": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "issues": []
+        },
+        "colors": {
+          "present": true,
+          "confidence": 0.88,
+          "value_preview": [
+            "#AAAAAA",
+            "#FFFFFF",
+            "#E6E6E6",
+            "#2265AD",
+            "#ffffff"
+          ],
+          "issues": []
+        },
+        "dialect": {
+          "present": true,
+          "confidence": 0.55,
+          "value_preview": "msa",
+          "issues": []
+        },
+        "languages": {
+          "present": true,
+          "confidence": 0.95,
+          "value_preview": [
+            "ar",
+            "en"
+          ],
+          "issues": []
+        },
+        "pillars_suggested": {
+          "present": true,
+          "confidence": 0.4,
+          "value_preview": [
+            {
+              "name": "Recipes & Meal Inspiration",
+              "description": "Family-friendly recipes using Almarai dairy, juice, bakery and poultry products (e.g., muffins, milkshakes, oat biscuits, avocado toast)."
+            },
+            {
+              "name": "Product Quality & Trust",
+              "description": "Content highlighting production scale, quality testing (39,000 daily tests), and freshness guarantees across dairy, juice, bakery and poultry lines."
+            },
+            {
+              "name": "Almarai Cares (CSR)",
+              "description": "Community-focused content covering training & development, promotion of healthy living, and community care initiatives."
+            },
+            {
+              "name": "Corporate & Financial Updates",
+              "description": "Updates on financial reports, distribution network (12,000+ vehicles, 220,000+ points of sale in 7 countries), and company growth."
+            }
+          ],
+          "issues": []
+        },
+        "competitors_suggested": {
+          "present": false,
+          "confidence": null,
+          "value_preview": null,
+          "issues": [
+            "missing"
+          ]
+        },
+        "logo_url": {
+          "present": true,
+          "confidence": 0.85,
+          "value_preview": "https://almmedia.almarai.com/Brands/logo_Almarai8102022104604AM-(1)12112023100520AM.png",
+          "issues": []
+        }
+      },
+      "warnings": [
+        "banned_claims: inferred from industry norms, not explicitly stated",
+        "dont_list: inferred from industry norms, not explicitly stated",
+        "No dedicated brand guideline, tone-of-voice, or style guide page was found in the crawled data; voice adjectives and do/don't lists are inferred from general marketing copy with low confidence.",
+        "The HTML lang attribute is set to 'en' despite the page content being in Arabic, indicating a possible metadata inconsistency.",
+        "No explicit color palette or hex codes were found on the crawled page (theme_color field empty).",
+        "No competitor brand mentions or handles were found in the provided page data.",
+        "No explicit list of banned or restricted marketing claims was found; only general product claims (e.g., 'no added sugar' juices) appear, which are not necessarily banned claims.",
+        "Social links were found (Facebook, Twitter/X, Instagram, LinkedIn) but their content was not crawled, limiting further voice/tone analysis."
+      ],
+      "error": null,
+      "raw_fields": {
+        "voice_adjectives": {
+          "value": [
+            "Caring",
+            "Family-oriented",
+            "Trustworthy",
+            "Wholesome",
+            "Warm"
+          ],
+          "confidence": 0.35
+        },
+        "do_list": {
+          "value": [
+            "Emphasize freshness and quality of dairy, juice, bakery and poultry products",
+            "Highlight family-friendly recipes and meal ideas",
+            "Showcase corporate social responsibility (training & development, healthy living promotion, community care) under the 'Almarai Cares' program",
+            "Use warm, inviting language that appeals to all family members",
+            "Reference scale and trust metrics (e.g., daily milk production, quality tests) to build credibility"
+          ],
+          "confidence": 0.3
+        },
+        "dont_list": {
+          "value": [
+            "Avoid exaggerated or unverified medical claims",
+            "Avoid casual or informal tone in clinical content",
+            "Avoid pressuring language around urgent care"
+          ],
+          "confidence": 0.18
+        },
+        "banned_claims": {
+          "value": [
+            "Guaranteed cure or 100% success rate",
+            "No side effects or complications",
+            "Clinically proven (without citation)",
+            "Best hospital in [country] (without accreditation)"
+          ],
+          "confidence": 0.18
+        },
+        "colors": {
+          "value": [
+            "#AAAAAA",
+            "#FFFFFF",
+            "#E6E6E6",
+            "#2265AD",
+            "#ffffff"
+          ],
+          "confidence": 0.88
+        },
+        "dialect": {
+          "value": "msa",
+          "confidence": 0.55
+        },
+        "languages": {
+          "value": [
+            "ar",
+            "en"
+          ],
+          "confidence": 0.95
+        },
+        "pillars_suggested": {
+          "value": [
+            {
+              "name": "Recipes & Meal Inspiration",
+              "description": "Family-friendly recipes using Almarai dairy, juice, bakery and poultry products (e.g., muffins, milkshakes, oat biscuits, avocado toast)."
+            },
+            {
+              "name": "Product Quality & Trust",
+              "description": "Content highlighting production scale, quality testing (39,000 daily tests), and freshness guarantees across dairy, juice, bakery and poultry lines."
+            },
+            {
+              "name": "Almarai Cares (CSR)",
+              "description": "Community-focused content covering training & development, promotion of healthy living, and community care initiatives."
+            },
+            {
+              "name": "Corporate & Financial Updates",
+              "description": "Updates on financial reports, distribution network (12,000+ vehicles, 220,000+ points of sale in 7 countries), and company growth."
+            }
+          ],
+          "confidence": 0.4
+        },
+        "logo_url": {
+          "value": "https://almmedia.almarai.com/Brands/logo_Almarai8102022104604AM-(1)12112023100520AM.png",
+          "confidence": 0.85
+        }
+      }
+    }
+  ],
+  "summary": {
+    "site_count": 10,
+    "ok_count": 10,
+    "full_field_count": 4,
+    "avg_fields": 9.1,
+    "avg_elapsed_seconds": 26.664,
+    "field_fill_rates": {
+      "voice_adjectives": 9,
+      "do_list": 9,
+      "dont_list": 10,
+      "banned_claims": 10,
+      "colors": 10,
+      "dialect": 7,
+      "languages": 10,
+      "pillars_suggested": 10,
+      "competitors_suggested": 6,
+      "logo_url": 10
+    }
+  }
+}
