@@ -99,11 +99,43 @@ class _AlwaysSucceeds:
 
 @pytest.mark.asyncio
 async def test_router_falls_back_on_primary_payment_required() -> None:
-    primary = _AlwaysFails(ProviderPaymentRequiredError("credit balance too low"))
-    fallback = _AlwaysSucceeds()
+    """Fallback still works when a task explicitly configures one (defaults do not)."""
+    from app.core.config import TaskConfig
+
+    tasks = dict(LLMSettings().tasks)
+    tasks["brand_research"] = TaskConfig(
+        provider="openai",
+        model="gpt-5.5",
+        timeout_seconds=45,
+        max_retries=1,
+        temperature=0.2,
+        fallback_provider="openai",
+        fallback_model="gpt-5.6-luna",
+    )
+
+    class _FailThenOk:
+        def __init__(self) -> None:
+            self.calls: list[dict] = []
+
+        async def generate_structured(self, request, *, model, timeout_seconds=None):
+            self.calls.append({"model": model, "timeout_seconds": timeout_seconds})
+            if model == "gpt-5.5":
+                raise ProviderPaymentRequiredError("credit balance too low")
+            return StructuredGenerationResponse(
+                content={"ok": True},
+                usage=Usage(
+                    prompt_tokens=1,
+                    completion_tokens=1,
+                    cost_usd=Decimal("0"),
+                    provider_request_id="fb",
+                ),
+                raw={},
+            )
+
+    provider = _FailThenOk()
     router = LLMTaskRouter(
-        providers={"anthropic": primary, "openai": fallback},  # type: ignore[dict-item]
-        settings=LLMSettings(),
+        providers={"openai": provider},  # type: ignore[dict-item]
+        settings=LLMSettings(tasks=tasks),
     )
     response = await router.run_structured(
         "brand_research",
@@ -114,6 +146,4 @@ async def test_router_falls_back_on_primary_payment_required() -> None:
         ),
     )
     assert response.content == {"ok": True}
-    assert len(primary.calls) == 1
-    assert len(fallback.calls) == 1
-    assert fallback.calls[0]["model"] == "gpt-5.5"
+    assert [c["model"] for c in provider.calls] == ["gpt-5.5", "gpt-5.6-luna"]

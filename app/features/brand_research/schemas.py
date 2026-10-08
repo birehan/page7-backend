@@ -3,21 +3,34 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import HttpUrl
+from pydantic import BeforeValidator, HttpUrl
 
 from app.core.schema import CamelModel
 
 
+def _coerce_http_url(value: object) -> object:
+    """Accept bare hostnames the way onboarding does (add https://)."""
+    if not isinstance(value, str):
+        return value
+    trimmed = value.strip()
+    if trimmed and not trimmed.lower().startswith(("http://", "https://")):
+        return f"https://{trimmed}"
+    return trimmed
+
+
+HttpUrlInput = Annotated[HttpUrl, BeforeValidator(_coerce_http_url)]
+
+
 class RelearnBrandBody(CamelModel):
     brand_id: uuid.UUID
-    url: HttpUrl
+    url: HttpUrlInput
 
 
 class GenerateBrandBody(CamelModel):
     brand_id: uuid.UUID
-    source_url: HttpUrl | None = None
+    source_url: HttpUrlInput | None = None
     # Optional onboarding hints (audience, goal, languages, …) merged into research context.
     brand_context: dict[str, str] | None = None
 

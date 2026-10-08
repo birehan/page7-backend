@@ -1,27 +1,41 @@
-"""ai.visuals_generate — fan-out Fal calls + immediate gen/pending copy."""
+"""ai.visuals_generate — fan-out Fal calls + brand finish + gen/pending copy.
+
+Callers: job worker for type ai.visuals_generate.
+User: implement logo-composite + aspect-pixels from production AI image gen plan.
+"""
 
 from __future__ import annotations
 
+# Callers: ai.visuals_generate worker. Fixes: logo composite + variant diversity.
+# User: logo not adding; variants almost exact; use Qwen default.
+
 import asyncio
+import random
 import time
 import uuid
 from datetime import timedelta
 from decimal import Decimal
 from typing import Any, Literal, cast
 
+import httpx
 import structlog
 from sqlalchemy import select
 
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.core.time import utc_now
 from app.db.session import get_session_factory
 from app.features import content_ai
 from app.features.visuals import repository
+from app.features.visuals.aspects import parse_image_size
+from app.features.visuals.composite import apply_brand_finish
+from app.features.visuals.prompt_rewrite import PROMPT_VERSION
+from app.features.visuals.service import r2_key_from_public_url
 from app.integrations.errors import ProviderTimeoutError, ProviderUnavailableError
 from app.integrations.imagegen import get_image_generation_provider
 from app.integrations.imagegen.ports import (
     ImageGenerationProvider,
     ImageGenerationRequest,
+    ImageSize,
     ParamProfile,
     VisualAspect,
     VisualStyle,
@@ -34,7 +48,7 @@ from app.sse.models import Run
 
 log = structlog.get_logger(__name__)
 
-_SlotOutcome = Literal["success", "filtered", "error"]
+_VALID_PROFILES = frozenset({"flux", "qwen", "ideogram", "gpt_image"})
 
 
 async def handle(payload: dict[str, Any]) -> None:
@@ -46,7 +60,7 @@ async def handle(payload: dict[str, Any]) -> None:
         user_id = uuid.UUID(str(payload["user_id"]))
         count = int(payload["count"])
         model_id = str(payload["model_id"])
-        image_size = str(payload["image_size"])
+        image_size: ImageSize = payload["image_size"]
         augmented_prompt = str(payload["augmented_prompt"])
         style = str(payload["style"])
         aspect = str(payload["aspect"])
@@ -67,13 +81,46 @@ async def handle(payload: dict[str, Any]) -> None:
         [str(u) for u in refs_raw] if isinstance(refs_raw, list) else []
     )
     seed_raw = payload.get("seed")
-    base_seed = int(seed_raw) if isinstance(seed_raw, int) else None
+    # Always diversify variants — Fal with seed=None often returns near-duplicates.
+    base_seed = int(seed_raw) if isinstance(seed_raw, int) else random.randint(1, 2_000_000_000)
+    negative_prompt = payload.get("negative_prompt")
+    logo_url = payload.get("logo_url")
+    logo_url_str = str(logo_url) if isinstance(logo_url, str) and logo_url else None
+    force_logo = bool(payload.get("force_logo")) or bool(logo_url_str)
+    overlay_hint = str(payload.get("overlay_hint") or "logo_bottom_left")
+    if force_logo and (overlay_hint == "none" or not overlay_hint.startswith("logo_")):
+        overlay_hint = "logo_bottom_left"
+    quality = str(payload.get("quality") or "standard")
+    prompt_version = str(payload.get("prompt_version") or PROMPT_VERSION)
+    variants_raw = payload.get("prompt_variants")
+    prompt_variants: list[str] = (
+        [str(p) for p in variants_raw]
+        if isinstance(variants_raw, list) and variants_raw
+        else [augmented_prompt]
+    )
+    try:
+        target_width = int(payload.get("target_width") or parse_image_size(image_size)[0])
+        target_height = int(
+            payload.get("target_height") or parse_image_size(image_size)[1]
+        )
+    except (TypeError, ValueError):
+        target_width, target_height = 1080, 1350
 
     settings = get_settings()
     provider = get_image_generation_provider(settings)
     storage = get_object_storage(settings)
     factory = get_session_factory()
     ttl_days = settings.imagegen.provider_url_ttl_days
+
+    logo_bytes = await _load_logo_bytes(
+        logo_url_str, storage=storage, settings=settings
+    )
+    if force_logo and logo_bytes is None:
+        log.warning(
+            "visuals_logo_missing_bytes",
+            logo_url=logo_url_str,
+            generation_id=str(generation_id),
+        )
 
     async with factory() as session:
         run = (
@@ -104,7 +151,7 @@ async def handle(payload: dict[str, Any]) -> None:
         await emit(
             session, run_id, {"type": "step", "step": "prompt", "status": "done"}
         )
-        if use_brand_colors:
+        if use_brand_colors or logo_bytes is not None:
             await emit(
                 session, run_id, {"type": "step", "step": "brand", "status": "start"}
             )
@@ -120,6 +167,7 @@ async def handle(payload: dict[str, Any]) -> None:
     emit_lock = asyncio.Lock()
 
     async def _one(index: int) -> dict[str, Any]:
+        prompt_i = prompt_variants[index % len(prompt_variants)]
         return await _generate_one(
             index=index,
             count=count,
@@ -131,7 +179,8 @@ async def handle(payload: dict[str, Any]) -> None:
             factory=factory,
             model_id=model_id,
             image_size=image_size,
-            augmented_prompt=augmented_prompt,
+            augmented_prompt=prompt_i,
+            negative_prompt=str(negative_prompt) if negative_prompt else None,
             style=style,
             aspect=aspect,
             brand_colors=brand_colors,
@@ -142,11 +191,13 @@ async def handle(payload: dict[str, Any]) -> None:
             reference_image_urls=reference_image_urls,
             ttl_days=ttl_days,
             emit_lock=emit_lock,
-            # Deterministic per-index offset: reusing the exact same seed across every
-            # image in a batch would make count>1 produce near-duplicate outputs
-            # (architecture/09 review §6.3 "generate more like this"). Offsetting by
-            # index keeps the batch varied while staying anchored to the requested seed.
-            seed=(base_seed + index) if base_seed is not None else None,
+            seed=base_seed + index * 9973,
+            logo_bytes=logo_bytes,
+            force_logo=force_logo,
+            overlay_hint=overlay_hint,
+            target_width=target_width,
+            target_height=target_height,
+            quality=quality,
         )
 
     outcomes = await asyncio.gather(*[_one(i) for i in range(count)])
@@ -190,7 +241,7 @@ async def handle(payload: dict[str, Any]) -> None:
             kind="image_generate",
             provider="fal",
             model=model_id,
-            prompt_version="visuals.v1",
+            prompt_version=prompt_version,
             inputs_hash=str(generation_id),
             input_summary={
                 "prompt": original_prompt,
@@ -199,6 +250,7 @@ async def handle(payload: dict[str, Any]) -> None:
                 "aspect": aspect,
                 "count": count,
                 "imageSize": image_size,
+                "quality": quality,
                 "enableSafetyChecker": True,
                 "numInferenceSteps": num_inference_steps,
                 "guidanceScale": guidance_scale,
@@ -274,6 +326,53 @@ async def handle(payload: dict[str, Any]) -> None:
         await session.commit()
 
 
+async def _fetch_bytes(url: str | None) -> bytes | None:
+    if not url:
+        return None
+    try:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+            resp = await client.get(url)
+            resp.raise_for_status()
+            return resp.content
+    except Exception as exc:  # noqa: BLE001
+        log.warning("visuals_fetch_bytes_failed", url=url, error=str(exc))
+        return None
+
+
+async def _load_logo_bytes(
+    url: str | None,
+    *,
+    storage: ObjectStorage,
+    settings: Settings,
+) -> bytes | None:
+    """Prefer object-storage get (works for local CDN URLs); fall back to HTTP."""
+    if not url:
+        return None
+    key = r2_key_from_public_url(url, public_base_url=settings.storage.public_base_url)
+    if key:
+        try:
+            return await storage.get_object("public", key)
+        except Exception as exc:  # noqa: BLE001
+            log.warning(
+                "visuals_logo_storage_get_failed",
+                key=key,
+                error=str(exc),
+            )
+    return await _fetch_bytes(url)
+
+
+def _corner_from_hint(hint: str) -> Literal[
+    "bottom_left", "bottom_right", "top_left", "top_right"
+]:
+    mapping = {
+        "logo_bottom_left": "bottom_left",
+        "logo_bottom_right": "bottom_right",
+        "logo_top_left": "top_left",
+        "logo_top_right": "top_right",
+    }
+    return mapping.get(hint, "bottom_left")  # type: ignore[return-value]
+
+
 async def _generate_one(
     *,
     index: int,
@@ -285,8 +384,9 @@ async def _generate_one(
     storage: ObjectStorage,
     factory: Any,
     model_id: str,
-    image_size: str,
+    image_size: ImageSize,
     augmented_prompt: str,
+    negative_prompt: str | None,
     style: str,
     aspect: str,
     brand_colors: list[str],
@@ -298,8 +398,21 @@ async def _generate_one(
     ttl_days: int,
     emit_lock: asyncio.Lock,
     seed: int | None = None,
+    logo_bytes: bytes | None = None,
+    force_logo: bool = False,
+    overlay_hint: str = "logo_bottom_left",
+    target_width: int = 1080,
+    target_height: int = 1350,
+    quality: str = "standard",
 ) -> dict[str, Any]:
-    profile: ParamProfile = "qwen" if param_profile == "qwen" else "flux"
+    profile: ParamProfile = (
+        cast(ParamProfile, param_profile)
+        if param_profile in _VALID_PROFILES
+        else "flux"
+    )
+    quality_tier = (
+        cast(Any, quality) if quality in {"draft", "standard", "premium"} else "standard"
+    )
     request = ImageGenerationRequest(
         prompt=augmented_prompt,
         style=cast(VisualStyle, style),
@@ -317,6 +430,8 @@ async def _generate_one(
             float(guidance_scale) if isinstance(guidance_scale, (int, float)) else None
         ),
         seed=seed,
+        negative_prompt=negative_prompt,
+        quality_tier=quality_tier,
     )
 
     try:
@@ -335,7 +450,6 @@ async def _generate_one(
             "message": f"Image {index + 1} of {count} failed: {exc}",
         }
 
-    # Serialize DB writes / emit so concurrent fan-out cannot race on run_events.seq.
     async with emit_lock:
         if provider_error is not None:
             async with factory() as session:
@@ -373,6 +487,59 @@ async def _generate_one(
         pending_key = f"gen/pending/{generation_id}/{index}"
         expires_at = utc_now() + timedelta(days=ttl_days)
 
+        raw_bytes: bytes | None = None
+        if result.image.url.startswith("https://fal.media/files/fake/"):
+            from app.integrations.imagegen.fakes import FAKE_PNG_BYTES
+
+            raw_bytes = FAKE_PNG_BYTES
+        else:
+            raw_bytes = await _fetch_bytes(result.image.url)
+
+        finished_bytes: bytes | None = None
+        out_w, out_h = target_width, target_height
+        if raw_bytes is not None:
+            try:
+                # force_logo (user checkbox) always wins over LLM overlay_hint=none.
+                apply_logo = logo_bytes if (force_logo or overlay_hint != "none") else None
+                if force_logo and apply_logo is None:
+                    raise ValueError(
+                        "Place logo was requested but brand logo bytes could not be loaded"
+                    )
+                finished_bytes = apply_brand_finish(
+                    raw_bytes,
+                    target_width=target_width,
+                    target_height=target_height,
+                    logo_bytes=apply_logo,
+                    corner=_corner_from_hint(overlay_hint),
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.warning(
+                    "visuals_brand_finish_failed",
+                    error=str(exc),
+                    generation_id=str(generation_id),
+                    index=index,
+                    force_logo=force_logo,
+                )
+                if force_logo:
+                    error = {
+                        "code": "LOGO_COMPOSITE_FAILED",
+                        "message": (
+                            f"Image {index + 1} of {count}: "
+                            f"could not place brand logo ({exc})"
+                        ),
+                    }
+                    async with factory() as session:
+                        await emit(session, run_id, {"type": "error", **error})
+                        await session.commit()
+                    return {
+                        "outcome": "error",
+                        "cost": Decimal("0"),
+                        "provider_request_id": result.usage.provider_request_id,
+                        "error": error,
+                    }
+                finished_bytes = raw_bytes
+                out_w, out_h = result.image.width, result.image.height
+
         async with factory() as session:
             output = await repository.insert_output(
                 session,
@@ -381,18 +548,16 @@ async def _generate_one(
                 index=index,
                 provider_url=result.image.url,
                 provider_url_expires_at=expires_at,
-                width=result.image.width,
-                height=result.image.height,
+                width=out_w,
+                height=out_h,
                 seed=result.image.seed,
             )
             try:
-                if result.image.url.startswith("https://fal.media/files/fake/"):
-                    from app.integrations.imagegen.fakes import FAKE_PNG_BYTES
-
+                if finished_bytes is not None:
                     await storage.put_object(
                         "public",
                         pending_key,
-                        FAKE_PNG_BYTES,
+                        finished_bytes,
                         content_type="image/png",
                     )
                 else:
@@ -404,6 +569,7 @@ async def _generate_one(
                             content_type="image/png",
                         )
                     )
+                    out_w, out_h = result.image.width, result.image.height
             except Exception as exc:
                 error = {
                     "code": "PROVIDER_UNAVAILABLE",
@@ -431,8 +597,8 @@ async def _generate_one(
                     "index": index,
                     "total": count,
                     "url": our_url,
-                    "width": result.image.width,
-                    "height": result.image.height,
+                    "width": out_w,
+                    "height": out_h,
                 },
             )
             await session.commit()

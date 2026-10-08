@@ -23,7 +23,7 @@ async def test_source_url_in_user_message_not_only_system() -> None:
     result = await researcher.research(
         ResearchRequest(source_url=url, brand_context={"name": "Noor"})
     )
-    assert result.voice_adjectives.confidence is not None
+    assert result.name.confidence is not None
     assert fake.calls
     call = fake.calls[0]
     messages = call["messages"]

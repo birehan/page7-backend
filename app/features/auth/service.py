@@ -33,11 +33,24 @@ if TYPE_CHECKING:
     from app.core.config import Settings
     from app.features.organizations.models import Organization
 
-_SESSION_TTL_SLIDING = timedelta(hours=12)
+# Fixed lifetimes, set once at login: a session never extends itself while in use, and the
+# cookie's max-age is fixed to match. A user is signed out when this elapses, active or not.
+_SESSION_TTL_DEFAULT = timedelta(hours=12)
 _SESSION_TTL_REMEMBER_ME = timedelta(days=30)
 _RESET_TOKEN_TTL = timedelta(hours=1)
+# Abuse limits, each counted per fixed window. Password-reset requests are counted whether or
+# not the account exists, so hitting a limit never reveals who is registered.
+_FORGOT_EMAIL_LIMIT = (3, timedelta(hours=1))
+_FORGOT_IP_LIMIT = (10, timedelta(hours=1))
+_SIGNUP_IP_LIMIT = (10, timedelta(hours=1))
 _INVITE_TTL = timedelta(days=7)
 _MFA_CHALLENGE_TTL = timedelta(minutes=5)
+_EMAIL_VERIFY_TTL = timedelta(minutes=10)
+_EMAIL_VERIFY_MAX_ATTEMPTS = 5
+_EMAIL_VERIFY_RESEND_COOLDOWN = timedelta(seconds=60)
+_EMAIL_VERIFY_SEND_WINDOW = timedelta(minutes=10)
+_EMAIL_VERIFY_MAX_SENDS_PER_EMAIL = 3
+_EMAIL_VERIFY_MAX_SENDS_PER_IP = 10
 _AUTH_OAUTH_STATE_TTL = timedelta(minutes=10)
 _LOGIN_LOCKOUT_THRESHOLD = 10
 _LOGIN_LOCKOUT_WINDOW = timedelta(minutes=15)
@@ -65,6 +78,12 @@ class AuthResult:
 @dataclass
 class MfaChallengeResult:
     raw_challenge_token: str
+
+
+@dataclass
+class EmailVerificationRequiredResult:
+    raw_challenge_token: str
+    masked_email: str
 
 
 @dataclass
@@ -100,6 +119,30 @@ def _hash_token(raw: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
+def _new_otp_code() -> str:
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def _hash_otp_code(*, salt: str, code: str) -> str:
+    return hashlib.sha256(f"{salt}:{code}".encode()).hexdigest()
+
+
+def _mask_email(email: str) -> str:
+    local, _, domain = email.partition("@")
+    if not local or not domain:
+        return "***"
+    visible = local[:1]
+    return f"{visible}***@{domain}"
+
+
+async def _enforce_rate_limit(bucket: str, limit: tuple[int, timedelta], message: str) -> None:
+    """Count one hit against `bucket`; raise 429 once it is over the limit for the window."""
+    threshold, window = limit
+    count = await RateLimiter().increment(bucket=bucket, now=utc_now(), window=window)
+    if count > threshold:
+        raise ApiError("RATE_LIMIT", message, status_code=429)
+
+
 async def _create_session_for(
     session: AsyncSession,
     *,
@@ -111,7 +154,7 @@ async def _create_session_for(
     user_agent: str | None,
 ) -> AuthResult:
     raw_token = _new_token()
-    ttl = _SESSION_TTL_REMEMBER_ME if remember_me else _SESSION_TTL_SLIDING
+    ttl = _SESSION_TTL_REMEMBER_ME if remember_me else _SESSION_TTL_DEFAULT
     row = await repository.create_session(
         session,
         user_id=user.id,
@@ -130,6 +173,66 @@ async def _create_session_for(
 # --- signup / login / logout --------------------------------------------
 
 
+async def _enforce_email_verify_send_limits(
+    *, email: str, ip: str | None
+) -> None:
+    limiter = RateLimiter()
+    now = utc_now()
+    email_bucket = f"email_verify:send:email:{hashlib.sha256(email.lower().encode()).hexdigest()}"
+    email_count = await limiter.increment(
+        bucket=email_bucket, now=now, window=_EMAIL_VERIFY_SEND_WINDOW
+    )
+    if email_count > _EMAIL_VERIFY_MAX_SENDS_PER_EMAIL:
+        raise ApiError("RATE_LIMIT", "Too many verification emails", status_code=429)
+    if ip:
+        ip_count = await limiter.increment(
+            bucket=f"email_verify:send:ip:{ip}", now=now, window=_EMAIL_VERIFY_SEND_WINDOW
+        )
+        if ip_count > _EMAIL_VERIFY_MAX_SENDS_PER_IP:
+            raise ApiError("RATE_LIMIT", "Too many verification emails", status_code=429)
+
+
+async def _issue_email_verification_challenge(
+    session: AsyncSession,
+    *,
+    user: User,
+    locale: str,
+    ip: str | None,
+) -> EmailVerificationRequiredResult:
+    await _enforce_email_verify_send_limits(email=user.email, ip=ip)
+    await repository.consume_active_email_verification_challenges(session, user_id=user.id)
+
+    raw_token = _new_token()
+    code = _new_otp_code()
+    salt = secrets.token_hex(16)
+    challenge = await repository.create_email_verification_challenge(
+        session,
+        user_id=user.id,
+        token_hash=_hash_token(raw_token),
+        code_salt=salt,
+        code_hash=_hash_otp_code(salt=salt, code=code),
+        expires_at=utc_now() + _EMAIL_VERIFY_TTL,
+        locale=locale if locale in ("ar", "en") else "en",
+        ip=ip,
+    )
+    await queue.enqueue(
+        session,
+        queue="sync",
+        type="email.send",
+        payload={
+            "kind": "verify_email",
+            "challenge_id": str(challenge.id),
+            "code": code,
+            "locale": challenge.locale,
+        },
+        unique_key=f"verify_email:{challenge.id}",
+    )
+    return EmailVerificationRequiredResult(
+        raw_challenge_token=raw_token,
+        masked_email=_mask_email(user.email),
+    )
+
+
 async def signup(
     session: AsyncSession,
     *,
@@ -137,20 +240,39 @@ async def signup(
     email: str,
     password: str,
     organization_name: str,
+    locale: str = "en",
     ip: str | None = None,
     user_agent: str | None = None,
-) -> AuthResult:
+) -> EmailVerificationRequiredResult:
     # Local import: features.team.create_membership, to avoid the
     # features.auth <-> features.team module-level circular import —
     # features/team/router.py makes the (safe) other-direction top-level
     # import of features.auth for its invite-touching endpoints.
     from app.features import organizations, team
 
-    if await repository.get_user_by_email(session, email) is not None:
-        raise ApiError("EMAIL_IN_USE", "Email is already in use", status_code=409)
+    del user_agent  # reserved for future audit; signup issues no session yet
+
+    if ip:
+        await _enforce_rate_limit(f"signup:ip:{ip}", _SIGNUP_IP_LIMIT, "Too many sign-up attempts")
+
+    existing = await repository.get_user_by_email(session, email)
+    if existing is not None:
+        if existing.email_verified_at is not None:
+            raise ApiError("EMAIL_IN_USE", "Email is already in use", status_code=409)
+        if existing.password_hash is None or not await crypto.verify_password_async(
+            existing.password_hash, password
+        ):
+            raise ApiError("EMAIL_IN_USE", "Email is already in use", status_code=409)
+        return await _issue_email_verification_challenge(
+            session, user=existing, locale=locale, ip=ip
+        )
 
     user = await repository.create_user(
-        session, email=email, name=name, password_hash=await crypto.hash_password_async(password)
+        session,
+        email=email,
+        name=name,
+        password_hash=await crypto.hash_password_async(password),
+        locale=locale if locale in ("ar", "en") else "en",
     )
     org = await organizations.create_organization_for_signup(
         session, name=organization_name, created_by_user_id=user.id
@@ -166,14 +288,105 @@ async def signup(
         target_type="organization",
         target_id=org.id,
     )
+    return await _issue_email_verification_challenge(
+        session, user=user, locale=locale, ip=ip
+    )
+
+
+async def verify_email(
+    session: AsyncSession,
+    *,
+    challenge_token: str,
+    code: str,
+    ip: str | None = None,
+    user_agent: str | None = None,
+) -> AuthResult:
+    from app.features import organizations, team
+
+    challenge = await repository.get_email_verification_challenge_by_token_hash(
+        session, _hash_token(challenge_token)
+    )
+    if (
+        challenge is None
+        or challenge.consumed_at is not None
+        or challenge.expires_at < utc_now()
+    ):
+        raise ApiError("INVALID_TOKEN", "Verification code is invalid or expired", status_code=400)
+
+    if challenge.attempt_count >= _EMAIL_VERIFY_MAX_ATTEMPTS:
+        raise ApiError(
+            "CODE_EXHAUSTED",
+            "Too many incorrect codes. Request a new one.",
+            status_code=400,
+        )
+
+    expected = _hash_otp_code(salt=challenge.code_salt, code=code)
+    if not secrets.compare_digest(expected, challenge.code_hash):
+        # Own transaction: ApiError rolls back the request session, so the
+        # attempt counter must commit independently (same pattern as RateLimiter).
+        count = await repository.record_email_verification_failure(
+            challenge.id, max_attempts=_EMAIL_VERIFY_MAX_ATTEMPTS
+        )
+        if count >= _EMAIL_VERIFY_MAX_ATTEMPTS:
+            raise ApiError(
+                "CODE_EXHAUSTED",
+                "Too many incorrect codes. Request a new one.",
+                status_code=400,
+            )
+        raise ApiError("INVALID_CODE", "That code isn't right. Try again.", status_code=400)
+
+    user = await repository.get_user_by_id(session, challenge.user_id)
+    if user is None:
+        raise ApiError("INVALID_TOKEN", "Verification code is invalid or expired", status_code=400)
+
+    user.email_verified_at = utc_now()
+    user.last_login_at = utc_now()
+    await session.flush()
+    await repository.mark_email_verification_challenge_consumed(session, challenge)
+    await repository.consume_active_email_verification_challenges(session, user_id=user.id)
+
+    membership = await team.get_default_membership(session, user.id)
+    if membership is None:
+        raise RuntimeError(f"user {user.id} has no organization")
+    org = await organizations.get_organization(session, membership.organization_id)
     return await _create_session_for(
         session,
         user=user,
         organization=org,
-        role="owner",
+        role=membership.role,
         remember_me=False,
         ip=ip,
         user_agent=user_agent,
+    )
+
+
+async def resend_email_verification(
+    session: AsyncSession,
+    *,
+    challenge_token: str,
+    ip: str | None = None,
+) -> EmailVerificationRequiredResult:
+    challenge = await repository.get_email_verification_challenge_by_token_hash(
+        session, _hash_token(challenge_token)
+    )
+    if challenge is None or challenge.consumed_at is not None:
+        raise ApiError("INVALID_TOKEN", "Verification challenge is invalid", status_code=400)
+
+    if utc_now() - challenge.created_at < _EMAIL_VERIFY_RESEND_COOLDOWN:
+        raise ApiError(
+            "RESEND_TOO_SOON",
+            "Wait a moment before requesting another code.",
+            status_code=429,
+        )
+
+    user = await repository.get_user_by_id(session, challenge.user_id)
+    if user is None:
+        raise ApiError("INVALID_TOKEN", "Verification challenge is invalid", status_code=400)
+    if user.email_verified_at is not None:
+        raise ApiError("ALREADY_VERIFIED", "Email is already verified", status_code=400)
+
+    return await _issue_email_verification_challenge(
+        session, user=user, locale=challenge.locale, ip=ip
     )
 
 
@@ -185,7 +398,7 @@ async def login(
     remember_me: bool,
     ip: str | None = None,
     user_agent: str | None = None,
-) -> AuthResult | MfaChallengeResult:
+) -> AuthResult | MfaChallengeResult | EmailVerificationRequiredResult:
     from app.features import organizations, team
 
     limiter = RateLimiter()
@@ -211,6 +424,11 @@ async def login(
         raise ApiError("INVALID_CREDENTIALS", "Invalid email or password", status_code=401)
     if not await crypto.verify_password_async(user.password_hash, password):
         raise ApiError("INVALID_CREDENTIALS", "Invalid email or password", status_code=401)
+
+    if user.email_verified_at is None:
+        return await _issue_email_verification_challenge(
+            session, user=user, locale=user.locale or "en", ip=ip
+        )
 
     user.last_login_at = utc_now()
     await session.flush()
@@ -263,6 +481,12 @@ async def forgot_password(
     email: str,
     ip: str | None = None,
 ) -> None:
+    email_hash = hashlib.sha256(email.lower().encode()).hexdigest()
+    await _enforce_rate_limit(
+        f"forgot:email:{email_hash}", _FORGOT_EMAIL_LIMIT, "Too many reset requests"
+    )
+    if ip:
+        await _enforce_rate_limit(f"forgot:ip:{ip}", _FORGOT_IP_LIMIT, "Too many reset requests")
     user = await repository.get_user_by_email(session, email)
     if user is None:
         await asyncio.sleep(_FORGOT_PASSWORD_MISS_DELAY_SECONDS)
@@ -318,8 +542,20 @@ async def create_invitation(
     invited_by_name: str,
     locale: str = "ar",
 ) -> Invitation:
-    if await repository.get_user_by_email(session, email) is not None:
-        raise ApiError("EMAIL_IN_USE", "This person is already a member", status_code=409)
+    # Multi-membership is allowed (memberships unique on org+user), so an
+    # existing Page7 account is fine — only reject when they already belong
+    # to *this* organization.
+    from app.features import team
+
+    locale_norm = locale if locale in ("ar", "en") else "ar"
+
+    existing_user = await repository.get_user_by_email(session, email)
+    if existing_user is not None:
+        membership = await team.get_membership(
+            session, organization_id=organization_id, user_id=existing_user.id
+        )
+        if membership is not None:
+            raise ApiError("EMAIL_IN_USE", "This person is already a member", status_code=409)
     if (
         await repository.get_pending_invitation_by_email(
             session, organization_id=organization_id, email=email
@@ -351,7 +587,7 @@ async def create_invitation(
             "organization_id": str(organization_id),
             "raw_token": raw_token,
             "inviter_name": invited_by_name,
-            "locale": locale,
+            "locale": locale_norm,
         },
         unique_key=f"invite:{invitation.id}",
     )
@@ -376,6 +612,7 @@ async def resend_invitation(
     inviter_name: str,
     locale: str = "ar",
 ) -> Invitation:
+    locale_norm = locale if locale in ("ar", "en") else "ar"
     raw_token = _new_token()
     resent_at = utc_now()
     await repository.mark_invitation_resent(
@@ -392,7 +629,7 @@ async def resend_invitation(
             "organization_id": str(invitation.organization_id),
             "raw_token": raw_token,
             "inviter_name": inviter_name,
-            "locale": locale,
+            "locale": locale_norm,
             "resent_at": resent_at.isoformat(),
         },
         unique_key=f"invite-resend:{invitation.id}:{resent_at.isoformat()}",
@@ -468,23 +705,72 @@ async def accept_invite(
     token: str,
     name: str,
     password: str,
+    locale: str = "en",
     ip: str | None = None,
     user_agent: str | None = None,
 ) -> AuthResult:
     from app.features import organizations, team
 
+    locale_norm = locale if locale in ("ar", "en") else "en"
+
     invitation = await get_invitation_by_token(session, token=token)
     if invitation is None or not _invitation_is_valid(invitation):
         raise ApiError("INVALID_TOKEN", "Invite is invalid or expired", status_code=400)
-    if await repository.get_user_by_email(session, invitation.email) is not None:
-        raise ApiError("EMAIL_IN_USE", "Email is already in use", status_code=409)
 
-    user = await repository.create_user(
-        session,
-        email=invitation.email,
-        name=name,
-        password_hash=await crypto.hash_password_async(password),
-    )
+    existing = await repository.get_user_by_email(session, invitation.email)
+    if existing is not None:
+        already = await team.get_membership(
+            session, organization_id=invitation.organization_id, user_id=existing.id
+        )
+        if already is not None:
+            raise ApiError("EMAIL_IN_USE", "This person is already a member", status_code=409)
+        # OAuth-only / MFA accounts can't complete this password-only form yet
+        # without bypassing login's MFA gate or inventing a logged-in accept.
+        if existing.password_hash is None:
+            raise ApiError(
+                "EMAIL_IN_USE",
+                "This email already has an account that signs in with Google. "
+                "Ask an admin to remove the invite and add you after you share a password account, "
+                "or use a different email.",
+                status_code=409,
+            )
+        # Same lockout buckets as login: invite preview already reveals the email.
+        limiter = RateLimiter()
+        now = utc_now()
+        email_bucket = (
+            f"login:email:{hashlib.sha256(invitation.email.lower().encode()).hexdigest()}"
+        )
+        email_count = await limiter.increment(
+            bucket=email_bucket, now=now, window=_LOGIN_LOCKOUT_WINDOW
+        )
+        ip_count = 0
+        if ip:
+            ip_count = await limiter.increment(
+                bucket=f"login:ip:{ip}", now=now, window=_LOGIN_LOCKOUT_WINDOW
+            )
+        if email_count > _LOGIN_LOCKOUT_THRESHOLD or ip_count > _LOGIN_LOCKOUT_THRESHOLD:
+            raise ApiError("RATE_LIMIT", "Too many login attempts", status_code=429)
+        if not await crypto.verify_password_async(existing.password_hash, password):
+            raise ApiError("INVALID_CREDENTIALS", "Invalid email or password", status_code=401)
+        # After password proof only — don't fingerprint MFA to the token holder first.
+        if existing.mfa_enabled:
+            raise ApiError(
+                "MFA_REQUIRED",
+                "This account has two-step verification. Password-only invite accept is not "
+                "supported yet — use an email without MFA, or contact support.",
+                status_code=403,
+            )
+        user = existing
+    else:
+        user = await repository.create_user(
+            session,
+            email=invitation.email,
+            name=name,
+            password_hash=await crypto.hash_password_async(password),
+            locale=locale_norm,
+            email_verified_at=utc_now(),
+        )
+
     await team.create_membership(
         session,
         organization_id=invitation.organization_id,
@@ -551,7 +837,7 @@ async def mfa_enroll(session: AsyncSession, *, user: User) -> MfaEnrollResult:
         user_id=user.id,
         code_hashes=[_hash_token(code) for code in recovery_codes],
     )
-    otpauth_url = pyotp.TOTP(secret).provisioning_uri(name=user.email, issuer_name="pgblank.ai")
+    otpauth_url = pyotp.TOTP(secret).provisioning_uri(name=user.email, issuer_name="Page7")
     return MfaEnrollResult(secret=secret, otpauth_url=otpauth_url, recovery_codes=recovery_codes)
 
 
@@ -882,6 +1168,8 @@ async def finish_google_oauth(
         raise ApiError("ACCOUNT_DISABLED", "Account is deactivated", status_code=403)
 
     user.last_login_at = utc_now()
+    if profile.email_verified and user.email_verified_at is None:
+        user.email_verified_at = utc_now()
     if profile.picture and user.avatar_url is None:
         user.avatar_url = profile.picture
     await session.flush()

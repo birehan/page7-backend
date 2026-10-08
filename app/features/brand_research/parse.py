@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from app.features.brand_research.ports import (
@@ -10,8 +11,9 @@ from app.features.brand_research.ports import (
     FieldExtraction,
 )
 
-_VALID_DIALECTS = frozenset({"gulf", "msa"})
 _VALID_LANGS = frozenset({"ar", "en"})
+_HEX_RE = re.compile(r"^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$")
+_MAX_COLORS = 3
 
 
 def parse_extraction_content(
@@ -71,58 +73,45 @@ def _parse_field(name: str, raw: object) -> tuple[FieldExtraction, str | None]:
 def _validate_value(name: str, value: object) -> tuple[object | None, str | None]:
     if value is None:
         return None, "null value"
-    if name == "dialect":
-        if not isinstance(value, str) or value not in _VALID_DIALECTS:
-            return None, "dialect must be gulf or msa"
-        return value, None
+    if name == "name":
+        if not isinstance(value, str):
+            return None, "name must be a string"
+        cleaned = value.strip()
+        if not cleaned:
+            return None, "empty name"
+        return cleaned[:80], None
+    if name == "industry":
+        if not isinstance(value, str):
+            return None, "industry must be a string"
+        cleaned = value.strip()
+        if not cleaned:
+            return None, "empty industry"
+        return cleaned[:64], None
+    if name == "description":
+        if not isinstance(value, str):
+            return None, "description must be a string"
+        cleaned = " ".join(value.split()).strip()
+        if not cleaned:
+            return None, "empty description"
+        return cleaned[:280], None
     if name == "languages":
-        if not isinstance(value, list):
-            return None, "languages must be a list"
-        langs = [str(v) for v in value if str(v) in _VALID_LANGS]
-        if not langs:
-            return None, "no valid languages"
-        return langs, None
-    if name in {
-        "voice_adjectives",
-        "do_list",
-        "dont_list",
-        "banned_claims",
-        "colors",
-    }:
+        preferred = _preferred_language(value)
+        if preferred is None:
+            return None, "no valid preferred language"
+        return [preferred], None
+    if name == "colors":
         if not isinstance(value, list):
             return None, "expected list"
-        items = [str(v).strip() for v in value if str(v).strip()]
-        if not items:
+        colors: list[str] = []
+        for item in value:
+            hex_val = _normalize_hex(item)
+            if hex_val and hex_val not in colors:
+                colors.append(hex_val)
+            if len(colors) >= _MAX_COLORS:
+                break
+        if not colors:
             return None, "empty list"
-        return items, None
-    if name == "pillars_suggested":
-        if not isinstance(value, list):
-            return None, "expected list"
-        pillars: list[dict[str, str]] = []
-        for item in value:
-            if not isinstance(item, dict):
-                continue
-            n = item.get("name")
-            d = item.get("description")
-            if isinstance(n, str) and isinstance(d, str) and n.strip():
-                pillars.append({"name": n.strip(), "description": d.strip()})
-        if not pillars:
-            return None, "no valid pillars"
-        return pillars, None
-    if name == "competitors_suggested":
-        if not isinstance(value, list):
-            return None, "expected list"
-        comps: list[dict[str, str]] = []
-        for item in value:
-            if not isinstance(item, dict):
-                continue
-            handle = item.get("handle")
-            platform = item.get("platform")
-            if isinstance(handle, str) and isinstance(platform, str) and handle.strip():
-                comps.append({"handle": handle.strip(), "platform": platform.strip()})
-        if not comps:
-            return None, "no valid competitors"
-        return comps, None
+        return colors, None
     if name == "logo_url":
         if not isinstance(value, str):
             return None, "logo_url must be a string"
@@ -133,6 +122,38 @@ def _validate_value(name: str, value: object) -> tuple[object | None, str | None
             return None, "logo_url too long"
         return url, None
     return value, None
+
+
+def _preferred_language(value: object) -> str | None:
+    """Pick a single preferred language (ar|en). First valid wins for lists."""
+    if isinstance(value, str):
+        code = value.strip().lower()
+        if code in _VALID_LANGS:
+            return code
+        if code.startswith("ar"):
+            return "ar"
+        if code.startswith("en"):
+            return "en"
+        return None
+    if isinstance(value, list):
+        for item in value:
+            preferred = _preferred_language(item)
+            if preferred:
+                return preferred
+    return None
+
+
+def _normalize_hex(raw: object) -> str | None:
+    if not isinstance(raw, str):
+        return None
+    s = raw.strip()
+    if not s.startswith("#"):
+        s = f"#{s}"
+    if not _HEX_RE.match(s):
+        return None
+    if len(s) == 4:
+        return f"#{s[1]*2}{s[2]*2}{s[3]*2}".upper()
+    return s.upper()
 
 
 def _dedupe(urls: list[str]) -> list[str]:

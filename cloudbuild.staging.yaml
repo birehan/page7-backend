@@ -12,6 +12,42 @@ options:
     - DOCKER_BUILDKIT=1
 
 steps:
+  # Quality gate: nothing is built, migrated or deployed unless types, import contracts
+  # and the test suite pass. Tests use a throwaway Postgres on the `cloudbuild` network.
+  - name: gcr.io/cloud-builders/docker
+    id: test-db
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        docker run -d --name pgtest --network cloudbuild \
+          -e POSTGRES_USER=pgblank -e POSTGRES_PASSWORD=pgblank -e POSTGRES_DB=pgblank_test \
+          postgres:18-alpine
+        for i in $$(seq 1 30); do
+          if docker exec pgtest pg_isready -U pgblank -d pgblank_test; then exit 0; fi
+          sleep 1
+        done
+        echo "Postgres did not become ready" >&2
+        exit 1
+
+  - name: python:3.12-slim-bookworm
+    id: quality-gate
+    entrypoint: bash
+    env:
+      - DATABASE__URL=postgresql+asyncpg://pgblank:pgblank@pgtest:5432/pgblank_test
+    args:
+      - -ceu
+      - |
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends ffmpeg >/dev/null
+        pip install -q uv==0.12.9
+        uv sync --frozen
+        uv run mypy app
+        uv run lint-imports
+        # Known pre-existing findings; make blocking once `ruff check` is clean.
+        uv run ruff check app tests || echo "WARN: ruff findings (non-blocking)"
+        # Coverage floor: measured 71% on the full suite; fail if it drops below 68%.
+        uv run pytest -q -p no:cacheprovider --cov=app --cov-fail-under=68
+
   - name: gcr.io/cloud-builders/docker
     id: pull-cache
     entrypoint: bash
@@ -112,6 +148,7 @@ steps:
       - REGION=${_REGION}
       - SQL_INSTANCE=${_SQL_INSTANCE}
       - DATABASE_URL_SECRET=DATABASE_URL
+      - IMAGE_TAG=$SHORT_SHA
     args:
       - -ceu
       - |

@@ -8,6 +8,8 @@ from httpx import AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from tests.auth_signup_helpers import signup_and_verify
+
 
 @pytest.fixture(autouse=True)
 async def _isolate_rate_limits(db_session: AsyncSession) -> AsyncIterator[None]:
@@ -26,15 +28,15 @@ async def _isolate_rate_limits(db_session: AsyncSession) -> AsyncIterator[None]:
     await db_session.commit()
 
 
-async def test_login_lockout_after_ten_failures(client: AsyncClient) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Lockout User",
-            "email": "lockout-login@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Lockout Co",
-        },
+async def test_login_lockout_after_ten_failures(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await signup_and_verify(
+        client,
+        db_session,
+        email="lockout-login@example.com",
+        name="Lockout User",
+        organization_name="Lockout Co",
     )
     await client.post("/v1/auth/logout")
 
@@ -52,15 +54,15 @@ async def test_login_lockout_after_ten_failures(client: AsyncClient) -> None:
     assert responses[10].json()["error"]["code"] == "RATE_LIMIT"
 
 
-async def test_mfa_verify_lockout_after_five_failures(client: AsyncClient) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "MFA Lockout User",
-            "email": "lockout-mfa@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "MFA Lockout Co",
-        },
+async def test_mfa_verify_lockout_after_five_failures(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await signup_and_verify(
+        client,
+        db_session,
+        email="lockout-mfa@example.com",
+        name="MFA Lockout User",
+        organization_name="MFA Lockout Co",
     )
     secret = (await client.post("/v1/auth/mfa/enroll")).json()["secret"]
     code = pyotp.TOTP(secret).now()

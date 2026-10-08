@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, Header, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import ApiError
+from app.core.security.client_ip import client_ip
 from app.db.session import get_db_session
 from app.features.review_links import repository, service
 from app.features.review_links.schemas import (
@@ -31,7 +32,7 @@ router = APIRouter(prefix="/review", tags=["review-links-public"])
 
 
 def _client_ip(request: Request) -> str | None:
-    return request.client.host if request.client else None
+    return client_ip(request)
 
 
 @router.get(

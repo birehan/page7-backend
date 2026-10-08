@@ -17,8 +17,22 @@ async def test_health_is_intentionally_absent_from_the_shared_frontend_contract(
     assert "health" not in resources
 
 
-async def test_health_responses_have_a_stable_status_field(client: AsyncClient) -> None:
-    for path in ("/health/live", "/health/ready", "/health/deep"):
+async def test_liveness_and_readiness_have_a_stable_status_field(client: AsyncClient) -> None:
+    for path in ("/health/live", "/health/ready"):
         response = await client.get(path)
         assert response.status_code == 200
         assert response.json()["status"] == "ok"
+
+
+async def test_deep_health_always_reports_a_known_status_and_its_checks(
+    client: AsyncClient,
+) -> None:
+    """Deep health reflects live system state (queue lag, scheduler), so it may legitimately
+    be 503. What must stay stable is the shape monitors parse: the status vocabulary, a
+    status code that agrees with it, and a `checks` object with the database result."""
+    response = await client.get("/health/deep")
+    body = response.json()
+    assert body["status"] in {"ok", "degraded", "down"}
+    assert response.status_code == (200 if body["status"] == "ok" else 503)
+    assert isinstance(body["checks"], dict)
+    assert "ok" in body["checks"]["database"]

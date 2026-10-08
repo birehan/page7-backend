@@ -21,7 +21,7 @@ from app.integrations.storage.fakes import FakeObjectStorage
 
 
 @pytest.mark.asyncio
-async def test_keep_copies_and_deletes_pending(
+async def test_keep_copies_pending_to_durable_media(
     db_session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     user = User(email=f"k{uuid.uuid4().hex[:8]}@ex.com", name="K")
@@ -97,12 +97,9 @@ async def test_keep_copies_and_deletes_pending(
     )
 
     assert result["source"] == "generated"
-    assert ("public", pending_key) not in storage.objects
+    # Pending retained so in-flight <img> requests don't 404 after keep.
+    assert ("public", pending_key) in storage.objects
     assert any(k.startswith("orgs/") for (_, k) in storage.objects)
-    assert ("public", pending_key) in [(b, k) for b, k in storage.deleted] or (
-        "public",
-        pending_key,
-    ) in storage.deleted
     await db_session.refresh(output)
     assert output.kept_at is not None
 

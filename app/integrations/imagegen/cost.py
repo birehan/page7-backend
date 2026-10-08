@@ -34,12 +34,22 @@ _MODEL_RATES_PER_IMAGE: dict[str, tuple[Decimal, Decimal]] = {
     "alibaba/qwen-image-3/edit": (Decimal("0.04"), Decimal("0.075")),
 }
 
+# Ideogram v3 BALANCED flat rate; GPT Image approx medium per-MP.
+_MODEL_RATES_FLAT: dict[str, Decimal] = {
+    "fal-ai/ideogram/v3": Decimal("0.06"),
+}
+_MODEL_RATES_PER_MP["fal-ai/gpt-image-1.5"] = Decimal("0.034")
+
 _MP = Decimal("1000000")
 _ONE_K_PIXELS = Decimal("1024") * Decimal("1024")
 
 
 def estimate_image_cost_usd(model_id: str, width: int, height: int) -> Decimal:
     """Return billed USD for one image, or 0 with a warning if the model is unpriced."""
+    flat = _MODEL_RATES_FLAT.get(model_id)
+    if flat is not None:
+        return flat
+
     per_image = _MODEL_RATES_PER_IMAGE.get(model_id)
     if per_image is not None:
         rate_1k, rate_2k = per_image

@@ -21,3 +21,6 @@ __pycache__/
 .tmp/
 .cloud-sql-proxy
 cloud-sql-proxy
+
+# Imagegen bakeoff galleries (live Fal runs)
+scripts/imagegen_bakeoff/out/

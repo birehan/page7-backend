@@ -28,5 +28,5 @@ async def test_search_timeout_returns_warning(
         _HungSearchResearcher(),  # type: ignore[arg-type]
         ResearchRequest(source_url="https://example.com", brand_context={}),
     )
-    assert result.voice_adjectives.confidence is None
+    assert result.name.confidence is None
     assert any("timed out" in w for w in result.warnings)

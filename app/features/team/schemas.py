@@ -28,7 +28,13 @@ class TeamMemberOut(CamelModel):
 class InviteMemberBody(CamelModel):
     email: EmailStr
     role: Role
+    # Active UI language of the inviter — drives invite email copy + accept link.
+    locale: Literal["ar", "en"] = "ar"
 
 
 class UpdateMemberRoleBody(CamelModel):
     role: Role
+
+
+class ResendInviteBody(CamelModel):
+    locale: Literal["ar", "en"] = "ar"

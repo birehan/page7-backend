@@ -9,7 +9,7 @@ from pathlib import Path
 
 from app.core.request_context import CAPABILITY_MATRIX
 
-CONTRACT_PATH = Path(__file__).parents[3] / "docs" / "contracts" / "capabilities.json"
+CONTRACT_PATH = Path(__file__).parents[2] / "docs" / "contracts" / "capabilities.json"
 
 
 def test_capability_matrix_matches_frontend_fixture() -> None:

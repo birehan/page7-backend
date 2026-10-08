@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.features.auth.models import Session as AuthSession
 from app.features.auth.models import User
 from app.integrations.email.fakes import FakeEmailProvider
+from tests.auth_signup_helpers import signup_and_verify
 
 
 def _extract_token(fake: FakeEmailProvider, *, path_segment: str) -> str:
@@ -20,25 +21,23 @@ def _extract_token(fake: FakeEmailProvider, *, path_segment: str) -> str:
     return match.group(1)
 
 
-async def _signup(client: AsyncClient, email: str) -> None:
-    response = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Reset User",
-            "email": email,
-            "password": "correct horse battery staple",
-            "organizationName": "Reset Co",
-        },
+async def _signup(client: AsyncClient, db_session: AsyncSession, email: str) -> None:
+    await signup_and_verify(
+        client,
+        db_session,
+        email=email,
+        name="Reset User",
+        organization_name="Reset Co",
     )
-    assert response.status_code == 200
 
 
 async def test_forgot_password_for_a_known_email_sends_a_reset_email(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    await _signup(client, "forgot-known@example.com")
+    await _signup(client, db_session, "forgot-known@example.com")
 
     response = await client.post("/v1/auth/forgot", json={"email": "forgot-known@example.com"})
 
@@ -73,7 +72,7 @@ async def test_reset_password_end_to_end(
     db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    await _signup(client, "reset-e2e@example.com")
+    await _signup(client, db_session, "reset-e2e@example.com")
     user = (
         await db_session.execute(select(User).where(User.email == "reset-e2e@example.com"))
     ).scalar_one()
@@ -120,9 +119,10 @@ async def test_reset_password_end_to_end(
 async def test_reset_token_is_single_use(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    await _signup(client, "reset-single-use@example.com")
+    await _signup(client, db_session, "reset-single-use@example.com")
     await client.post("/v1/auth/forgot", json={"email": "reset-single-use@example.com"})
     await drain_email()
     token = _extract_token(fake, path_segment="reset-password")

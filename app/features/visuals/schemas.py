@@ -9,6 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class GenerateVisualsBody(BaseModel):
+    """Generate request. Callers: visuals router → service. User: plan generate-ui quality."""
+
     model_config = ConfigDict(populate_by_name=True)
 
     brand_id: UUID = Field(alias="brandId")
@@ -21,6 +23,8 @@ class GenerateVisualsBody(BaseModel):
     headline: str | None = Field(default=None, max_length=200)
     reference_media_id: UUID | None = Field(default=None, alias="referenceMediaId")
     seed: int | None = Field(default=None, alias="seed")
+    # draft=Flux Flash, standard=Flux Pro / Ideogram, premium=GPT Image
+    quality: Literal["draft", "standard", "premium"] = Field(default="standard")
 
 
 class KeepVisualBody(BaseModel):

@@ -1,26 +1,31 @@
+"""MFA integration tests. Callers: pytest. Uses signup_and_verify helper.
+API: /auth/signup+verify-email, /auth/mfa/*, /auth/login. Instruction: OTP signup plan."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
 
 import pyotp
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.auth_signup_helpers import signup_and_verify
 
 
-async def _signup(client: AsyncClient, email: str) -> None:
-    response = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "MFA User",
-            "email": email,
-            "password": "correct horse battery staple",
-            "organizationName": "MFA Co",
-        },
+async def _signup(client: AsyncClient, db_session: AsyncSession, email: str) -> None:
+    await signup_and_verify(
+        client,
+        db_session,
+        email=email,
+        name="MFA User",
+        organization_name="MFA Co",
     )
-    assert response.status_code == 200
 
 
-async def test_mfa_enroll_and_verify_enables_mfa(client: AsyncClient) -> None:
-    await _signup(client, "mfa-enroll@example.com")
+async def test_mfa_enroll_and_verify_enables_mfa(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await _signup(client, db_session, "mfa-enroll@example.com")
 
     enroll = await client.post("/v1/auth/mfa/enroll")
     assert enroll.status_code == 200
@@ -37,8 +42,10 @@ async def test_mfa_enroll_and_verify_enables_mfa(client: AsyncClient) -> None:
     assert me.json()["mfaEnabled"] is True
 
 
-async def test_login_for_mfa_enabled_account_returns_a_challenge(client: AsyncClient) -> None:
-    await _signup(client, "mfa-login@example.com")
+async def test_login_for_mfa_enabled_account_returns_a_challenge(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await _signup(client, db_session, "mfa-login@example.com")
     secret = (await client.post("/v1/auth/mfa/enroll")).json()["secret"]
     code = pyotp.TOTP(secret).now()
     await client.post("/v1/auth/mfa/verify", json={"code": code})
@@ -57,8 +64,10 @@ async def test_login_for_mfa_enabled_account_returns_a_challenge(client: AsyncCl
     assert "pgblank_session" not in login.cookies
 
 
-async def test_mfa_challenge_completes_login_and_sets_the_cookie(client: AsyncClient) -> None:
-    await _signup(client, "mfa-challenge@example.com")
+async def test_mfa_challenge_completes_login_and_sets_the_cookie(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await _signup(client, db_session, "mfa-challenge@example.com")
     secret = (await client.post("/v1/auth/mfa/enroll")).json()["secret"]
     code = pyotp.TOTP(secret).now()
     await client.post("/v1/auth/mfa/verify", json={"code": code})
@@ -85,8 +94,10 @@ async def test_mfa_challenge_completes_login_and_sets_the_cookie(client: AsyncCl
     assert me.status_code == 200
 
 
-async def test_a_replayed_totp_code_is_rejected(client: AsyncClient) -> None:
-    await _signup(client, "mfa-replay@example.com")
+async def test_a_replayed_totp_code_is_rejected(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    await _signup(client, db_session, "mfa-replay@example.com")
     secret = (await client.post("/v1/auth/mfa/enroll")).json()["secret"]
     code = pyotp.TOTP(secret).now()
     await client.post("/v1/auth/mfa/verify", json={"code": code})

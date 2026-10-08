@@ -106,7 +106,8 @@ async def keep_visual(
         ai_decision_id=generation.decision_id,
     )
 
-    await storage.delete_object("public", r2_key)
+    # Leave pending in place — clients may still hold gen/pending URLs briefly
+    # after keep returns; deleting races the browser and breaks previews.
     await repository.mark_output_kept(session, output)
 
     await job_queue.enqueue(

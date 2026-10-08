@@ -44,8 +44,10 @@ class LocalStorage:
             raise RuntimeError(
                 f"STORAGE__PRIVATE_BUCKET is not configured; cannot use bucket={bucket!r}"
             )
-        path = (self._root / name / key).resolve()
-        if not str(path).startswith(str((self._root / name).resolve())):
+        bucket_root = (self._root / name).resolve()
+        path = (bucket_root / key).resolve()
+        # `startswith` would accept a sibling like "<bucket>-other"; require real containment.
+        if not path.is_relative_to(bucket_root):
             raise ValueError("storage key escapes bucket root")
         return path
 

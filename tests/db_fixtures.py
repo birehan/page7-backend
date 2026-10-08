@@ -44,7 +44,11 @@ def seed_member(db_session: AsyncSession) -> SeedMember:
     """
 
     async def _seed(*, role: str) -> tuple[uuid.UUID, uuid.UUID, str]:
-        user = User(email=f"{uuid.uuid4()}@example.com", name="Seeded User")
+        user = User(
+            email=f"{uuid.uuid4()}@example.com",
+            name="Seeded User",
+            email_verified_at=datetime.now(UTC),
+        )
         org = Organization(name="Seeded Org")
         db_session.add_all([user, org])
         await db_session.flush()

@@ -1,7 +1,10 @@
-"""Fal.ai ImageGenerationProvider adapter (architecture/09 §1).
+"""Fal.ai ImageGenerationProvider adapter (architecture/09 §1 / v2).
 
 Only this module may import fal_client (import-linter contract).
-Supports flux-family and Qwen Image 3 argument profiles.
+Supports flux, Qwen, Ideogram, and GPT Image argument profiles.
+
+Callers: get_image_generation_provider → jobs/handlers/visuals.py.
+User: implement fal-profiles from production AI image gen plan.
 """
 
 from __future__ import annotations
@@ -14,6 +17,7 @@ from typing import Any
 import fal_client
 from fal_client import FalClientError, FalClientHTTPError, FalClientTimeoutError
 
+from app.features.visuals.aspects import fal_image_size_arg, parse_image_size
 from app.infrastructure.telemetry.metrics import provider_call
 from app.integrations.errors import (
     ProviderAuthError,
@@ -33,6 +37,8 @@ from app.integrations.imagegen.ports import (
 
 _QWEN_TEXT_TO_IMAGE = "alibaba/qwen-image-3/text-to-image"
 _QWEN_EDIT = "alibaba/qwen-image-3/edit"
+_IDEOGRAM_V3 = "fal-ai/ideogram/v3"
+_GPT_IMAGE = "fal-ai/gpt-image-1.5"
 # architecture/09 review §6.4/§7: Qwen (poster) has no has_nsfw_concepts signal at
 # all — safety was prompt-policy only. This closes that gap with a cheap
 # ($0.001/image), same-fal_client moderation pass run only on the Qwen path.
@@ -135,12 +141,19 @@ class FalImageProvider:
     ) -> tuple[str, dict[str, Any]]:
         if request.param_profile == "qwen":
             return self._build_qwen_call(request)
+        if request.param_profile == "ideogram":
+            return self._build_ideogram_call(request)
+        if request.param_profile == "gpt_image":
+            return self._build_gpt_image_call(request)
         return request.model_id, self._build_flux_arguments(request)
+
+    def _image_size_arg(self, request: ImageGenerationRequest) -> str | dict[str, int]:
+        return fal_image_size_arg(request.image_size)
 
     def _build_flux_arguments(self, request: ImageGenerationRequest) -> dict[str, Any]:
         args: dict[str, Any] = {
             "prompt": request.prompt,
-            "image_size": request.image_size,
+            "image_size": self._image_size_arg(request),
             "enable_safety_checker": request.enable_safety_checker,
             "output_format": request.output_format,
             "num_images": 1,
@@ -151,21 +164,28 @@ class FalImageProvider:
             args["guidance_scale"] = request.guidance_scale
         if request.seed is not None:
             args["seed"] = request.seed
+        if request.negative_prompt:
+            args["negative_prompt"] = request.negative_prompt
         return args
 
     def _build_qwen_call(
         self, request: ImageGenerationRequest
     ) -> tuple[str, dict[str, Any]]:
         refs = list(request.reference_image_urls)[:3]
+        # Callers: FalImageProvider._build_call. User: variants almost exact —
+        # expansion off because visuals.v2 already rewrites; Qwen expansion
+        # homogenizes multi-variant batches into near-duplicates.
         args: dict[str, Any] = {
             "prompt": request.prompt,
-            "image_size": request.image_size,
+            "image_size": self._image_size_arg(request),
             "num_images": 1,
             "output_format": request.output_format,
-            "enable_prompt_expansion": True,
+            "enable_prompt_expansion": False,
         }
         if request.seed is not None:
             args["seed"] = request.seed
+        if request.negative_prompt:
+            args["negative_prompt"] = request.negative_prompt
         if refs:
             args["image_urls"] = refs
             return _QWEN_EDIT, args
@@ -174,6 +194,59 @@ class FalImageProvider:
             if request.model_id.startswith("alibaba/qwen-image-3")
             else _QWEN_TEXT_TO_IMAGE
         )
+        return model, args
+
+    def _build_ideogram_call(
+        self, request: ImageGenerationRequest
+    ) -> tuple[str, dict[str, Any]]:
+        model = (
+            request.model_id
+            if "ideogram" in request.model_id
+            else _IDEOGRAM_V3
+        )
+        args: dict[str, Any] = {
+            "prompt": request.prompt,
+            "image_size": self._image_size_arg(request),
+            "num_images": 1,
+            "expand_prompt": True,
+            "rendering_speed": "BALANCED",
+        }
+        if request.seed is not None:
+            args["seed"] = request.seed
+        if request.negative_prompt:
+            args["negative_prompt"] = request.negative_prompt
+        return model, args
+
+    def _build_gpt_image_call(
+        self, request: ImageGenerationRequest
+    ) -> tuple[str, dict[str, Any]]:
+        model = (
+            request.model_id
+            if "gpt-image" in request.model_id
+            else _GPT_IMAGE
+        )
+        # GPT Image on fal uses fixed size enums; map custom pixels to nearest.
+        width, height = parse_image_size(request.image_size)
+        if width == height:
+            size = "1024x1024"
+        elif height > width:
+            size = "1024x1536"
+        else:
+            size = "1536x1024"
+        quality = "medium"
+        if request.quality_tier == "premium":
+            quality = "high"
+        elif request.quality_tier == "draft":
+            quality = "low"
+        args: dict[str, Any] = {
+            "prompt": request.prompt,
+            "image_size": size,
+            "num_images": 1,
+            "quality": quality,
+            "output_format": request.output_format
+            if request.output_format in {"png", "jpeg", "webp"}
+            else "png",
+        }
         return model, args
 
     def _parse_result(
@@ -198,9 +271,9 @@ class FalImageProvider:
         url = first.get("url")
         width = first.get("width")
         height = first.get("height")
-        # Qwen sometimes omits width/height — default from aspect map conventions.
+        # Some models omit width/height — default from requested canvas.
         if not isinstance(width, int) or not isinstance(height, int):
-            width, height = _default_dims(request.image_size)
+            width, height = parse_image_size(request.image_size)
         if not isinstance(url, str):
             raise ProviderUnavailableError("fal image missing url")
 
@@ -229,16 +302,6 @@ class FalImageProvider:
         )
 
 
-def _default_dims(image_size: str) -> tuple[int, int]:
-    defaults: dict[str, tuple[int, int]] = {
-        "square_hd": (1024, 1024),
-        "portrait_4_3": (768, 1024),
-        "portrait_16_9": (576, 1024),
-        "landscape_16_9": (1024, 576),
-    }
-    return defaults.get(image_size, (1024, 1024))
-
-
 def _extract_flagged(
     result: dict[str, Any], *, index: int, profile: str = "flux"
 ) -> bool:
@@ -247,7 +310,7 @@ def _extract_flagged(
     Qwen's own generation response never returns has_nsfw_concepts; this
     always returns False for profile="qwen" and callers must run a separate
     moderation pass (see FalImageProvider._moderate_qwen_result) rather than
-    look for a signal in this response.
+    look for a signal in this response. Ideogram/GPT Image follow flux signal.
     """
     if profile == "qwen":
         return False

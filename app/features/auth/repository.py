@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.time import utc_now
 from app.features.auth.models import (
     AuthOauthState,
+    EmailVerificationChallenge,
     Invitation,
     MfaChallenge,
     MfaCredential,
@@ -333,6 +334,87 @@ async def get_mfa_challenge_by_token_hash(
 async def mark_mfa_challenge_consumed(session: AsyncSession, row: MfaChallenge) -> None:
     row.consumed_at = utc_now()
     await session.flush()
+
+
+# --- email verification challenges ----------------------------------------
+
+
+async def consume_active_email_verification_challenges(
+    session: AsyncSession, *, user_id: uuid.UUID
+) -> None:
+    stmt = select(EmailVerificationChallenge).where(
+        EmailVerificationChallenge.user_id == user_id,
+        EmailVerificationChallenge.consumed_at.is_(None),
+    )
+    rows = (await session.execute(stmt)).scalars().all()
+    now = utc_now()
+    for row in rows:
+        row.consumed_at = now
+    if rows:
+        await session.flush()
+
+
+async def create_email_verification_challenge(
+    session: AsyncSession,
+    *,
+    user_id: uuid.UUID,
+    token_hash: str,
+    code_salt: str,
+    code_hash: str,
+    expires_at: datetime,
+    locale: str,
+    ip: str | None = None,
+) -> EmailVerificationChallenge:
+    row = EmailVerificationChallenge(
+        user_id=user_id,
+        token_hash=token_hash,
+        code_salt=code_salt,
+        code_hash=code_hash,
+        expires_at=expires_at,
+        locale=locale,
+        ip=ip,
+    )
+    session.add(row)
+    await session.flush()
+    return row
+
+
+async def get_email_verification_challenge_by_token_hash(
+    session: AsyncSession, token_hash: str
+) -> EmailVerificationChallenge | None:
+    stmt = select(EmailVerificationChallenge).where(
+        EmailVerificationChallenge.token_hash == token_hash
+    )
+    return (await session.execute(stmt)).scalar_one_or_none()
+
+
+async def mark_email_verification_challenge_consumed(
+    session: AsyncSession, row: EmailVerificationChallenge
+) -> None:
+    row.consumed_at = utc_now()
+    await session.flush()
+
+
+async def record_email_verification_failure(
+    challenge_id: uuid.UUID, *, max_attempts: int
+) -> int:
+    """Increment attempt_count in its own transaction (survives ApiError rollback).
+
+    Returns the new attempt_count. Consumes the challenge once attempts hit
+    ``max_attempts`` so the code cannot be reused.
+    """
+    from app.db.session import get_session_factory
+
+    async with get_session_factory()() as session:
+        row = await session.get(EmailVerificationChallenge, challenge_id)
+        if row is None:
+            return max_attempts
+        row.attempt_count += 1
+        if row.attempt_count >= max_attempts:
+            row.consumed_at = utc_now()
+        count = row.attempt_count
+        await session.commit()
+        return count
 
 
 # --- oauth_states (Phase 9 Zernio connect) ---------------------------------

@@ -4,6 +4,7 @@ import uuid
 from collections.abc import Sequence
 from typing import Any, Literal
 
+import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.features.audit import repository
@@ -30,9 +31,16 @@ async def record(
     state change (phase-02 doc, "Backend components"). No transaction
     management here — the caller's own transaction is what makes an audit row
     atomic with the action it records; `record` only ever flushes.
+
+    The caller's IP and the request id come from the per-request logging context that
+    `RequestContextMiddleware` binds, so no call site has to pass them. Rows written by
+    workers and scheduled jobs have no request, and get neither.
     """
+    context = structlog.contextvars.get_contextvars()
     return await repository.insert(
         session,
+        ip=context.get("client_ip"),
+        request_id=context.get("request_id"),
         organization_id=organization_id,
         brand_id=brand_id,
         actor_kind=actor_kind,

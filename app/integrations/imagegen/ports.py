@@ -9,7 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 VisualStyle = Literal["photo", "flat", "three-d", "minimal", "saudi-modern", "poster"]
 VisualAspect = Literal["square", "portrait", "vertical", "landscape"]
-ParamProfile = Literal["flux", "qwen"]
+ParamProfile = Literal["flux", "qwen", "ideogram", "gpt_image"]
+ImageSize = str | dict[str, int]
 
 
 class ImageGenerationRequest(BaseModel):
@@ -20,7 +21,7 @@ class ImageGenerationRequest(BaseModel):
     aspect: VisualAspect
     brand_color_hint: list[str] = Field(default_factory=list)
     model_id: str
-    image_size: str
+    image_size: ImageSize
     param_profile: ParamProfile = "flux"
     reference_image_urls: list[str] = Field(default_factory=list, max_length=3)
     enable_safety_checker: bool = True
@@ -28,6 +29,8 @@ class ImageGenerationRequest(BaseModel):
     guidance_scale: float | None = None
     output_format: str = "png"
     seed: int | None = None
+    negative_prompt: str | None = None
+    quality_tier: Literal["draft", "standard", "premium"] | None = None
 
 
 class GeneratedImage(BaseModel):

@@ -195,7 +195,14 @@ class ZernioClient:
         )
 
     async def publish(self, request: PublishRequest) -> PublishResult:
-        """POST /v1/posts with publishNow:true; normalize every outcome shape."""
+        """POST /v1/posts with publishNow:true; normalize every outcome shape.
+
+        Callers: publish_post handler via SocialProvider.publish.
+        User: post now taking forever / error while actually posted.
+        Zernio: Idempotency-Key for timeout retries; publishNow is sync (can
+        exceed 30s on Instagram). x-request-id must be UUID — our pub: keys
+        are not, so send Idempotency-Key only.
+        """
         body: dict[str, Any] = {
             "content": request.content,
             "platforms": request.platforms,
@@ -211,7 +218,10 @@ class ZernioClient:
                 "POST",
                 "/posts",
                 json=body,
-                extra_headers={"x-request-id": request.idempotency_key},
+                extra_headers={
+                    "Idempotency-Key": request.idempotency_key[:255],
+                },
+                timeout=90.0,
             )
         except ProviderUnavailableError as exc:
             return PublishResult(
@@ -511,6 +521,7 @@ class ZernioClient:
         params: dict[str, str] | None = None,
         json: dict[str, Any] | None = None,
         extra_headers: dict[str, str] | None = None,
+        timeout: float | None = None,
     ) -> tuple[int, dict[str, Any] | list[Any] | None, httpx.Headers]:
         """Like ``_request`` but returns status/body for publish outcome decoding."""
         response = await self._send(
@@ -519,6 +530,7 @@ class ZernioClient:
             params=params,
             json=json,
             extra_headers=extra_headers,
+            timeout=timeout,
         )
         await self._emit_rate_limit(response)
         if response.status_code == 204 or not response.content:
@@ -539,11 +551,13 @@ class ZernioClient:
         params: dict[str, str] | None = None,
         json: dict[str, Any] | None = None,
         extra_headers: dict[str, str] | None = None,
+        timeout: float | None = None,
     ) -> httpx.Response:
         url = f"{self._base_url}{path}"
         headers = self._headers()
         if extra_headers:
             headers.update(extra_headers)
+        request_timeout = timeout if timeout is not None else self._timeout
         async with self._semaphore:
             try:
                 if self._client is not None:
@@ -553,8 +567,9 @@ class ZernioClient:
                         headers=headers,
                         params=params,
                         json=json,
+                        timeout=request_timeout,
                     )
-                async with httpx.AsyncClient(timeout=self._timeout) as client:
+                async with httpx.AsyncClient(timeout=request_timeout) as client:
                     return await client.request(
                         method,
                         url,
@@ -803,6 +818,29 @@ def _normalize_publish_response(
     )
 
 
+def _account_id_from_platform_row(raw: Any) -> str:
+    """Zernio may return accountId as a string or nested `{_id: ...}` object."""
+    if isinstance(raw, dict):
+        nested = raw.get("_id") or raw.get("id")
+        return str(nested) if nested is not None else ""
+    if raw is None:
+        return ""
+    return str(raw)
+
+
+def _normalize_platform_status(raw: Any) -> str:
+    """Map provider platform statuses onto our pending/publishing/published/failed set."""
+    status = str(raw or "pending").strip().lower()
+    # Zernio Instagram often returns "processing" while the post is already accepted.
+    if status in {"processing", "queued", "scheduled", "in_progress", "in-progress"}:
+        return "publishing"
+    if status in {"success", "succeeded", "complete", "completed", "live"}:
+        return "published"
+    if status in {"error", "errored"}:
+        return "failed"
+    return status or "pending"
+
+
 def _map_platforms(raw: Any) -> list[PlatformOutcome]:
     if not isinstance(raw, list):
         return []
@@ -813,8 +851,8 @@ def _map_platforms(raw: Any) -> list[PlatformOutcome]:
         out.append(
             PlatformOutcome(
                 platform=str(row.get("platform") or ""),
-                account_id=str(row.get("accountId") or ""),
-                status=str(row.get("status") or "pending"),
+                account_id=_account_id_from_platform_row(row.get("accountId")),
+                status=_normalize_platform_status(row.get("status")),
                 platform_post_id=_str_or_none(row.get("platformPostId")),
                 platform_post_url=_str_or_none(row.get("platformPostUrl")),
                 error_category=_str_or_none(row.get("errorCategory")),

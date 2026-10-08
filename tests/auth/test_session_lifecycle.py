@@ -11,6 +11,7 @@ from app.features.auth.models import Session as AuthSession
 from app.integrations.email import get_email_provider
 from app.integrations.email.fakes import FakeEmailProvider
 from app.main import create_app
+from tests.auth_signup_helpers import signup_and_verify
 
 
 def _client_for(raw_token: str | None = None) -> AsyncClient:
@@ -27,16 +28,14 @@ def _client_for(raw_token: str | None = None) -> AsyncClient:
 async def test_logout_revokes_exactly_one_session_row(
     client: AsyncClient, db_session: AsyncSession
 ) -> None:
-    signup = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Session User",
-            "email": "session-lifecycle@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Session Co",
-        },
+    signup = await signup_and_verify(
+        client,
+        db_session,
+        email="session-lifecycle@example.com",
+        name="Session User",
+        organization_name="Session Co",
     )
-    user_id = signup.json()["user"]["id"]
+    user_id = signup["user"]["id"]
 
     async with _client_for() as second:
         await second.post(
@@ -84,16 +83,14 @@ async def test_password_reset_revokes_every_session_not_just_one(
             base_url="https://test",
             headers={"Origin": settings.cors.allowed_origins[0]},
         ) as client_a:
-            signup = await client_a.post(
-                "/v1/auth/signup",
-                json={
-                    "name": "Reset Lifecycle User",
-                    "email": "reset-lifecycle@example.com",
-                    "password": "correct horse battery staple",
-                    "organizationName": "Reset Lifecycle Co",
-                },
+            signup = await signup_and_verify(
+                client_a,
+                db_session,
+                email="reset-lifecycle@example.com",
+                name="Reset Lifecycle User",
+                organization_name="Reset Lifecycle Co",
             )
-            user_id = signup.json()["user"]["id"]
+            user_id = signup["user"]["id"]
 
             async with AsyncClient(
                 transport=ASGITransport(app=app),
@@ -130,17 +127,17 @@ async def test_password_reset_revokes_every_session_not_just_one(
     assert all(s.revoked_at is not None for s in sessions)
 
 
-async def test_remember_me_session_gets_a_thirty_day_expiry(client: AsyncClient) -> None:
-    signup = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Remember User",
-            "email": "remember-me@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Remember Co",
-        },
+async def test_remember_me_session_gets_a_thirty_day_expiry(
+    client: AsyncClient, db_session: AsyncSession
+) -> None:
+    signup = await signup_and_verify(
+        client,
+        db_session,
+        email="remember-me@example.com",
+        name="Remember User",
+        organization_name="Remember Co",
     )
-    signup_expires_at = signup.json()["expiresAt"]
+    signup_expires_at = signup["expiresAt"]
     await client.post("/v1/auth/logout")
 
     login = await client.post(

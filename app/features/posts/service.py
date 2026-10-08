@@ -1643,59 +1643,6 @@ async def reschedule_post(
     return RescheduleResponse(post=out, warnings=warnings)
 
 
-async def publish_now(
-    session: AsyncSession,
-    *,
-    organization_id: uuid.UUID,
-    brand_id: uuid.UUID,
-    post_id: uuid.UUID,
-    actor: Actor,
-    storage: ObjectStorage,
-) -> PostOut:
-    del actor, storage  # Phase 6 stub — no transition / channel call yet.
-    await _assert_brand(session, organization_id=organization_id, brand_id=brand_id)
-    post = await repository.get_post(
-        session,
-        organization_id=organization_id,
-        brand_id=brand_id,
-        post_id=post_id,
-    )
-    if post is None:
-        raise ApiError("NOT_FOUND", "Post not found", status_code=404)
-    if await _is_publishing_frozen(session, organization_id=organization_id):
-        raise ApiError(
-            "FROZEN",
-            "Publishing is frozen for this organization.",
-            status_code=409,
-        )
-    # Phase 6: social_accounts / Zernio do not exist yet.
-    raise ApiError(
-        "CHANNEL_NOT_CONNECTED",
-        "No connected channel for this platform yet.",
-        status_code=409,
-    )
-
-
-async def retry_publish(
-    session: AsyncSession,
-    *,
-    organization_id: uuid.UUID,
-    brand_id: uuid.UUID,
-    post_id: uuid.UUID,
-    actor: Actor,
-    storage: ObjectStorage,
-) -> PostOut:
-    # Same Phase-6 termination as publish_now (freeze first, then channel).
-    return await publish_now(
-        session,
-        organization_id=organization_id,
-        brand_id=brand_id,
-        post_id=post_id,
-        actor=actor,
-        storage=storage,
-    )
-
-
 async def soft_delete_for_brand(
     session: AsyncSession, *, brand_id: uuid.UUID, deleted_by: uuid.UUID
 ) -> int:

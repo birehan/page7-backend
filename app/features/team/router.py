@@ -12,7 +12,12 @@ from app.db.session import get_db_session
 from app.features import auth
 from app.features.team import service as team
 from app.features.team.models import Membership
-from app.features.team.schemas import InviteMemberBody, TeamMemberOut, UpdateMemberRoleBody
+from app.features.team.schemas import (
+    InviteMemberBody,
+    ResendInviteBody,
+    TeamMemberOut,
+    UpdateMemberRoleBody,
+)
 
 if TYPE_CHECKING:
     # Type-only, per the import-linter feature-boundary contract — every
@@ -83,6 +88,7 @@ async def invite_member(
         role=body.role,
         invited_by_user_id=ctx.user_id,
         invited_by_name=ctx.user_name,
+        locale=body.locale,
     )
     return _invitation_to_out(invitation)
 
@@ -144,6 +150,7 @@ async def resend_invite(
     memberId: str,  # noqa: N803 - matches the URL's camelCase path param
     ctx: Annotated[AccessContext, Depends(require_min_role("admin"))],
     db: Annotated[AsyncSession, Depends(get_db_session)],
+    body: ResendInviteBody | None = None,
 ) -> TeamMemberOut:
     invitation = await auth.get_invitation_by_id(
         db, organization_id=ctx.organization_id, invitation_id=uuid.UUID(memberId)
@@ -151,10 +158,12 @@ async def resend_invite(
     if invitation is None:
         raise ApiError("NOT_FOUND", "Invitation not found", status_code=404)
     org = await auth.get_session_organization(db, organization_id=ctx.organization_id)
+    locale = body.locale if body is not None else "ar"
     updated = await auth.resend_invitation(
         db,
         invitation=invitation,
         organization_name=org.name,
         inviter_name=ctx.user_name,
+        locale=locale,
     )
     return _invitation_to_out(updated)

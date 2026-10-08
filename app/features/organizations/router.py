@@ -73,7 +73,9 @@ async def update_organization(
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_organization(
-    ctx: Annotated[AccessContext, Depends(require_capability("org.delete"))],
+    ctx: Annotated[
+        AccessContext, Depends(require_capability("org.delete", include_deleted=True))
+    ],
     db: Annotated[AsyncSession, Depends(get_db_session)],
 ) -> Response:
     """Soft-delete the organization and enqueue a 30-day PDPL purge.

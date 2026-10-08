@@ -233,36 +233,44 @@ async def handle(payload: dict[str, Any]) -> None:
             await session.commit()
             return
 
-        if resume and pub.request_payload:
-            request = PublishRequest.model_validate(pub.request_payload)
-        else:
-            request = await build_publish_request(
-                session,
-                post=post_row,
-                publication=pub,
-                social_account=social_account,
-                storage=storage,
-                correlation_id=correlation_id,
-            )
-
         provider = get_social_provider_for_credential(
             settings, alias=credential.alias, secret_ref=credential.secret_ref
         )
-        from app.features.publishing.media_staging import (
-            ensure_media_urls_provider_fetchable,
-        )
 
-        request = await ensure_media_urls_provider_fetchable(
-            request,
-            storage=storage,
-            provider=provider,
-            public_base_url=settings.storage.public_base_url,
-        )
-        pub.request_payload = request.model_dump(mode="json")
-        await session.flush()
-        await session.commit()
+        # Already handed to Zernio → reconcile only. Never create a second post.
+        # Concurrent API-inline + worker is prevented by claiming the queued job
+        # before inline execution (publishing/http._run_publish_job_inline).
+        if pub.zernio_post_id:
+            zernio_post_id = pub.zernio_post_id
+            await session.commit()
+            publish_result = await provider.get_post(zernio_post_id)
+        else:
+            if resume and pub.request_payload:
+                request = PublishRequest.model_validate(pub.request_payload)
+            else:
+                request = await build_publish_request(
+                    session,
+                    post=post_row,
+                    publication=pub,
+                    social_account=social_account,
+                    storage=storage,
+                    correlation_id=correlation_id,
+                )
 
-    publish_result = await provider.publish(request)
+            from app.features.publishing.media_staging import (
+                ensure_media_urls_provider_fetchable,
+            )
+
+            request = await ensure_media_urls_provider_fetchable(
+                request,
+                storage=storage,
+                provider=provider,
+                public_base_url=settings.storage.public_base_url,
+            )
+            pub.request_payload = request.model_dump(mode="json")
+            await session.flush()
+            await session.commit()
+            publish_result = await provider.publish(request)
 
     async with factory() as session:
         try:
@@ -280,6 +288,46 @@ async def handle(payload: dict[str, Any]) -> None:
 
         if outcome.should_auto_retry_publication:
             from app.features.posts import service as posts_service
+            from app.features.publishing.service import _cas_post
+
+            pub_row = await session.get(Publication, publication.id)
+            # Provider already accepted a post — reconcile later, never duplicate.
+            if pub_row is not None and pub_row.zernio_post_id:
+                log.info(
+                    "publish_post.skip_auto_retry_has_zernio_id",
+                    post_id=str(post_id),
+                    zernio_post_id=pub_row.zernio_post_id,
+                )
+                # Safety net for older apply paths that still marked failed:
+                # revive so Post now / reconcile can poll instead of leaving a
+                # false failure while the content is already live.
+                post_row = await session.get(Post, post_id)
+                if post_row is not None and post_row.status == "failed":
+                    try:
+                        revived = await _cas_post(
+                            session, post_row, from_status="failed", to_status="scheduled"
+                        )
+                        await _cas_post(
+                            session,
+                            revived,
+                            from_status="scheduled",
+                            to_status="publishing",
+                            patch={"last_error": None},
+                        )
+                    except ClaimCheckFailed:
+                        log.warning(
+                            "publish_post.skip_auto_retry_revive_failed",
+                            post_id=str(post_id),
+                        )
+                if pub_row.status == "failed":
+                    pub_row.status = "accepted"
+                    pub_row.completed_at = None
+                    pub_row.error_code = None
+                    pub_row.error_category = None
+                    pub_row.error_message = None
+                    pub_row.retryable = True
+                await session.commit()
+                return
 
             post_row = await session.get(Post, post_id)
             if post_row is not None and post_row.status == "failed":

@@ -17,6 +17,12 @@ its hash — see docs/phases/phase-03-background-jobs.md §Risks):
          "locale": "<str>",
          "resent_at": "<iso>"}       # resend_invite only
 
+    verify_email:
+        {"kind": "verify_email",
+         "challenge_id": "<uuid>",
+         "code": "<6-digit>",
+         "locale": "<str>"}
+
 The handler re-reads the token/invitation row at run time so a stale payload
 (an invitation revoked between enqueue and claim) is caught by the re-read.
 The Resend idempotency-key is derived from stable business ids so a crash after
@@ -51,6 +57,8 @@ async def handle(payload: dict[str, Any]) -> None:
         await _handle_reset(payload)
     elif kind in ("invite", "resend_invite"):
         await _handle_invite(payload)
+    elif kind == "verify_email":
+        await _handle_verify_email(payload)
     else:
         raise TerminalError(f"EMAIL_SEND_UNKNOWN_KIND:{kind}")
 
@@ -131,3 +139,37 @@ async def _handle_invite(payload: dict[str, Any]) -> None:
         raise RetryableError() from exc
 
     log.info("email_send.invite_sent", invitation_id=str(invitation_id), kind=payload["kind"])
+
+
+async def _handle_verify_email(payload: dict[str, Any]) -> None:
+    challenge_id = uuid.UUID(payload["challenge_id"])
+    code: str = payload["code"]
+    locale: str = payload.get("locale", "en")
+
+    async with get_session_factory()() as session:
+        from app.features.auth.models import EmailVerificationChallenge
+
+        challenge = await session.get(EmailVerificationChallenge, challenge_id)
+        if challenge is None or challenge.consumed_at is not None:
+            log.info("email_send.verify_challenge_gone", challenge_id=str(challenge_id))
+            return
+
+        user = await get_user_by_id(session, challenge.user_id)
+        if user is None:
+            raise TerminalError("EMAIL_SEND_VERIFY_USER_NOT_FOUND")
+
+        message = emails.verify_email_otp_email(
+            to=user.email,
+            code=code,
+            locale=locale,
+            idempotency_key=f"verify_email:{challenge.id}",
+        )
+
+    provider = get_email_provider(get_settings())
+    try:
+        await provider.send(message)
+    except Exception as exc:
+        log.warning("email_send.provider_error", exc=repr(exc))
+        raise RetryableError() from exc
+
+    log.info("email_send.verify_email_sent", challenge_id=str(challenge_id))

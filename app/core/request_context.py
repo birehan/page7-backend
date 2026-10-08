@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -17,26 +18,31 @@ from starlette.responses import Response
 
 from app.core.config import Settings, get_settings
 from app.core.errors import ApiError
+from app.core.security.client_ip import client_ip
 from app.core.time import utc_now
 from app.db.session import get_db_session
 
 REQUEST_ID_HEADER = "X-Request-Id"
+# A caller-supplied id ends up in every log line and audit row, so only plain tokens are kept.
+_SAFE_REQUEST_ID = re.compile(r"^[A-Za-z0-9._-]{8,64}$")
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    """Assigns a request id — the inbound header if the caller sent one, else a
-    fresh one — stashes it on `request.state` for handlers/error handlers, binds it
-    into structlog's contextvars so every log line emitted while handling this
-    request carries it, and echoes it back on the response header.
+    """Assigns a request id — the inbound header if the caller sent a well-formed one, else
+    a fresh one — stashes it on `request.state` for handlers/error handlers, binds it (and
+    the client IP) into structlog's contextvars so every log line emitted while handling
+    this request carries them and `audit.record` can stamp them on audit rows, and echoes
+    the id back on the response header.
     """
 
     async def dispatch(
         self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
-        request_id = request.headers.get(REQUEST_ID_HEADER) or str(uuid.uuid4())
+        inbound = request.headers.get(REQUEST_ID_HEADER, "")
+        request_id = inbound if _SAFE_REQUEST_ID.fullmatch(inbound) else str(uuid.uuid4())
         request.state.request_id = request_id
         structlog.contextvars.clear_contextvars()
-        structlog.contextvars.bind_contextvars(request_id=request_id)
+        structlog.contextvars.bind_contextvars(request_id=request_id, client_ip=client_ip(request))
         response = await call_next(request)
         response.headers[REQUEST_ID_HEADER] = request_id
         return response
@@ -223,6 +229,35 @@ async def get_access_context(
             text(
                 "SELECT memberships.role, users.name FROM memberships "
                 "JOIN users ON users.id = memberships.user_id "
+                "JOIN organizations ON organizations.id = memberships.organization_id "
+                "AND organizations.deleted_at IS NULL "
+                "WHERE memberships.organization_id = :org_id "
+                "AND memberships.user_id = :user_id"
+            ),
+            {"org_id": org_id, "user_id": user.user_id},
+        )
+    ).first()
+    if row is None:
+        raise ApiError("NOT_FOUND", "Not found", status_code=404)
+    return AccessContext(
+        user_id=user.user_id, organization_id=org_id, role=row[0], user_name=row[1]
+    )
+
+
+async def get_access_context_including_deleted(
+    org_id: Annotated[uuid.UUID, Path(alias="orgId")],
+    user: Annotated[AuthenticatedUser, Depends(require_session)],
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+) -> AccessContext:
+    """`get_access_context` without the live-org filter. Only `DELETE /orgs/{orgId}`
+    uses it, so repeating the delete on an org already pending deletion stays a 204.
+    Every other route must use the strict dependency so a deleted org is locked out.
+    """
+    row = (
+        await db.execute(
+            text(
+                "SELECT memberships.role, users.name FROM memberships "
+                "JOIN users ON users.id = memberships.user_id "
                 "WHERE memberships.organization_id = :org_id "
                 "AND memberships.user_id = :user_id"
             ),
@@ -255,6 +290,8 @@ async def get_session_access_context(
             text(
                 "SELECT memberships.role, users.name FROM memberships "
                 "JOIN users ON users.id = memberships.user_id "
+                "JOIN organizations ON organizations.id = memberships.organization_id "
+                "AND organizations.deleted_at IS NULL "
                 "WHERE memberships.organization_id = :org_id "
                 "AND memberships.user_id = :user_id"
             ),
@@ -276,9 +313,16 @@ require_session_membership = get_session_access_context
 
 def require_capability(
     capability: Capability,
+    *,
+    include_deleted: bool = False,
 ) -> Callable[[AccessContext], Awaitable[AccessContext]]:
+    resolver = get_access_context_including_deleted if include_deleted else get_access_context
+
+    # `resolver` is a closure variable, and this module uses `from __future__ import
+    # annotations`, so it must be passed as a default (evaluated now), not inside an
+    # `Annotated[...]` string that FastAPI would resolve against module globals only.
     async def _dependency(
-        ctx: Annotated[AccessContext, Depends(get_access_context)],
+        ctx: AccessContext = Depends(resolver),  # noqa: B008
     ) -> AccessContext:
         if capability not in CAPABILITY_MATRIX[ctx.role]:
             raise ApiError("FORBIDDEN", "Missing required capability", status_code=403)

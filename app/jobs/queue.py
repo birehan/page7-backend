@@ -38,7 +38,9 @@ _JOB_TIMEOUT_SECONDS: dict[str, int] = {
     "maintenance.purge_run_events": 300,
     "media.process": 300,
     "media.cleanup_upload_intents": 300,
-    "publish_post": 45,
+    # Callers: job worker lease + inline publish claim. User: post now forever /
+    # error while posted. Must exceed Zernio publishNow timeout (90s) + headroom.
+    "publish_post": 120,
     "reconcile_publications": 120,
     "sweep_publishing_invariants": 120,
     "ai.plan_commit": 300,

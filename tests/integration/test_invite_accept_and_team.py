@@ -1,3 +1,7 @@
+"""Invite accept / team tests. Callers: pytest. Uses signup_and_verify.
+API: signup+verify-email, team invite, accept. Schemas: SessionPayload, User.email_verified_at.
+User instruction: Implement the plan as specified (Signup email verification 6-digit OTP)."""
+
 from __future__ import annotations
 
 import re
@@ -5,8 +9,12 @@ from collections.abc import Callable, Coroutine
 from typing import Any
 
 from httpx import AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.features.auth.models import User
 from app.integrations.email.fakes import FakeEmailProvider
+from tests.auth_signup_helpers import signup_and_verify
 
 
 def _extract_invite_token(fake: FakeEmailProvider) -> str:
@@ -16,26 +24,27 @@ def _extract_invite_token(fake: FakeEmailProvider) -> str:
     return match.group(1)
 
 
-async def _signup(client: AsyncClient, email: str, org_name: str = "Invite Co") -> dict[str, Any]:
-    response = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Owner",
-            "email": email,
-            "password": "correct horse battery staple",
-            "organizationName": org_name,
-        },
+async def _signup(
+    client: AsyncClient,
+    db_session: AsyncSession,
+    email: str,
+    org_name: str = "Invite Co",
+) -> dict[str, Any]:
+    return await signup_and_verify(
+        client,
+        db_session,
+        email=email,
+        name="Owner",
+        organization_name=org_name,
     )
-    assert response.status_code == 200
-    return response.json()  # type: ignore[no-any-return]
-
 
 async def test_invite_creates_a_pending_team_member(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "invite-owner@example.com")
+    session = await _signup(client, db_session, "invite-owner@example.com")
     org_id = session["organizationId"]
 
     response = await client.post(
@@ -55,12 +64,73 @@ async def test_invite_creates_a_pending_team_member(
     assert statuses == {"invite-owner@example.com": "active", "invitee@example.com": "pending"}
 
 
+async def test_invite_email_uses_requested_locale(
+    client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
+    drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
+) -> None:
+    """Regression: inviting from /en/settings/team used to send Arabic copy
+    because create_invitation defaulted locale to ar and the UI never passed it.
+    """
+    import uuid
+
+    client, fake = client_with_fake_email
+    suffix = uuid.uuid4().hex[:8]
+    session = await _signup(client, db_session, f"locale-owner-{suffix}@example.com")
+    org_id = session["organizationId"]
+
+    response = await client.post(
+        f"/v1/orgs/{org_id}/team",
+        json={
+            "email": f"locale-invitee-{suffix}@example.com",
+            "role": "editor",
+            "locale": "en",
+        },
+    )
+    assert response.status_code == 201
+    await drain_email()
+    assert len(fake.sent) == 1
+    message = fake.sent[-1]
+    assert "You're invited to join" in message.subject
+    assert "/en/invite/" in message.text
+    assert "Accept invitation" in message.html
+    assert "قبول الدعوة" not in message.html
+
+
+async def test_invite_allows_an_existing_user_from_another_org(
+    client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
+    drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
+) -> None:
+    """Regression: inviting an email that already owns another org used to
+    409 EMAIL_IN_USE because create_invitation checked global users, not
+    this org's memberships. Callers: pytest. User: "invite note working, fix it"
+    """
+    client, fake = client_with_fake_email
+    await _signup(client, db_session, "existing-invitee@example.com", "Invitee Co")
+    await client.post("/v1/auth/logout")
+
+    owner = await _signup(client, db_session, "cross-org-owner@example.com", "Owner Co")
+    org_id = owner["organizationId"]
+
+    response = await client.post(
+        f"/v1/orgs/{org_id}/team",
+        json={"email": "existing-invitee@example.com", "role": "editor"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["status"] == "pending"
+    await drain_email()
+    assert len(fake.sent) == 1
+
+
 async def test_editor_cannot_invite_a_member(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    owner_session = await _signup(client, "editor-owner@example.com")
+    owner_session = await _signup(client, db_session, "editor-owner@example.com")
     org_id = owner_session["organizationId"]
     await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "editor-user@example.com", "role": "editor"}
@@ -83,9 +153,10 @@ async def test_editor_cannot_invite_a_member(
 async def test_invite_preview_shows_org_and_role_without_authentication(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "preview-owner@example.com", "Preview Co")
+    session = await _signup(client, db_session, "preview-owner@example.com", "Preview Co")
     org_id = session["organizationId"]
     await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "preview-invitee@example.com", "role": "admin"}
@@ -107,9 +178,10 @@ async def test_invite_preview_shows_org_and_role_without_authentication(
 async def test_accept_invite_creates_a_member_and_signs_them_in(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "accept-owner@example.com", "Accept Co")
+    session = await _signup(client, db_session, "accept-owner@example.com", "Accept Co")
     org_id = session["organizationId"]
     await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "accept-invitee@example.com", "role": "editor"}
@@ -129,17 +201,57 @@ async def test_accept_invite_creates_a_member_and_signs_them_in(
     assert body["user"]["role"] == "editor"
     assert body["organizationId"] == org_id
 
+    invitee = (
+        await db_session.execute(select(User).where(User.email == "accept-invitee@example.com"))
+    ).scalar_one()
+    assert invitee.email_verified_at is not None
+
     team_list = await client.get(f"/v1/orgs/{org_id}/team")
     statuses = {m["email"]: m["status"] for m in team_list.json()}
     assert statuses["accept-invitee@example.com"] == "active"
 
 
+async def test_accept_invite_joins_an_existing_user_to_the_org(
+    client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
+    drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
+) -> None:
+    client, fake = client_with_fake_email
+    await _signup(client, db_session, "join-existing@example.com", "Existing Co")
+    await client.post("/v1/auth/logout")
+
+    owner = await _signup(client, db_session, "join-owner@example.com", "Join Co")
+    org_id = owner["organizationId"]
+    await client.post(
+        f"/v1/orgs/{org_id}/team", json={"email": "join-existing@example.com", "role": "viewer"}
+    )
+    await drain_email()
+    token = _extract_invite_token(fake)
+    await client.post("/v1/auth/logout")
+
+    accept = await client.post(
+        f"/v1/auth/invite/{token}/accept",
+        json={"name": "Ignored", "password": "correct horse battery staple"},
+    )
+
+    assert accept.status_code == 200
+    body = accept.json()
+    assert body["user"]["email"] == "join-existing@example.com"
+    assert body["user"]["role"] == "viewer"
+    assert body["organizationId"] == org_id
+
+    team_list = await client.get(f"/v1/orgs/{org_id}/team")
+    statuses = {m["email"]: m["status"] for m in team_list.json()}
+    assert statuses["join-existing@example.com"] == "active"
+
+
 async def test_accept_invite_twice_fails(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "double-accept-owner@example.com")
+    session = await _signup(client, db_session, "double-accept-owner@example.com")
     org_id = session["organizationId"]
     await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "double-accept@example.com", "role": "editor"}
@@ -163,9 +275,10 @@ async def test_accept_invite_twice_fails(
 async def test_update_member_role_and_remove_member(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "manage-owner@example.com")
+    session = await _signup(client, db_session, "manage-owner@example.com")
     org_id = session["organizationId"]
     await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "manage-invitee@example.com", "role": "editor"}
@@ -204,9 +317,10 @@ async def test_update_member_role_and_remove_member(
 async def test_resend_invite_sends_a_new_email(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "resend-owner@example.com")
+    session = await _signup(client, db_session, "resend-owner@example.com")
     org_id = session["organizationId"]
     invite = await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "resend-invitee@example.com", "role": "viewer"}
@@ -225,9 +339,10 @@ async def test_resend_invite_sends_a_new_email(
 async def test_revoked_invite_cannot_be_accepted(
     client_with_fake_email: tuple[AsyncClient, FakeEmailProvider],
     drain_email: Callable[[], Coroutine[Any, Any, None]],
+    db_session: AsyncSession,
 ) -> None:
     client, fake = client_with_fake_email
-    session = await _signup(client, "revoke-owner@example.com")
+    session = await _signup(client, db_session, "revoke-owner@example.com")
     org_id = session["organizationId"]
     invite = await client.post(
         f"/v1/orgs/{org_id}/team", json={"email": "revoke-invitee@example.com", "role": "viewer"}

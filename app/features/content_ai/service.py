@@ -719,6 +719,35 @@ def _event_covers_date(event: Any, date_key: str) -> bool:
     return bool(start <= date_key <= end)
 
 
+_ARABIC_SCRIPT_RE = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]")
+_LATIN_SCRIPT_RE = re.compile(r"[A-Za-z]")
+
+
+def _script_score(text: str) -> tuple[int, int]:
+    ar = len(_ARABIC_SCRIPT_RE.findall(text or ""))
+    latin = len(_LATIN_SCRIPT_RE.findall(text or ""))
+    return ar, latin
+
+
+def _normalize_plan_language_slots(
+    text_ar: str, text_en: str, hashtags_ar: list[str], hashtags_en: list[str]
+) -> tuple[str, str, list[str], list[str]]:
+    """If the model clearly swapped Arabic/English slots, unswap them."""
+    ar_ar, ar_latin = _script_score(text_ar)
+    en_ar, en_latin = _script_score(text_en)
+    # Require clear majorities to avoid false swaps on mixed brand/place names.
+    ar_looks_english = ar_latin >= 12 and ar_ar == 0
+    en_looks_arabic = en_ar >= 12 and en_ar >= en_latin
+    if not (ar_looks_english and en_looks_arabic):
+        return text_ar, text_en, hashtags_ar, hashtags_en
+    tag_ar_ar, tag_ar_latin = _script_score(" ".join(hashtags_ar))
+    tag_en_ar, tag_en_latin = _script_score(" ".join(hashtags_en))
+    tags_swapped = tag_ar_latin > tag_ar_ar and tag_en_ar > tag_en_latin
+    if tags_swapped:
+        return text_en, text_ar, hashtags_en, hashtags_ar
+    return text_en, text_ar, hashtags_ar, hashtags_en
+
+
 def _plan_item_from_llm(
     raw: PlanItemLLM,
     *,
@@ -747,6 +776,9 @@ def _plan_item_from_llm(
     en_caption = raw.text_en or raw.title or f"{brand.name} — {raw.platform}"
     ar_tags = _normalize_hashtags(raw.hashtags_ar) or ["#السعودية"]
     en_tags = _normalize_hashtags(raw.hashtags_en) or ["#SaudiArabia"]
+    ar_caption, en_caption, ar_tags, en_tags = _normalize_plan_language_slots(
+        ar_caption, en_caption, ar_tags, en_tags
+    )
 
     return PlanDraftItemIn(
         id=new_uuid7(),

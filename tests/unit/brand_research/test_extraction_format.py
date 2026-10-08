@@ -1,4 +1,4 @@
-"""Unit tests for brand-research prompt page formatting (brand-research-v2)."""
+"""Unit tests for brand-research prompt page formatting (identity-only)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,25 @@ from app.features.brand_research.prompts import extraction as extraction_prompt
 
 
 def test_prompt_version_bumped() -> None:
-    assert extraction_prompt.PROMPT_VERSION == "brand-research-v3"
+    assert extraction_prompt.PROMPT_VERSION == "brand-research-identity-v1"
+
+
+def test_output_schema_identity_only() -> None:
+    required = set(extraction_prompt.OUTPUT_SCHEMA["required"])
+    assert required == {
+        "name",
+        "industry",
+        "description",
+        "colors",
+        "languages",
+        "logo_url",
+        "warnings",
+    }
+    props = extraction_prompt.OUTPUT_SCHEMA["properties"]
+    assert "voice_adjectives" not in props
+    assert "pillars_suggested" not in props
+    assert "competitors_suggested" not in props
+    assert "dialect" not in props
 
 
 def test_format_pages_includes_social_contact_and_json_ld() -> None:
@@ -54,7 +72,6 @@ def test_format_pages_truncates_oversized_json_ld() -> None:
         ]
     )
     assert "…(truncated)" in blob
-    # Cap is 1500 chars of JSON-LD content plus the marker; ensure we did not dump all 5k.
     assert "x" * 2000 not in blob
 
 

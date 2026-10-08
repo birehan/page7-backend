@@ -25,13 +25,35 @@ async def handle_inbox_sync(payload: dict[str, Any]) -> None:
     except ValueError as exc:
         raise TerminalError("INBOX_SYNC_BAD_PAYLOAD") from exc
 
+    skip_classify = payload.get("skip_classify", True)
+    if not isinstance(skip_classify, bool):
+        skip_classify = True
+
+    mode_raw = payload.get("mode", "poll")
+    mode = mode_raw if mode_raw in ("initial", "more", "poll") else "poll"
+
+    conversation_limit: int | None = None
+    limit_raw = payload.get("conversation_limit")
+    if isinstance(limit_raw, int) and limit_raw > 0:
+        conversation_limit = limit_raw
+
     factory = get_session_factory()
     async with factory() as session:
         count = await inbox_feature.sync_backfill(
-            session, social_account_id=social_account_id
+            session,
+            social_account_id=social_account_id,
+            skip_classify=skip_classify,
+            conversation_limit=conversation_limit,
+            mode=mode,  # type: ignore[arg-type]
         )
         await session.commit()
-    log.info("inbox_sync.done", social_account_id=raw, upserted=count)
+    log.info(
+        "inbox_sync.done",
+        social_account_id=raw,
+        upserted=count,
+        mode=mode,
+        skip_classify=skip_classify,
+    )
 
 
 async def handle_inbox_poll(payload: dict[str, Any]) -> None:

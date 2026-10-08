@@ -1,0 +1,90 @@
+[
+  {
+    "id": "cafe-en-portrait",
+    "caption": "Fresh cold brew mornings at our Riyadh cafe — soft light, warm wood, perfect latte art",
+    "industry": "cafe",
+    "city": "Riyadh",
+    "style": "photo",
+    "aspect": "portrait",
+    "colors": ["#2C1810", "#D4A574", "#F5F0E8"],
+    "headline": null,
+    "language": "en"
+  },
+  {
+    "id": "clinic-ar-square",
+    "caption": "عيادة أسنان حديثة في جدة — ابتسامة واثقة ورعاية متخصصة لكل العائلة",
+    "industry": "dental clinic",
+    "city": "Jeddah",
+    "style": "photo",
+    "aspect": "square",
+    "colors": ["#0B6E4F", "#E8F5F0", "#1A1A1A"],
+    "headline": null,
+    "language": "ar"
+  },
+  {
+    "id": "salon-en-portrait",
+    "caption": "Book your weekend glow-up — pastel towels, clean mirrors, softbox lighting",
+    "industry": "salon",
+    "city": "Dammam",
+    "style": "saudi-modern",
+    "aspect": "portrait",
+    "colors": ["#C9A0A0", "#F7F3F0", "#4A3728"],
+    "headline": null,
+    "language": "en"
+  },
+  {
+    "id": "restaurant-ar-poster",
+    "caption": "عرض خاص اليوم — وجبات عائلية طازجة توصيل سريع",
+    "industry": "restaurant",
+    "city": "Riyadh",
+    "style": "poster",
+    "aspect": "square",
+    "colors": ["#8B1E1E", "#F4E8D8", "#1C1C1C"],
+    "headline": "عرض خاص",
+    "language": "ar"
+  },
+  {
+    "id": "retail-en-poster",
+    "caption": "New arrivals this week — premium skincare essentials for everyday glow",
+    "industry": "retail",
+    "city": "Riyadh",
+    "style": "poster",
+    "aspect": "portrait",
+    "colors": ["#1B3A4B", "#E6D5B8", "#FFFFFF"],
+    "headline": "New Arrivals",
+    "language": "en"
+  },
+  {
+    "id": "tech-en-landscape",
+    "caption": "Ship faster with our founder toolkit — dual monitors, dusk city light",
+    "industry": "tech",
+    "city": "Riyadh",
+    "style": "photo",
+    "aspect": "landscape",
+    "colors": ["#0EA5E9", "#0F172A", "#F8FAFC"],
+    "headline": null,
+    "language": "en"
+  },
+  {
+    "id": "services-ar-vertical",
+    "caption": "خدمات منزلية موثوقة في الرياض — نظافة وصيانة باحتراف",
+    "industry": "services",
+    "city": "Riyadh",
+    "style": "minimal",
+    "aspect": "vertical",
+    "colors": ["#2563EB", "#EFF6FF", "#111827"],
+    "headline": null,
+    "language": "ar"
+  },
+  {
+    "id": "fashion-en-square",
+    "caption": "Soft linen textures and desert gold accents for Eid looks",
+    "industry": "fashion",
+    "city": "Jeddah",
+    "style": "flat",
+    "aspect": "square",
+    "colors": ["#C4A35A", "#FAF7F2", "#2D2A26"],
+    "headline": null,
+    "language": "en"
+  }
+]

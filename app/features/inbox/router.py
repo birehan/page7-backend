@@ -12,6 +12,7 @@ from app.core.request_context import AccessContext, require_capability, require_
 from app.db.session import get_db_session
 from app.features.inbox import service as inbox
 from app.features.inbox.schemas import (
+    AiDraftOut,
     AssignConversationBody,
     ConversationMessagePage,
     ConversationOut,
@@ -30,6 +31,8 @@ from app.infrastructure.idempotency.dependency import (
     require_idempotency,
     serialize_model,
 )
+from app.integrations.llm import get_llm_router
+from app.integrations.llm.router import LLMTaskRouter
 
 router = APIRouter(prefix="/orgs/{orgId}/inbox", tags=["inbox"])
 
@@ -50,6 +53,9 @@ async def trigger_inbox_sync(
         organization_id=ctx.organization_id,
         brand_id=payload.brand_id,
         account_id=payload.account_id,
+        skip_classify=payload.skip_classify,
+        conversation_limit=payload.conversation_limit,
+        mode=payload.mode,
     )
 
 
@@ -114,6 +120,31 @@ async def list_messages(
         conversation_id=conversationId,
         cursor=cursor,
         limit=limit,
+    )
+
+
+@router.post(
+    "/conversations/{conversationId}/ai-draft",
+    response_model=AiDraftOut,
+    response_model_exclude_none=True,
+)
+async def draft_conversation_reply(
+    conversationId: uuid.UUID,  # noqa: N803
+    ctx: Annotated[AccessContext, Depends(require_capability("post.comment"))],
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+    llm_router: Annotated[LLMTaskRouter, Depends(get_llm_router)],
+) -> AiDraftOut:
+    from app.features import billing as billing_feature
+
+    await billing_feature.enforce_ai_credit_limit(
+        db, organization_id=ctx.organization_id
+    )
+    return await inbox.draft_reply(
+        db,
+        organization_id=ctx.organization_id,
+        conversation_id=conversationId,
+        actor_user_id=ctx.user_id,
+        router=llm_router,
     )
 
 

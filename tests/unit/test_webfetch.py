@@ -179,7 +179,7 @@ async def test_safe_connect_sends_html_accept_headers(monkeypatch: pytest.Monkey
     headers = captured["headers"]
     assert isinstance(headers, dict)
     assert "text/html" in str(headers.get("Accept", ""))
-    assert headers.get("User-Agent") == "pgblank-research/1.0"
+    assert headers.get("User-Agent") == "page7-research/1.0"
     assert "Accept-Language" in headers
 
 

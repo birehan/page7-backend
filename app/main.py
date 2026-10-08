@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
     configure_logging(json_output=settings.app_env is not Environment.DEVELOPMENT)
     init_sentry(settings)
 
-    app = FastAPI(title="pgblank.ai API", version="0.1.0")
+    app = FastAPI(title="Page7 API", version="0.1.0")
 
     # Order matters: security headers and request-id wrap every response,
     # including error responses; CORS sits outermost so preflight requests never

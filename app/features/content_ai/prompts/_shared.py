@@ -51,7 +51,11 @@ def format_pillars(pillars: list[dict[str, Any]]) -> str:
     for pillar in pillars:
         pillar_id = pillar.get("id", "")
         name = pillar.get("name") or pillar.get("title") or "(unnamed)"
-        lines.append(f"- id={pillar_id}: {name}")
+        description = (pillar.get("description") or "").strip()
+        if description:
+            lines.append(f"- id={pillar_id}: {name} — {description}")
+        else:
+            lines.append(f"- id={pillar_id}: {name}")
     return "\n".join(lines)
 
 

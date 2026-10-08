@@ -806,16 +806,29 @@ async def _apply_created_or_existing(
             actor_user_id=actor_user_id,
         )
 
+    # Callers: apply_publish_result ← publish_post / webhooks.
+    # User: "show error while it was actually posted".
     publication.zernio_post_id = zernio_post_id
     publication.response_payload = outcome.raw_response
     platform_row = _platform_for_account(list(outcome.platforms), zernio_account_id)
     status = platform_row.status if platform_row is not None else "publishing"
 
-    if status in ("pending", "publishing"):
+    # Live platformPostUrl / platformPostId = definitive success (Zernio docs).
+    if platform_row is not None and (
+        platform_row.platform_post_url or platform_row.platform_post_id
+    ):
+        return await _finalize_published(
+            session,
+            publication=publication,
+            post=post,
+            platform_row=platform_row,
+            actor_ref=actor_ref,
+            actor_name=actor_name,
+            actor_user_id=actor_user_id,
+        )
+
+    if status in ("pending", "publishing", "processing", "queued", "scheduled"):
         publication.status = "accepted"
-        if platform_row is not None:
-            publication.external_post_id = platform_row.platform_post_id
-            publication.external_url = platform_row.platform_post_url
         await session.flush()
         return ApplyPublishResultOutcome(
             publication_status="accepted",
@@ -846,17 +859,18 @@ async def _apply_created_or_existing(
         or mapped.default_message
     )
     if mapped.retryable:
-        return await _finalize_retryable_or_terminal(
+        if platform_row is not None:
+            if platform_row.platform_post_id:
+                publication.external_post_id = platform_row.platform_post_id
+            if platform_row.platform_post_url:
+                publication.external_url = platform_row.platform_post_url
+        return await _defer_retryable_with_provider_id(
             session,
             publication=publication,
             post=post,
             mapped=mapped,
             message=message,
-            retry_after_seconds=outcome.retry_after,
             response_payload=outcome.raw_response,
-            actor_ref=actor_ref,
-            actor_name=actor_name,
-            actor_user_id=actor_user_id,
         )
     return await _finalize_terminal_failure(
         session,
@@ -981,11 +995,28 @@ async def _finalize_published(
             patch=patch,
         )
     elif post.status == "failed" and was_failed:
-        # Late success correcting a failed publication — post may still be failed.
-        # failed → scheduled is legal, but published is not. Leave post failed and
-        # only correct the publication when ux_pub_published allows (above).
-        # If the post is still publishing from a later attempt, do not touch it.
-        pass
+        # Late success after a false failure (e.g. provider "processing").
+        # Walk legal transitions: failed → scheduled → publishing → published.
+        try:
+            updated = await _cas_post(
+                session, post, from_status="failed", to_status="scheduled"
+            )
+            updated = await _cas_post(
+                session, updated, from_status="scheduled", to_status="publishing"
+            )
+            updated = await _cas_post(
+                session,
+                updated,
+                from_status="publishing",
+                to_status="published",
+                patch=patch,
+            )
+        except ClaimCheckFailed:
+            logger.warning(
+                "publish_success_failed_post_revive",
+                post_id=str(post.id),
+                publication_id=str(publication.id),
+            )
     elif post.status == "published":
         pass
     else:
@@ -1099,6 +1130,50 @@ async def _finalize_terminal_failure(
     )
 
 
+async def _defer_retryable_with_provider_id(
+    session: AsyncSession,
+    *,
+    publication: Publication,
+    post: Post,
+    mapped: MappedError,
+    message: str,
+    response_payload: dict[str, Any] | None,
+) -> ApplyPublishResultOutcome:
+    """Keep accepted/publishing when the provider already has the post.
+
+    Transient platform_error often races a successful Instagram/Facebook
+    publish. Auto-retry is skipped when ``zernio_post_id`` is set (would
+    duplicate), so marking failed here false-fails Post now. Leave the
+    publication inflight for ``reconcile_publications`` to poll.
+    """
+    publication.status = "accepted"
+    publication.completed_at = None
+    publication.error_code = mapped.code
+    publication.error_category = mapped.publication_category
+    publication.error_message = message
+    publication.retryable = True
+    publication.response_payload = response_payload
+    await session.flush()
+    logger.info(
+        "publish.defer_retryable_platform_failure",
+        publication_id=str(publication.id),
+        post_id=str(post.id),
+        zernio_post_id=publication.zernio_post_id,
+        error_code=mapped.code,
+        message=message,
+    )
+    return ApplyPublishResultOutcome(
+        publication_status="accepted",
+        post_status="publishing",
+        finalized=False,
+        should_retry_job=False,
+        retry_after_seconds=None,
+        should_auto_retry_publication=False,
+        error_code=mapped.code,
+        terminal=False,
+    )
+
+
 async def _finalize_retryable_or_terminal(
     session: AsyncSession,
     *,
@@ -1112,6 +1187,16 @@ async def _finalize_retryable_or_terminal(
     actor_name: str,
     actor_user_id: uuid.UUID | None,
 ) -> ApplyPublishResultOutcome:
+    if publication.zernio_post_id:
+        return await _defer_retryable_with_provider_id(
+            session,
+            publication=publication,
+            post=post,
+            mapped=mapped,
+            message=message,
+            response_payload=response_payload,
+        )
+
     can_retry = publication.attempt_no < mapped.max_attempts
     if not can_retry:
         return await _finalize_terminal_failure(
@@ -1224,16 +1309,28 @@ def _caption_snippet(post: Post) -> str:
     return f"{caption[:60]}…" if len(caption) > 60 else caption
 
 
-def caption_for_publish(post: Post) -> str:
-    """Prefer Arabic, then English, then first variant caption."""
+def _variant_caption(variant: dict[str, Any] | None) -> str:
+    if not variant:
+        return ""
+    return str(variant.get("caption") or "").strip()
+
+
+def caption_for_publish(
+    post: Post, *, preferred_lang: Literal["ar", "en"] | None = None
+) -> str:
+    """Use the brand preferred language caption (fallback: other, then first)."""
     variants = list(post.variants or [])
     if not variants:
         return ""
     ar = next((v for v in variants if v.get("lang") == "ar"), None)
     en = next((v for v in variants if v.get("lang") == "en"), None)
-    chosen = ar or en or variants[0]
-    caption = str(chosen.get("caption") or "")
-    hashtags = chosen.get("hashtags") or []
+    preferred = preferred_lang or "ar"
+    ordered = [en, ar] if preferred == "en" else [ar, en]
+    chosen = next((v for v in ordered if _variant_caption(v)), None)
+    if chosen is None:
+        chosen = next((v for v in variants if _variant_caption(v)), variants[0])
+    caption = _variant_caption(chosen)
+    hashtags = chosen.get("hashtags") or [] if isinstance(chosen, dict) else []
     if isinstance(hashtags, list) and hashtags:
         tags = " ".join(str(t) for t in hashtags if t)
         if tags:
@@ -1323,6 +1420,34 @@ async def build_publish_request(
             code="ACCOUNT_DISCONNECTED",
         )
     media_items = await build_media_items_for_publish(session, post, storage)
+    preferred_lang: Literal["ar", "en"] = "ar"
+    try:
+        from app.features.brands import repository as brands_repo
+
+        brand_row = await brands_repo.get_brand(
+            session,
+            organization_id=post.organization_id,
+            brand_id=post.brand_id,
+        )
+        guidelines = getattr(brand_row, "guidelines", None) if brand_row else None
+        langs = None
+        if isinstance(guidelines, dict):
+            langs = guidelines.get("languages")
+        elif guidelines is not None:
+            langs = getattr(guidelines, "languages", None)
+        if isinstance(langs, list) and langs:
+            candidate = str(langs[0]).lower().strip()
+            if candidate == "en":
+                preferred_lang = "en"
+            elif candidate == "ar":
+                preferred_lang = "ar"
+    except (AttributeError, TypeError, ValueError, KeyError) as exc:
+        structlog.get_logger("publishing").warning(
+            "preferred_lang_fallback",
+            error=str(exc),
+            brand_id=str(post.brand_id),
+        )
+        preferred_lang = "ar"
     metadata: dict[str, Any] = {
         "post_id": str(post.id),
         "publication_id": str(publication.id),
@@ -1332,7 +1457,7 @@ async def build_publish_request(
     if correlation_id:
         metadata["correlation_id"] = correlation_id
     return PublishRequest(
-        content=caption_for_publish(post),
+        content=caption_for_publish(post, preferred_lang=preferred_lang),
         platforms=[
             {
                 "platform": post.platform,

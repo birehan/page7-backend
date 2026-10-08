@@ -5,7 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.request_context import AccessContext, require_membership
+from app.core.request_context import AccessContext, require_min_role
 from app.db.session import get_db_session
 from app.features.audit import service
 from app.features.audit.models import AuditLog
@@ -35,12 +35,12 @@ def _to_entry(log: AuditLog) -> AuditLogEntry:
 # only two fields this can ever affect on this response.
 @router.get("/audit", response_model=AuditLogPage, response_model_exclude_none=True)
 async def list_audit_log(
-    ctx: Annotated[AccessContext, Depends(require_membership)],
+    ctx: Annotated[AccessContext, Depends(require_min_role("admin"))],
     db: Annotated[AsyncSession, Depends(get_db_session)],
     cursor: str | None = Query(default=None),
 ) -> AuditLogPage:
-    """`kind='audit'` rows only this phase — the `UNION ALL` with
-    `ai_decisions` (`kind='ai'`) starts in Phase 7.
+    """Admins and owners only: the log names every member's actions. Audit rows only for
+    now; the `ai_decisions` half of the feed is not implemented.
     """
     logs, next_cursor = await service.list_page(
         db, organization_id=ctx.organization_id, cursor=cursor

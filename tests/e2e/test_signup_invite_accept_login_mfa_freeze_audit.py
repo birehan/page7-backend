@@ -19,6 +19,7 @@ from app.features.audit.models import AuditLog
 from app.features.organizations.models import OrgSettings
 from app.features.team.models import Membership
 from app.integrations.email.fakes import FakeEmailProvider
+from tests.auth_signup_helpers import signup_and_verify
 
 
 async def test_full_journey(
@@ -32,18 +33,14 @@ async def test_full_journey(
 
     client, fake = client_with_fake_email
 
-    # --- signup ---
-    signup = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Journey Owner",
-            "email": "journey-owner@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Journey Co",
-        },
+    # --- signup + email verification ---
+    session = await signup_and_verify(
+        client,
+        db_session,
+        email="journey-owner@example.com",
+        name="Journey Owner",
+        organization_name="Journey Co",
     )
-    assert signup.status_code == 200
-    session = signup.json()
     org_id = session["organizationId"]
     assert session["user"]["role"] == "owner"
 

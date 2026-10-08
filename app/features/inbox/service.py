@@ -7,7 +7,7 @@ import json
 import time
 import uuid
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Literal
 
 import structlog
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -23,6 +23,7 @@ from app.features.inbox.models import Conversation, ConversationMessage
 from app.features.inbox.prompts import classification as classification_prompt
 from app.features.inbox.prompts import reply_suggestion as reply_prompt
 from app.features.inbox.schemas import (
+    AiDraftOut,
     ConversationMessageOut,
     ConversationMessagePage,
     ConversationOut,
@@ -51,6 +52,7 @@ log = structlog.get_logger(__name__)
 OUTCOME_UNKNOWN = "OUTCOME_UNKNOWN"
 RECONCILE_PENDING_AGE = timedelta(seconds=60)
 RECONCILE_FAIL_AFTER = timedelta(minutes=30)
+REPLY_DRAFT_MESSAGE_LIMIT = 20
 
 
 class SentimentOut(BaseModel):
@@ -443,8 +445,13 @@ async def classify_message(
         provider_request_id=sentiment_resp.usage.provider_request_id,
     )
 
+    recent = await repository.list_recent_messages(
+        session,
+        conversation_id=conversation.id,
+        limit=REPLY_DRAFT_MESSAGE_LIMIT,
+    )
     reply_messages = reply_prompt.build(
-        body=message.body,
+        messages=_transcript_from_rows(recent),
         platform=conversation.platform,
         kind=conversation.kind,
         sentiment=sentiment_out.sentiment,
@@ -462,6 +469,8 @@ async def classify_message(
     reply_cfg = cfg.llm.tasks["reply_suggestion"]
     reply_inputs = {
         "messageId": str(message.id),
+        "conversationId": str(conversation.id),
+        "messageCount": len(recent),
         "sentiment": sentiment_out.sentiment,
     }
     suggestion_decision = await insert_decision(
@@ -498,6 +507,99 @@ async def classify_message(
     )
 
 
+async def draft_reply(
+    session: AsyncSession,
+    *,
+    organization_id: uuid.UUID,
+    conversation_id: uuid.UUID,
+    actor_user_id: uuid.UUID,
+    settings: Settings | None = None,
+    router: LLMTaskRouter | None = None,
+) -> AiDraftOut:
+    """Generate a bilingual draft from the last REPLY_DRAFT_MESSAGE_LIMIT messages."""
+    cfg = settings or get_settings()
+    llm = router or get_llm_router(cfg)
+
+    conversation = _require_org_conversation(
+        await repository.get_conversation(session, conversation_id=conversation_id),
+        organization_id=organization_id,
+    )
+    recent = await repository.list_recent_messages(
+        session,
+        conversation_id=conversation.id,
+        limit=REPLY_DRAFT_MESSAGE_LIMIT,
+    )
+    brand = await brands.get_brand(
+        session,
+        organization_id=conversation.organization_id,
+        brand_id=conversation.brand_id,
+    )
+    brand_version = brand.version if brand is not None else 1
+    brand_name = brand.name if brand is not None else None
+    sentiment = (
+        conversation.sentiment
+        if conversation.sentiment in ("positive", "neutral", "negative")
+        else "neutral"
+    )
+
+    reply_messages = reply_prompt.build(
+        messages=_transcript_from_rows(recent),
+        platform=conversation.platform,
+        kind=conversation.kind,
+        sentiment=sentiment,
+        brand_name=brand_name,
+    )
+    reply_req = StructuredGenerationRequest(
+        messages=reply_messages,
+        output_schema=reply_prompt.OUTPUT_SCHEMA,
+        schema_name="reply_suggestion",
+    )
+    t0 = time.monotonic()
+    reply_out, reply_resp = await _run_structured_validated(
+        llm, "reply_suggestion", reply_req, ReplySuggestionOut
+    )
+    reply_cfg = cfg.llm.tasks["reply_suggestion"]
+    reply_inputs = {
+        "conversationId": str(conversation.id),
+        "messageCount": len(recent),
+        "sentiment": sentiment,
+        "source": "ai_draft",
+    }
+    suggestion_decision = await insert_decision(
+        session,
+        organization_id=conversation.organization_id,
+        brand_id=conversation.brand_id,
+        brand_version=brand_version,
+        actor_user_id=actor_user_id,
+        kind="reply_suggest",
+        provider=reply_cfg.provider,
+        model=reply_cfg.model,
+        prompt_version=reply_prompt.PROMPT_VERSION,
+        inputs_hash=_inputs_hash(reply_inputs),
+        input_summary=reply_inputs,
+        output=reply_out.model_dump(),
+        status="succeeded",
+        target_type="conversation",
+        target_id=conversation.id,
+        prompt_tokens=reply_resp.usage.prompt_tokens,
+        completion_tokens=reply_resp.usage.completion_tokens,
+        cost_usd=reply_resp.usage.cost_usd,
+        latency_ms=int((time.monotonic() - t0) * 1000),
+        provider_request_id=reply_resp.usage.provider_request_id,
+    )
+    await repository.update_suggested_replies(
+        session,
+        conversation_id=conversation.id,
+        suggested_reply_ar=reply_out.suggested_reply_ar,
+        suggested_reply_en=reply_out.suggested_reply_en,
+        suggestion_decision_id=suggestion_decision.id,
+    )
+    return AiDraftOut(
+        suggested_reply_ar=reply_out.suggested_reply_ar,
+        suggested_reply_en=reply_out.suggested_reply_en,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Sync backfill
 # ---------------------------------------------------------------------------
@@ -511,16 +613,33 @@ _MAX_MESSAGES_PER_RUN = 500
 _MAX_COMMENT_POSTS = 20
 _COMMENT_LOOKBACK_DAYS = 30
 _SYNC_BUCKET_MINUTES = 5
+_DEFAULT_MANUAL_CONV_LIMIT = 25
+_SyncMode = Literal["initial", "more", "poll"]
+
+
+def _sync_time_bucket(now: datetime | None = None) -> str:
+    ts = now or utc_now()
+    floored_minute = (ts.minute // _SYNC_BUCKET_MINUTES) * _SYNC_BUCKET_MINUTES
+    bucket = ts.replace(minute=floored_minute, second=0, microsecond=0)
+    return bucket.strftime("%Y%m%d%H%M")
 
 
 def inbox_sync_unique_key(
     account_id: uuid.UUID, *, now: datetime | None = None
 ) -> str:
     """Time-bucketed unique key so completed syncs can re-run every 5 minutes."""
-    ts = now or utc_now()
-    floored_minute = (ts.minute // _SYNC_BUCKET_MINUTES) * _SYNC_BUCKET_MINUTES
-    bucket = ts.replace(minute=floored_minute, second=0, microsecond=0)
-    return f"inbox_sync:{account_id}:{bucket.strftime('%Y%m%d%H%M')}"
+    return f"inbox_sync:{account_id}:{_sync_time_bucket(now)}"
+
+
+def inbox_sync_more_unique_key(
+    account_id: uuid.UUID,
+    *,
+    dm_cursor: str | None,
+    now: datetime | None = None,
+) -> str:
+    """Unique key for Sync-more pages; cursor hash allows paging within a bucket."""
+    cursor_digest = hashlib.sha256((dm_cursor or "").encode()).hexdigest()[:12]
+    return f"inbox_sync:more:{account_id}:{cursor_digest}:{_sync_time_bucket(now)}"
 
 
 async def enqueue_inbox_sync(
@@ -528,13 +647,34 @@ async def enqueue_inbox_sync(
     *,
     social_account_id: uuid.UUID,
     organization_id: uuid.UUID,
+    skip_classify: bool = True,
+    conversation_limit: int | None = None,
+    mode: _SyncMode = "poll",
 ) -> int | None:
+    payload: dict[str, Any] = {
+        "social_account_id": str(social_account_id),
+        "skip_classify": skip_classify,
+        "mode": mode,
+    }
+    if conversation_limit is not None:
+        payload["conversation_limit"] = conversation_limit
+
+    if mode == "more":
+        state = await repository.get_or_create_sync_state(
+            session, social_account_id=social_account_id
+        )
+        unique_key = inbox_sync_more_unique_key(
+            social_account_id, dm_cursor=state.dm_cursor
+        )
+    else:
+        unique_key = inbox_sync_unique_key(social_account_id)
+
     return await job_queue.enqueue(
         session,
         queue="sync",
         type="inbox_sync",
-        payload={"social_account_id": str(social_account_id)},
-        unique_key=inbox_sync_unique_key(social_account_id),
+        payload=payload,
+        unique_key=unique_key,
         organization_id=organization_id,
     )
 
@@ -569,6 +709,9 @@ async def enqueue_org_inbox_sync(
     organization_id: uuid.UUID,
     brand_id: uuid.UUID | None = None,
     account_id: uuid.UUID | None = None,
+    skip_classify: bool = True,
+    conversation_limit: int = _DEFAULT_MANUAL_CONV_LIMIT,
+    mode: _SyncMode = "initial",
 ) -> list[uuid.UUID]:
     """Enqueue sync for connected org accounts; return account ids enqueued."""
     import sqlalchemy as sa
@@ -588,10 +731,19 @@ async def enqueue_org_inbox_sync(
     accounts = list((await session.execute(stmt)).scalars().all())
     enqueued_ids: list[uuid.UUID] = []
     for account in accounts:
+        if mode == "more":
+            state = await repository.get_or_create_sync_state(
+                session, social_account_id=account.id
+            )
+            if not state.dm_cursor:
+                continue
         job_id = await enqueue_inbox_sync(
             session,
             social_account_id=account.id,
             organization_id=account.organization_id,
+            skip_classify=skip_classify,
+            conversation_limit=conversation_limit,
+            mode=mode,
         )
         if job_id is not None:
             enqueued_ids.append(account.id)
@@ -604,6 +756,9 @@ async def sync_backfill(
     social_account_id: uuid.UUID,
     settings: Settings | None = None,
     provider: SocialProvider | None = None,
+    skip_classify: bool = True,
+    conversation_limit: int | None = None,
+    mode: _SyncMode = "poll",
 ) -> int:
     """Backfill DM conversations (hydrated) + comments on recent published posts."""
     cfg = settings or get_settings()
@@ -628,24 +783,46 @@ async def sync_backfill(
             cfg, alias=credential.alias, secret_ref=credential.secret_ref
         )
 
+    if mode in ("initial", "more"):
+        page_size = conversation_limit or _DEFAULT_MANUAL_CONV_LIMIT
+        max_pages = 1
+        start_cursor = state.dm_cursor if mode == "more" else None
+        persist_cursor = True
+    else:
+        page_size = _CONV_PAGE_SIZE
+        max_pages = _MAX_CONV_PAGES
+        start_cursor = None
+        persist_cursor = False
+
     upserted = 0
     messages_fetched = 0
+    next_dm_cursor: str | None = None
     try:
-        upserted, messages_fetched = await _sync_dm_conversations(
+        upserted, messages_fetched, next_dm_cursor = await _sync_dm_conversations(
             session,
             account=account,
             provider=provider,
             messages_budget=_MAX_MESSAGES_PER_RUN,
+            skip_classify=skip_classify,
+            page_size=page_size,
+            max_pages=max_pages,
+            start_cursor=start_cursor,
         )
         comment_upserted, comment_msgs = await _sync_post_comments(
             session,
             account=account,
             provider=provider,
             messages_budget=max(0, _MAX_MESSAGES_PER_RUN - messages_fetched),
+            skip_classify=skip_classify,
         )
         upserted += comment_upserted
         messages_fetched += comment_msgs
-        await repository.mark_sync_ok(session, state=state)
+        await repository.mark_sync_ok(
+            session,
+            state=state,
+            dm_cursor=next_dm_cursor,
+            update_dm_cursor=persist_cursor,
+        )
     except Exception as exc:
         await repository.mark_sync_error(session, state=state, error=str(exc))
         raise
@@ -655,6 +832,9 @@ async def sync_backfill(
         social_account_id=str(account.id),
         conversations=upserted,
         messages_fetched=messages_fetched,
+        mode=mode,
+        skip_classify=skip_classify,
+        has_more=bool(next_dm_cursor) if persist_cursor else None,
     )
     return upserted
 
@@ -665,15 +845,20 @@ async def _sync_dm_conversations(
     account: SocialAccount,
     provider: SocialProvider,
     messages_budget: int,
-) -> tuple[int, int]:
+    skip_classify: bool = True,
+    page_size: int = _CONV_PAGE_SIZE,
+    max_pages: int = _MAX_CONV_PAGES,
+    start_cursor: str | None = None,
+) -> tuple[int, int, str | None]:
     assert account.zernio_account_id is not None
     upserted = 0
     messages_fetched = 0
-    cursor: str | None = None
-    for _page in range(_MAX_CONV_PAGES):
+    cursor: str | None = start_cursor
+    next_cursor: str | None = None
+    for _page in range(max_pages):
         result = await provider.list_inbox_conversations(
             account_id=account.zernio_account_id,
-            limit=_CONV_PAGE_SIZE,
+            limit=page_size,
             cursor=cursor,
         )
         for conv in result.conversations:
@@ -714,14 +899,21 @@ async def _sync_dm_conversations(
                 conversation=conversation,
                 zernio_conversation_id=conv.id,
                 budget=messages_budget - messages_fetched,
+                skip_classify=skip_classify,
             )
             messages_fetched += fetched
         if messages_fetched >= messages_budget:
+            next_cursor = result.next_cursor if result.has_more else None
             break
         if not result.has_more or not result.next_cursor:
+            next_cursor = None
             break
         cursor = result.next_cursor
-    return upserted, messages_fetched
+        next_cursor = result.next_cursor
+    else:
+        # Exhausted max_pages while provider still has more.
+        next_cursor = cursor if cursor and cursor != start_cursor else next_cursor
+    return upserted, messages_fetched, next_cursor
 
 
 async def _hydrate_dm_messages(
@@ -732,6 +924,7 @@ async def _hydrate_dm_messages(
     conversation: Conversation,
     zernio_conversation_id: str,
     budget: int,
+    skip_classify: bool = True,
 ) -> int:
     assert account.zernio_account_id is not None
     fetched = 0
@@ -771,7 +964,7 @@ async def _hydrate_dm_messages(
                 # Duplicate external_message_id — do not burn the sync budget.
                 continue
             fetched += 1
-            if direction == "inbound":
+            if direction == "inbound" and not skip_classify:
                 await job_queue.enqueue(
                     session,
                     queue="ai",
@@ -792,6 +985,7 @@ async def _sync_post_comments(
     account: SocialAccount,
     provider: SocialProvider,
     messages_budget: int,
+    skip_classify: bool = True,
 ) -> tuple[int, int]:
     assert account.zernio_account_id is not None
     if messages_budget <= 0:
@@ -861,14 +1055,15 @@ async def _sync_post_comments(
             if inserted is None:
                 continue
             messages_fetched += 1
-            await job_queue.enqueue(
-                session,
-                queue="ai",
-                type="inbox_classify_message",
-                payload={"message_id": str(inserted.id)},
-                unique_key=f"inbox_classify:{inserted.id}",
-                organization_id=account.organization_id,
-            )
+            if not skip_classify:
+                await job_queue.enqueue(
+                    session,
+                    queue="ai",
+                    type="inbox_classify_message",
+                    payload={"message_id": str(inserted.id)},
+                    unique_key=f"inbox_classify:{inserted.id}",
+                    organization_id=account.organization_id,
+                )
     return upserted, messages_fetched
 
 
@@ -1051,12 +1246,24 @@ async def reconcile_inbox_replies(
             cfg, alias=credential.alias, secret_ref=credential.secret_ref
         )
 
-        found_id = await _find_outbound_on_provider(
-            provider,
-            conversation=conversation,
-            account_id=account.zernio_account_id,
-            body=message.body,
-        )
+        try:
+            found_id = await _find_outbound_on_provider(
+                provider,
+                conversation=conversation,
+                account_id=account.zernio_account_id,
+                body=message.body,
+            )
+        except Exception:
+            # Same posture as _sync_post_comments: one bad thread must not kill
+            # the whole reconcile cron (Zernio often 400s platform_api_error).
+            log.warning(
+                "inbox.reconcile_outbound.lookup_failed",
+                message_id=str(message.id),
+                conversation_id=str(conversation.id),
+                external_thread_id=conversation.external_thread_id,
+                exc_info=True,
+            )
+            continue
         if found_id is not None:
             await repository.mark_message_sent(
                 session, message_id=message.id, external_message_id=found_id
@@ -1069,11 +1276,21 @@ async def reconcile_inbox_replies(
         if age >= RECONCILE_FAIL_AFTER and message.error_code == OUTCOME_UNKNOWN:
             # Only fail when we got a non-empty list that clearly lacked the message.
             # Empty list stays pending (inconclusive).
-            listed = await _provider_list_nonempty(
-                provider,
-                conversation=conversation,
-                account_id=account.zernio_account_id,
-            )
+            try:
+                listed = await _provider_list_nonempty(
+                    provider,
+                    conversation=conversation,
+                    account_id=account.zernio_account_id,
+                )
+            except Exception:
+                log.warning(
+                    "inbox.reconcile_outbound.list_failed",
+                    message_id=str(message.id),
+                    conversation_id=str(conversation.id),
+                    external_thread_id=conversation.external_thread_id,
+                    exc_info=True,
+                )
+                continue
             if listed:
                 await repository.mark_message_failed(
                     session,
@@ -1148,6 +1365,19 @@ def _parse_ts(raw: str | None) -> datetime | None:
 def _inputs_hash(payload: dict[str, Any]) -> str:
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def _transcript_from_rows(
+    rows: list[ConversationMessage],
+) -> list[reply_prompt.TranscriptMessage]:
+    return [
+        {
+            "direction": row.direction,
+            "author_name": row.author_name or "",
+            "body": row.body or "",
+        }
+        for row in rows
+    ]
 
 
 async def _run_structured_validated[T: BaseModel](
@@ -1292,12 +1522,18 @@ async def trigger_org_sync(
     organization_id: uuid.UUID,
     brand_id: uuid.UUID | None = None,
     account_id: uuid.UUID | None = None,
+    skip_classify: bool = True,
+    conversation_limit: int = _DEFAULT_MANUAL_CONV_LIMIT,
+    mode: Literal["initial", "more"] = "initial",
 ) -> InboxSyncEnqueueOut:
     account_ids = await enqueue_org_inbox_sync(
         session,
         organization_id=organization_id,
         brand_id=brand_id,
         account_id=account_id,
+        skip_classify=skip_classify,
+        conversation_limit=conversation_limit,
+        mode=mode,
     )
     return InboxSyncEnqueueOut(enqueued=len(account_ids), account_ids=account_ids)
 
@@ -1318,6 +1554,7 @@ async def get_org_sync_status(
                 last_synced_at=state.last_synced_at,
                 last_sync_status=state.last_sync_status,
                 last_error=state.last_error,
+                has_more=bool(state.dm_cursor),
             )
         )
     return InboxSyncStatusOut(accounts=accounts)

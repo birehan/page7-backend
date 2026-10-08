@@ -147,6 +147,34 @@ class MfaChallenge(Base, UUIDPrimaryKeyMixin, CreatedAtMixin):
     ip: Mapped[str | None] = mapped_column(INET, default=None)
 
 
+class EmailVerificationChallenge(Base, UUIDPrimaryKeyMixin, CreatedAtMixin):
+    """6-digit email ownership OTP after password signup / unverified login.
+    10-minute TTL; code stored hashed with per-row salt.
+    """
+
+    __tablename__ = "email_verification_challenges"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    token_hash: Mapped[str] = mapped_column(unique=True)
+    code_salt: Mapped[str]
+    code_hash: Mapped[str]
+    expires_at: Mapped[datetime]
+    consumed_at: Mapped[datetime | None] = mapped_column(default=None)
+    attempt_count: Mapped[int] = mapped_column(server_default=text("0"))
+    locale: Mapped[str] = mapped_column(server_default="en")
+    ip: Mapped[str | None] = mapped_column(INET, default=None)
+
+    __table_args__ = (
+        CheckConstraint("locale IN ('ar', 'en')", name="locale_valid"),
+        Index(
+            "ix_email_verify_user_active",
+            "user_id",
+            postgresql_where=text("consumed_at IS NULL"),
+        ),
+        Index("ix_email_verify_expiry", "expires_at"),
+    )
+
+
 class OauthState(Base, CreatedAtMixin):
     """architecture/02 §1. `brand_id` → brands(id) was added in Phase 4 once
     the target table existed. Nothing enqueues a row until Phase 9's Zernio

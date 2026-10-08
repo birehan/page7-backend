@@ -1,0 +1,58 @@
+{
+  "viewer": [],
+  "approver": [
+    "post.approve",
+    "post.comment",
+    "post.reject",
+    "post.requestChanges",
+    "review_link.create"
+  ],
+  "editor": [
+    "brand.edit",
+    "calendar.generate",
+    "post.comment",
+    "post.create",
+    "post.edit",
+    "post.submit",
+    "review_link.create"
+  ],
+  "admin": [
+    "billing.manage",
+    "brand.delete",
+    "brand.edit",
+    "calendar.generate",
+    "post.approve",
+    "post.comment",
+    "post.create",
+    "post.edit",
+    "post.publishNow",
+    "post.reject",
+    "post.requestChanges",
+    "post.schedule",
+    "post.submit",
+    "post.unschedule",
+    "publishing.freeze",
+    "review_link.create",
+    "settings.manage"
+  ],
+  "owner": [
+    "billing.manage",
+    "brand.delete",
+    "brand.edit",
+    "calendar.generate",
+    "org.delete",
+    "post.approve",
+    "post.comment",
+    "post.create",
+    "post.edit",
+    "post.publishNow",
+    "post.reject",
+    "post.requestChanges",
+    "post.schedule",
+    "post.submit",
+    "post.unschedule",
+    "publishing.freeze",
+    "review_link.create",
+    "settings.manage"
+  ]
+}

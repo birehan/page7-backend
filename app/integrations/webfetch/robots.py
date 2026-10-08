@@ -14,7 +14,7 @@ from urllib.robotparser import RobotFileParser
 from app.integrations.errors import ProviderTimeoutError, ProviderUnavailableError
 from app.integrations.webfetch.ssrf import safe_connect
 
-_USER_AGENT = "pgblank-research"
+_USER_AGENT = "page7-research"
 _CACHE_TTL_SECONDS = 3600.0
 
 

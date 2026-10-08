@@ -251,6 +251,10 @@ async def _insert_cron_run(
     """INSERT INTO cron_runs ... ON CONFLICT DO NOTHING RETURNING name.
 
     Returns True iff the INSERT actually inserted (not a no-op from conflict).
+
+    Deliberately does NOT commit: the caller commits this claim together with the job it
+    enqueues. Committing the claim first would let a crash before the enqueue lose that
+    period for good (a daily or weekly job would silently never run).
     """
     from sqlalchemy import text
 
@@ -265,5 +269,4 @@ async def _insert_cron_run(
         ),
         {"name": name, "period_start": period_start},
     )
-    await session.commit()
     return result.fetchone() is not None

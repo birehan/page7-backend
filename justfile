@@ -10,6 +10,12 @@ up:
     just ensure-test-db
     just wait-ready
 
+# Start existing images without rebuilding.
+start:
+    docker compose -f compose/docker-compose.yml up -d
+    just ensure-test-db
+    just wait-ready
+
 # Drain job queues (visuals/generate, brand research, media, …). Required when
 # running the API via host uvicorn instead of `just up` (compose already starts
 # its own worker service).

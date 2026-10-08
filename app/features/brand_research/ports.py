@@ -1,4 +1,9 @@
-"""ResearchProvider port (architecture/08 §3)."""
+"""ResearchProvider port (architecture/08 §3).
+
+Identity-only extraction: name, industry, description, colors (≤3),
+preferred language (ar|en), logo. Voice/pillars/competitors/dialect are
+not researched.
+"""
 
 from __future__ import annotations
 
@@ -7,43 +12,33 @@ from typing import Any, Protocol, runtime_checkable
 from pydantic import BaseModel, ConfigDict, Field
 
 EXTRACTION_FIELD_NAMES: tuple[str, ...] = (
-    "voice_adjectives",
-    "do_list",
-    "dont_list",
-    "banned_claims",
+    "name",
+    "industry",
+    "description",
     "colors",
-    "dialect",
     "languages",
-    "pillars_suggested",
-    "competitors_suggested",
     "logo_url",
 )
 
 # Wire-side camelCase names inside proposal.patch.guidelines / top-level.
 FIELD_TO_PATCH_KEY: dict[str, str] = {
-    "voice_adjectives": "voiceAdjectives",
-    "do_list": "doList",
-    "dont_list": "dontList",
-    "banned_claims": "bannedClaims",
+    "name": "name",
+    "industry": "industry",
+    "description": "description",
     "colors": "colors",
-    "dialect": "dialect",
     "languages": "languages",
-    "pillars_suggested": "pillars",
-    "competitors_suggested": "competitors",
     "logo_url": "logoUrl",
 }
 
 GUIDELINE_FIELDS = frozenset(
     {
-        "voice_adjectives",
-        "do_list",
-        "dont_list",
-        "banned_claims",
         "colors",
-        "dialect",
         "languages",
     }
 )
+
+IDENTITY_PATCH_KEYS = frozenset({"name", "industry", "description", "logoUrl", "guidelines"})
+IDENTITY_GUIDELINE_KEYS = frozenset({"colors", "languages"})
 
 
 class ResearchRequest(BaseModel):
@@ -64,15 +59,11 @@ class FieldExtraction(BaseModel):
 class ExtractionResult(BaseModel):
     model_config = ConfigDict(frozen=True)
 
-    voice_adjectives: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    do_list: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    dont_list: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    banned_claims: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
+    name: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
+    industry: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
+    description: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
     colors: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    dialect: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
     languages: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    pillars_suggested: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
-    competitors_suggested: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
     logo_url: FieldExtraction = Field(default_factory=lambda: FieldExtraction())
     sources: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)

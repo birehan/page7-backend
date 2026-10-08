@@ -19,6 +19,8 @@ from pydantic import SecretStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from tests.auth_signup_helpers import signup_and_verify
+
 from app.core.config import AuthSettings, Settings, get_settings
 from app.features.auth import google as google_client
 from app.features.auth.google import GoogleProfile
@@ -229,17 +231,14 @@ async def test_google_links_by_verified_email(
 ) -> None:
     email = f"link-me-{_uid()}@example.com"
     subject = f"google-sub-link-{_uid()}"
-    signup = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Existing User",
-            "email": email,
-            "password": "correct horse battery staple",
-            "organizationName": "Link Co",
-        },
+    signup = await signup_and_verify(
+        client,
+        db_session,
+        email=email,
+        name="Existing User",
+        organization_name="Link Co",
     )
-    assert signup.status_code == 200
-    existing_id = signup.json()["user"]["id"]
+    existing_id = signup["user"]["id"]
 
     async def fake_exchange(code: str, *, settings: AuthSettings) -> GoogleProfile:
         return GoogleProfile(
@@ -271,20 +270,17 @@ async def test_google_links_by_verified_email(
 
 @pytest.mark.usefixtures("google_settings")
 async def test_google_mfa_redirects_with_challenge(
-    monkeypatch: pytest.MonkeyPatch, client: AsyncClient
+    monkeypatch: pytest.MonkeyPatch, client: AsyncClient, db_session: AsyncSession
 ) -> None:
     email = f"google-mfa-{_uid()}@example.com"
     subject = f"google-sub-mfa-{_uid()}"
-    signup = await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "MFA User",
-            "email": email,
-            "password": "correct horse battery staple",
-            "organizationName": "MFA Co",
-        },
+    await signup_and_verify(
+        client,
+        db_session,
+        email=email,
+        name="MFA User",
+        organization_name="MFA Co",
     )
-    assert signup.status_code == 200
     enroll = await client.post("/v1/auth/mfa/enroll")
     assert enroll.status_code == 200
     secret = enroll.json()["secret"]

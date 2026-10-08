@@ -6,6 +6,7 @@ from app.integrations.errors import (
     ProviderTimeoutError,
     ProviderUnavailableError,
 )
+from app.features.visuals.aspects import parse_image_size
 from app.integrations.imagegen.cost import estimate_image_cost_usd
 from app.integrations.imagegen.ports import (
     GeneratedImage,
@@ -13,14 +14,6 @@ from app.integrations.imagegen.ports import (
     ImageGenerationRequest,
     ImageGenerationResult,
 )
-
-# Deterministic dimensions matching fal square_hd / portrait_4_3 / etc.
-_ASPECT_DIMS: dict[str, tuple[int, int]] = {
-    "square_hd": (1024, 1024),
-    "portrait_4_3": (768, 1024),
-    "portrait_16_9": (576, 1024),
-    "landscape_16_9": (1024, 576),
-}
 
 # Valid 1×1 RGB PNG — browsers reject the old signature-only stub that left the
 # generate grid blank in fake mode.
@@ -61,7 +54,7 @@ class FakeImageGenerationProvider:
         if idx in self.unavailable_indexes:
             raise ProviderUnavailableError("fake unavailable")
 
-        width, height = _ASPECT_DIMS.get(request.image_size, (1024, 1024))
+        width, height = parse_image_size(request.image_size)
         flagged = idx in self.flagged_indexes and not self.omit_nsfw_signal
 
         cost = estimate_image_cost_usd(request.model_id, width, height)

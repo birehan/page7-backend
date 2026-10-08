@@ -18,4 +18,5 @@ def test_publish_post_handler_registered() -> None:
 
 
 def test_publish_post_timeout_configured() -> None:
-    assert timeout_for("publish_post") == 45
+    # Callers: pytest. User: "post now taking forever" — cover Zernio 90s call.
+    assert timeout_for("publish_post") == 120

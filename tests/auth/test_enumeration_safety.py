@@ -3,6 +3,9 @@ from __future__ import annotations
 import time
 
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.auth_signup_helpers import signup_and_verify
 
 # Generous — this only needs to catch a gross timing leak (e.g. skipping the
 # email send entirely on a miss), not prove indistinguishability under
@@ -12,16 +15,14 @@ _TIMING_TOLERANCE_SECONDS = 2.0
 
 
 async def test_forgot_password_response_is_identical_for_known_and_unknown_email(
-    client: AsyncClient,
+    client: AsyncClient, db_session: AsyncSession,
 ) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Enum User",
-            "email": "enum-known@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Enum Co",
-        },
+    await signup_and_verify(
+        client,
+        db_session,
+        email="enum-known@example.com",
+        name="Enum User",
+        organization_name="Enum Co",
     )
 
     known = await client.post("/v1/auth/forgot", json={"email": "enum-known@example.com"})
@@ -32,16 +33,14 @@ async def test_forgot_password_response_is_identical_for_known_and_unknown_email
 
 
 async def test_forgot_password_timing_is_comparable_for_known_and_unknown_email(
-    client: AsyncClient,
+    client: AsyncClient, db_session: AsyncSession,
 ) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Timing User",
-            "email": "timing-known@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Timing Co",
-        },
+    await signup_and_verify(
+        client,
+        db_session,
+        email="timing-known@example.com",
+        name="Timing User",
+        organization_name="Timing Co",
     )
 
     start = time.monotonic()
@@ -56,16 +55,14 @@ async def test_forgot_password_timing_is_comparable_for_known_and_unknown_email(
 
 
 async def test_login_error_is_identical_for_wrong_password_and_unknown_email(
-    client: AsyncClient,
+    client: AsyncClient, db_session: AsyncSession,
 ) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Login Enum User",
-            "email": "login-enum-known@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Login Enum Co",
-        },
+    await signup_and_verify(
+        client,
+        db_session,
+        email="login-enum-known@example.com",
+        name="Login Enum User",
+        organization_name="Login Enum Co",
     )
     await client.post("/v1/auth/logout")
 
@@ -84,16 +81,14 @@ async def test_login_error_is_identical_for_wrong_password_and_unknown_email(
 
 
 async def test_login_timing_is_comparable_for_wrong_password_and_unknown_email(
-    client: AsyncClient,
+    client: AsyncClient, db_session: AsyncSession,
 ) -> None:
-    await client.post(
-        "/v1/auth/signup",
-        json={
-            "name": "Login Timing User",
-            "email": "login-timing-known@example.com",
-            "password": "correct horse battery staple",
-            "organizationName": "Login Timing Co",
-        },
+    await signup_and_verify(
+        client,
+        db_session,
+        email="login-timing-known@example.com",
+        name="Login Timing User",
+        organization_name="Login Timing Co",
     )
     await client.post("/v1/auth/logout")
 

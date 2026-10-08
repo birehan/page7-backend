@@ -45,20 +45,20 @@ def test_task_requiring_tools_rejects_incapable_model() -> None:
 def test_default_llm_settings_load() -> None:
     settings = LLMSettings()
     assert "caption_generation" in settings.tasks
-    assert settings.tasks["caption_generation"].provider == "anthropic"
-    assert settings.tasks["caption_generation"].model == "claude-sonnet-5"
-    assert settings.tasks["caption_generation"].fallback_provider == "openai"
-    assert settings.tasks["caption_generation"].fallback_model == "gpt-5.5"
-    assert settings.tasks["caption_transform"].model == "claude-haiku-4-5-20251001"
-    assert settings.tasks["classification"].provider == "anthropic"
-    assert settings.tasks["classification"].model == "claude-haiku-4-5-20251001"
-    assert settings.tasks["classification"].fallback_model == "gpt-5.6-luna"
-    assert settings.tasks["insight_report"].provider == "anthropic"
-    assert settings.tasks["brand_research"].provider == "anthropic"
-    assert settings.tasks["brand_research"].model == "claude-sonnet-5"
+    assert settings.tasks["caption_generation"].provider == "openai"
+    assert settings.tasks["caption_generation"].model == "gpt-5.5"
+    assert settings.tasks["caption_generation"].fallback_provider is None
+    assert settings.tasks["caption_transform"].provider == "openai"
+    assert settings.tasks["caption_transform"].model == "gpt-5.6-luna"
+    assert settings.tasks["classification"].provider == "openai"
+    assert settings.tasks["classification"].model == "gpt-5.6-luna"
+    assert settings.tasks["insight_report"].provider == "openai"
+    assert settings.tasks["insight_report"].model == "gpt-5.5"
+    assert settings.tasks["brand_research"].provider == "openai"
+    assert settings.tasks["brand_research"].model == "gpt-5.5"
     plan = settings.tasks["plan_generation"]
-    assert plan.provider == "anthropic"
-    assert plan.model == "claude-sonnet-5"
+    assert plan.provider == "openai"
+    assert plan.model == "gpt-5.5"
     assert plan.timeout_seconds == 90
     assert plan.max_output_tokens == 16384
 

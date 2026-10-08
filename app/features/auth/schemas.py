@@ -43,7 +43,14 @@ class MfaRequiredLoginOut(CamelModel):
     challenge_token: str
 
 
-LoginResponseOut = AuthenticatedLoginOut | MfaRequiredLoginOut
+class EmailVerificationRequiredOut(CamelModel):
+    status: Literal["email_verification_required"] = "email_verification_required"
+    challenge_token: str
+    email: str
+
+
+LoginResponseOut = AuthenticatedLoginOut | MfaRequiredLoginOut | EmailVerificationRequiredOut
+SignupResponseOut = EmailVerificationRequiredOut
 
 
 class LoginBody(CamelModel):
@@ -57,6 +64,16 @@ class SignupBody(CamelModel):
     email: EmailStr
     password: str = Field(min_length=8)
     organization_name: str = Field(min_length=1)
+    locale: Literal["ar", "en"] = "en"
+
+
+class VerifyEmailBody(CamelModel):
+    challenge_token: str = Field(min_length=1)
+    code: str = Field(pattern=r"^\d{6}$")
+
+
+class ResendVerificationBody(CamelModel):
+    challenge_token: str = Field(min_length=1)
 
 
 class ForgotPasswordBody(CamelModel):
@@ -79,6 +96,7 @@ class InvitePreviewOut(CamelModel):
 class AcceptInviteBody(CamelModel):
     name: str = Field(min_length=1)
     password: str = Field(min_length=8)
+    locale: Literal["ar", "en"] = "en"
 
 
 class MfaEnrollResponseOut(CamelModel):

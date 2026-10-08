@@ -16,6 +16,6 @@ def init_tracing(app: FastAPI, settings: Settings) -> None:
     """
     if not settings.observability.otel_enabled:
         return
-    provider = TracerProvider(resource=Resource.create({SERVICE_NAME: "pgblank-api"}))
+    provider = TracerProvider(resource=Resource.create({SERVICE_NAME: "page7-api"}))
     trace.set_tracer_provider(provider)
     FastAPIInstrumentor.instrument_app(app)

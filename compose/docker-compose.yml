@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:18-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: pgblank
       POSTGRES_PASSWORD: pgblank
@@ -33,6 +34,7 @@ services:
     build:
       context: ..
       target: api
+    restart: unless-stopped
     env_file:
       - ../.env
     environment:
@@ -58,6 +60,7 @@ services:
     build:
       context: ..
       target: worker
+    restart: unless-stopped
     env_file:
       - ../.env
     environment:
@@ -76,6 +79,7 @@ services:
     build:
       context: ..
       target: scheduler
+    restart: unless-stopped
     env_file:
       - ../.env
     environment:

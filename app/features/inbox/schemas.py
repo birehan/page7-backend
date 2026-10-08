@@ -58,6 +58,11 @@ class SendReplyBody(CamelModel):
     body: str = Field(min_length=1)
 
 
+class AiDraftOut(CamelModel):
+    suggested_reply_ar: str
+    suggested_reply_en: str
+
+
 class AssignConversationBody(CamelModel):
     assignee_id: uuid.UUID | None = None
 
@@ -83,6 +88,9 @@ class CreateSavedReplyBody(CamelModel):
 class InboxSyncBody(CamelModel):
     brand_id: uuid.UUID | None = None
     account_id: uuid.UUID | None = None
+    skip_classify: bool = True
+    conversation_limit: int = Field(default=25, ge=1, le=100)
+    mode: Literal["initial", "more"] = "initial"
 
 
 class InboxSyncEnqueueOut(CamelModel):
@@ -97,6 +105,7 @@ class InboxSyncAccountStatusOut(CamelModel):
     last_synced_at: datetime | None = None
     last_sync_status: str
     last_error: str | None = None
+    has_more: bool = False
 
 
 class InboxSyncStatusOut(CamelModel):

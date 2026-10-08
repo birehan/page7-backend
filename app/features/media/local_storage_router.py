@@ -25,9 +25,9 @@ def _require_local(
     settings: Annotated[Settings, Depends(get_settings)],
     storage: Annotated[ObjectStorage, Depends(get_object_storage)],
 ) -> LocalStorage:
-    if settings.app_env not in (Environment.DEVELOPMENT, Environment.TESTING) and (
-        settings.storage.provider != "local"
-    ):
+    # This surface has no authentication, so it exists only in development/testing. A
+    # `STORAGE__PROVIDER=local` setting must never open it in staging or production.
+    if settings.app_env not in (Environment.DEVELOPMENT, Environment.TESTING):
         raise ApiError("NOT_FOUND", "Not found", status_code=404)
     if not isinstance(storage, LocalStorage):
         raise ApiError("NOT_FOUND", "Not found", status_code=404)

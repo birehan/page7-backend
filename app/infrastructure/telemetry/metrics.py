@@ -14,7 +14,7 @@ from opentelemetry import metrics
 
 from app.integrations.errors import ProviderError
 
-meter = metrics.get_meter("pgblank.api")
+meter = metrics.get_meter("page7.api")
 
 _provider_call_duration = meter.create_histogram(
     name="provider_call_duration_seconds",

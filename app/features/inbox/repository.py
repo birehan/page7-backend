@@ -372,6 +372,24 @@ async def update_conversation_classification(
     await session.flush()
 
 
+async def update_suggested_replies(
+    session: AsyncSession,
+    *,
+    conversation_id: uuid.UUID,
+    suggested_reply_ar: str,
+    suggested_reply_en: str,
+    suggestion_decision_id: uuid.UUID,
+) -> None:
+    conv = await session.get(Conversation, conversation_id)
+    if conv is None:
+        return
+    conv.suggested_reply_ar = suggested_reply_ar
+    conv.suggested_reply_en = suggested_reply_en
+    conv.suggestion_decision_id = suggestion_decision_id
+    conv.updated_at = utc_now()
+    await session.flush()
+
+
 async def mark_message_sent(
     session: AsyncSession,
     *,
@@ -715,13 +733,15 @@ async def mark_sync_ok(
     *,
     state: InboxSyncState,
     dm_cursor: str | None = None,
+    update_dm_cursor: bool = False,
 ) -> None:
+    """Mark sync success. Only touch dm_cursor when update_dm_cursor is True (may clear to None)."""
     state.last_synced_at = utc_now()
     state.last_sync_status = "ok"
     state.last_error = None
     state.consecutive_failures = 0
     state.updated_at = utc_now()
-    if dm_cursor is not None:
+    if update_dm_cursor:
         state.dm_cursor = dm_cursor
     await session.flush()
 

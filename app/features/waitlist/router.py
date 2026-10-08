@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security.client_ip import client_ip
 from app.db.session import get_db_session
 from app.features.waitlist import service
 from app.features.waitlist.schemas import WaitlistJoinIn, WaitlistJoinOut
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/waitlist", tags=["waitlist"])
 
 
 def _client_ip(request: Request) -> str | None:
-    return request.client.host if request.client else None
+    return client_ip(request)
 
 
 @router.post("", response_model=WaitlistJoinOut, response_model_exclude_none=True)

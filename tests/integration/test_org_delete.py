@@ -88,6 +88,32 @@ async def test_cross_tenant_delete_returns_404(
     assert response.status_code == 404
 
 
+async def test_deleted_organization_is_locked_out_of_org_routes(
+    client: AsyncClient, seed_member: SeedMember
+) -> None:
+    org_id, _user_id, raw_token = await seed_member(role="owner")
+    _login(client, raw_token)
+    assert (await client.get(f"/v1/orgs/{org_id}/notifications")).status_code == 200
+    assert (await client.get(f"/v1/orgs/{org_id}/settings")).status_code == 200
+
+    assert (await client.delete(f"/v1/orgs/{org_id}")).status_code == 204
+
+    # Membership-only route and min-role route both behave like a non-member now.
+    assert (await client.get(f"/v1/orgs/{org_id}/notifications")).status_code == 404
+    assert (await client.get(f"/v1/orgs/{org_id}/settings")).status_code == 404
+
+
+async def test_deleted_organization_member_can_still_use_session_routes(
+    client: AsyncClient, seed_member: SeedMember
+) -> None:
+    org_id, _user_id, raw_token = await seed_member(role="owner")
+    _login(client, raw_token)
+    assert (await client.delete(f"/v1/orgs/{org_id}")).status_code == 204
+
+    # Session-only routes stay open so the user can still read their profile and log out.
+    assert (await client.get("/v1/users/me")).status_code == 200
+
+
 async def test_purge_organization_anonymizes_audit_and_retains_invoices(
     seed_member: SeedMember, db_session: AsyncSession
 ) -> None:

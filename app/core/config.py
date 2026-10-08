@@ -107,37 +107,30 @@ TOOL_CAPABLE_MODELS: dict[str, set[str]] = {
 
 
 def _default_tasks() -> dict[str, TaskConfig]:
-    # Anthropic-first: Haiku for high-volume/low-stakes, Sonnet 5 for creative/structured.
-    # OpenAI remains the automatic fallback for resilience.
+    # OpenAI-only for all text LLM tasks. Image generation stays on IMAGEGEN__
+    # (Fal) and is unrelated to these task configs.
     creative = TaskConfig(
-        provider="anthropic",
-        model="claude-sonnet-5",
+        provider="openai",
+        model="gpt-5.5",
         timeout_seconds=25,
         temperature=0.9,
-        fallback_provider="openai",
-        fallback_model="gpt-5.5",
     )
     light = TaskConfig(
-        provider="anthropic",
-        model="claude-haiku-4-5-20251001",
+        provider="openai",
+        model="gpt-5.6-luna",
         timeout_seconds=25,
         temperature=0.9,
-        fallback_provider="openai",
-        fallback_model="gpt-5.5",
     )
     classification = TaskConfig(
-        provider="anthropic",
-        model="claude-haiku-4-5-20251001",
+        provider="openai",
+        model="gpt-5.6-luna",
         timeout_seconds=10,
         temperature=0.0,
-        fallback_provider="openai",
-        fallback_model="gpt-5.6-luna",
     )
     return {
         "caption_generation": creative,
         "caption_transform": light,
-        # Full 14-day bilingual calendars routinely exceed the creative default (25s)
-        # and the Anthropic adapter's 4096-token floor (truncation → invalid JSON).
+        # Full 14-day bilingual calendars routinely exceed the creative default (25s).
         "plan_generation": creative.model_copy(
             update={
                 "temperature": 0.7,
@@ -148,27 +141,27 @@ def _default_tasks() -> dict[str, TaskConfig]:
         "strategy_generation": creative.model_copy(update={"temperature": 0.7}),
         "alt_text": light,
         "brand_research": TaskConfig(
-            provider="anthropic",
-            model="claude-sonnet-5",
+            provider="openai",
+            model="gpt-5.5",
             timeout_seconds=45,
             max_retries=1,
             temperature=0.2,
             # web_search is requested explicitly by SearchAugmentedResearcher only.
             # FetchExtractResearcher shares this task and must not inherit tools —
             # injecting web_search there burns budget and can stall extraction.
-            fallback_provider="openai",
-            fallback_model="gpt-5.5",
         ),
         "insight_report": TaskConfig(
-            provider="anthropic",
-            model="claude-sonnet-5",
+            provider="openai",
+            model="gpt-5.5",
             timeout_seconds=30,
             temperature=0.7,
-            fallback_provider="openai",
-            fallback_model="gpt-5.5",
         ),
         "classification": classification,
         "reply_suggestion": classification,
+        # Caption → Flux-safe visual brief (architecture/09 v2).
+        "visual_brief": light.model_copy(
+            update={"temperature": 0.4, "timeout_seconds": 20}
+        ),
     }
 
 
@@ -206,10 +199,23 @@ class LLMSettings(BaseModel):
 
 
 class StyleConfig(BaseModel):
-    """Per-style fal model and prompt augmentation (architecture/09 §2)."""
+    """Per-style fal model and prompt augmentation (architecture/09 §2 / v2).
 
-    model_id: str = "fal-ai/flux-2/flash"
-    param_profile: Literal["flux", "qwen"] = "flux"
+    Callers: model_resolve.resolve_model, visuals.service.start_generate.
+    User: make Qwen Image 3 default for image generation here and onboarding.
+    """
+
+    model_id: str = "alibaba/qwen-image-3/text-to-image"
+    draft_model_id: str | None = "fal-ai/flux-2/flash"
+    premium_model_id: str | None = "fal-ai/ideogram/v3"
+    param_profile: Literal["flux", "qwen", "ideogram", "gpt_image"] = "qwen"
+    draft_param_profile: Literal["flux", "qwen", "ideogram", "gpt_image"] | None = "flux"
+    premium_param_profile: Literal["flux", "qwen", "ideogram", "gpt_image"] | None = (
+        "ideogram"
+    )
+    # Poster EN routing (AR stays on model_id / qwen).
+    en_model_id: str | None = None
+    en_param_profile: Literal["flux", "qwen", "ideogram", "gpt_image"] | None = None
     prompt_prefix: str = ""
     prompt_suffix: str = ""
     num_inference_steps: int | None = None
@@ -222,57 +228,57 @@ _NO_TEXT = (
 
 
 def _default_styles() -> dict[str, StyleConfig]:
-    """Style → model mapping (architecture/09 review §6.1, verified live 2026-09-13).
+    """Style → model mapping (bakeoff-locked defaults).
 
-    Flux styles moved from fal-ai/flux/dev to fal-ai/flux-2/flash: ~2.3x faster
-    (2.8s vs 6.5s on a fixed prompt), ~5x cheaper per MP ($0.005 vs $0.025), and
-    visibly higher fidelity in a direct side-by-side. flux-2/flash is a
-    "zero-config" model (fal's own framing) — it does not take
-    num_inference_steps/guidance_scale, so those stay None for flux styles.
-    poster stays on Qwen Image 3: its Arabic text rendering was verified live
-    (legible, correctly joined script) and is the reason the style exists —
-    don't swap the one style whose value proposition is text quality without
-    a wider A/B, per architecture/09 review §6.1.
-
-    Flux styles always append a no-text clause: Flux cannot reliably render
-    Arabic (or most non-Latin) glyphs, and feeding caption text into these
-    styles produces garbled in-image typography. Text-bearing creatives must
-    use the `poster` (Qwen) style with an explicit `headline`.
-
-    Changing model_id alone is not enough — param_profile must match the model's
-    argument shape (flux vs qwen) or fal rejects unknown keys.
+    Standard photo styles use Qwen Image 3 (best bilingual / Saudi-market pick
+    vs Ideogram). Draft stays on cheap Flux Flash; Premium uses Ideogram.
+    Poster: Qwen for AR, Ideogram for EN headlines.
     """
+    qwen_photo = StyleConfig(
+        model_id="alibaba/qwen-image-3/text-to-image",
+        draft_model_id="fal-ai/flux-2/flash",
+        premium_model_id="fal-ai/ideogram/v3",
+        param_profile="qwen",
+        draft_param_profile="flux",
+        premium_param_profile="ideogram",
+    )
     return {
-        "photo": StyleConfig(
-            model_id="fal-ai/flux-2/flash",
-            param_profile="flux",
-            prompt_suffix=f"professional photography, natural lighting, {_NO_TEXT}",
+        "photo": qwen_photo.model_copy(
+            update={
+                "prompt_suffix": f"professional photography, natural lighting, {_NO_TEXT}",
+            }
         ),
-        "flat": StyleConfig(
-            model_id="fal-ai/flux-2/flash",
-            param_profile="flux",
-            prompt_suffix=f"flat vector illustration, no gradients, {_NO_TEXT}",
+        "flat": qwen_photo.model_copy(
+            update={
+                "prompt_suffix": f"flat vector illustration, no gradients, {_NO_TEXT}",
+            }
         ),
-        "three-d": StyleConfig(
-            model_id="fal-ai/flux-2/flash",
-            param_profile="flux",
-            prompt_suffix=f"3D render, soft studio lighting, {_NO_TEXT}",
+        "three-d": qwen_photo.model_copy(
+            update={
+                "prompt_suffix": f"3D render, soft studio lighting, {_NO_TEXT}",
+            }
         ),
-        "minimal": StyleConfig(
-            model_id="fal-ai/flux-2/flash",
-            param_profile="flux",
-            prompt_suffix=f"minimalist, generous negative space, {_NO_TEXT}",
+        "minimal": qwen_photo.model_copy(
+            update={
+                "prompt_suffix": f"minimalist, generous negative space, {_NO_TEXT}",
+            }
         ),
-        "saudi-modern": StyleConfig(
-            model_id="fal-ai/flux-2/flash",
-            param_profile="flux",
-            prompt_suffix=(
-                f"modern Saudi aesthetic, geometric pattern motifs, {_NO_TEXT}"
-            ),
+        "saudi-modern": qwen_photo.model_copy(
+            update={
+                "prompt_suffix": (
+                    f"modern Saudi aesthetic, geometric pattern motifs, {_NO_TEXT}"
+                ),
+            }
         ),
         "poster": StyleConfig(
             model_id="alibaba/qwen-image-3/text-to-image",
+            draft_model_id="alibaba/qwen-image-3/text-to-image",
+            premium_model_id="fal-ai/ideogram/v3",
             param_profile="qwen",
+            draft_param_profile="qwen",
+            premium_param_profile="ideogram",
+            en_model_id="fal-ai/ideogram/v3",
+            en_param_profile="ideogram",
             prompt_suffix=(
                 "clean social media poster layout, legible typography, "
                 "Saudi-market appropriate (no alcohol, no pork, modest dress)"
@@ -282,12 +288,10 @@ def _default_styles() -> dict[str, StyleConfig]:
     }
 
 
-_DEFAULT_ASPECT_MAP: dict[str, str] = {
-    "square": "square_hd",
-    "portrait": "portrait_4_3",
-    "vertical": "portrait_16_9",
-    "landscape": "landscape_16_9",
-}
+def _default_aspect_map() -> dict[str, dict[str, int]]:
+    from app.features.visuals.aspects import default_aspect_map
+
+    return default_aspect_map()
 
 
 class ImageGenSettings(BaseModel):
@@ -296,9 +300,7 @@ class ImageGenSettings(BaseModel):
     api_key: SecretStr | None = None
     provider: Literal["auto", "fal", "fake"] = "auto"
     styles: dict[str, StyleConfig] = Field(default_factory=_default_styles)
-    aspect_map: dict[str, str] = Field(
-        default_factory=lambda: dict(_DEFAULT_ASPECT_MAP)
-    )
+    aspect_map: dict[str, dict[str, int]] = Field(default_factory=_default_aspect_map)
     rate_limit_generate: int = 20
     rate_limit_window_seconds: int = 60
     timeout_seconds: float = 120.0
@@ -406,6 +408,10 @@ class Settings(BaseSettings):
     )
 
     app_env: Environment = Environment.DEVELOPMENT
+
+    # Number of trusted reverse proxies in front of the API (Cloud Run = 1). Used to read
+    # the real client IP from X-Forwarded-For; 0 ignores the header. See core/security/client_ip.py.
+    trusted_proxy_hops: int = Field(default=0, ge=0, le=5)
 
     # Top-level, not nested under `auth` — architecture/05 §4 fixes these exact
     # env var names: `APP_ENCRYPTION_KEY__<alias>` populates the dict below,

@@ -24,7 +24,7 @@ _DEFAULT_TIMEOUT = 30.0
 # Browser-like Accept is required: several CDNs (Cloudflare challenge pages) return
 # 403 to clients that send only User-Agent without an HTML Accept header.
 _RESEARCH_HEADERS = {
-    "User-Agent": "pgblank-research/1.0",
+    "User-Agent": "page7-research/1.0",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
 }

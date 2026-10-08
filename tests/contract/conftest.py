@@ -12,7 +12,7 @@ from alembic import command
 from tests.db_fixtures import db_session, seed_member  # noqa: F401
 from tests.email_fixtures import client_with_fake_email  # noqa: F401
 
-CONTRACT_PATH = Path(__file__).parents[3] / "docs" / "contracts" / "api-contract.json"
+CONTRACT_PATH = Path(__file__).parents[2] / "docs" / "contracts" / "api-contract.json"
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -100,10 +100,14 @@ def _structured_signals(pages: list[PageExtraction]) -> dict[str, FieldExtractio
             logo_url = page.logo_url
             logo_page_url = page.url
     if colors:
-        out["colors"] = FieldExtraction(value=colors, confidence=0.95, source_page_urls=color_urls)
+        out["colors"] = FieldExtraction(
+            value=colors[:3], confidence=0.95, source_page_urls=color_urls[:3]
+        )
     if languages:
+        # Preferred language: first detected ar|en only
+        preferred = languages[0]
         out["languages"] = FieldExtraction(
-            value=languages, confidence=0.9, source_page_urls=lang_urls
+            value=[preferred], confidence=0.9, source_page_urls=lang_urls[:1]
         )
     if logo_url is not None and logo_page_url is not None:
         out["logo_url"] = FieldExtraction(

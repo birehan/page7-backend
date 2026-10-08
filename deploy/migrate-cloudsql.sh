@@ -120,6 +120,28 @@ async def main() -> None:
 asyncio.run(main())
 PY
 
+# On-demand Cloud SQL backups are kept until deleted, so only take one when a migration
+# is actually pending. Best effort by default; REQUIRE_PRE_MIGRATE_BACKUP=1 (set for
+# production) refuses to migrate without a fresh backup.
+if APP_ENV=${APP_ENV:-development} uv run alembic current 2>/dev/null | grep -q "(head)"; then
+  echo "==> database already at head; skipping pre-migration backup"
+else
+  echo "==> pre-migration Cloud SQL backup"
+  backup_ok=0
+  if command -v gcloud >/dev/null 2>&1 &&
+    gcloud sql backups create --instance="$SQL_INSTANCE" --project="$PROJECT" \
+      --description="pre-migrate ${IMAGE_TAG:-manual}" --quiet; then
+    backup_ok=1
+  fi
+  if [[ "$backup_ok" != "1" ]]; then
+    if [[ "${REQUIRE_PRE_MIGRATE_BACKUP:-0}" == "1" ]]; then
+      echo "ERROR: pre-migration backup failed and REQUIRE_PRE_MIGRATE_BACKUP=1; not migrating" >&2
+      exit 1
+    fi
+    echo "WARN: pre-migration backup failed or gcloud missing; continuing" >&2
+  fi
+fi
+
 echo "==> alembic upgrade head"
 APP_ENV=${APP_ENV:-development} uv run alembic upgrade head
 echo "==> Migrations applied"

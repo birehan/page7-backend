@@ -27,8 +27,12 @@ async def insert(
     target_type: str,
     target_id: uuid.UUID,
     meta: dict[str, Any] | None,
+    ip: str | None = None,
+    request_id: str | None = None,
 ) -> AuditLog:
     log = AuditLog(
+        ip=ip,
+        request_id=request_id,
         organization_id=organization_id,
         brand_id=brand_id,
         actor_kind=actor_kind,

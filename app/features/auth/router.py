@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import Environment, Settings, get_settings
 from app.core.errors import ApiError
 from app.core.request_context import AuthenticatedUser, require_session
+from app.core.security.client_ip import client_ip
 from app.core.time import utc_now
 from app.db.session import get_db_session
 from app.features import team
@@ -19,6 +20,7 @@ from app.features.auth.schemas import (
     AcceptInviteBody,
     AuthenticatedLoginOut,
     AuthProvidersOut,
+    EmailVerificationRequiredOut,
     ForgotPasswordBody,
     GoogleStartOut,
     InvitePreviewOut,
@@ -27,21 +29,28 @@ from app.features.auth.schemas import (
     MfaEnrollResponseOut,
     MfaRequiredLoginOut,
     MfaVerifyBody,
+    ResendVerificationBody,
     ResetPasswordBody,
     SessionPayloadOut,
     SessionUserOut,
     SignupBody,
+    SignupResponseOut,
     UpdateUserBody,
     UserOut,
+    VerifyEmailBody,
 )
-from app.features.auth.service import AuthResult, MfaChallengeResult
+from app.features.auth.service import (
+    AuthResult,
+    EmailVerificationRequiredResult,
+    MfaChallengeResult,
+)
 
 router = APIRouter(tags=["auth"])
 users_router = APIRouter(prefix="/users", tags=["users"])
 
 
 def _client_ip(request: Request) -> str | None:
-    return request.client.host if request.client else None
+    return client_ip(request)
 
 
 def _to_session_payload(result: AuthResult) -> SessionPayloadOut:
@@ -214,29 +223,79 @@ async def login(
     )
     if isinstance(result, MfaChallengeResult):
         return MfaRequiredLoginOut(challenge_token=result.raw_challenge_token)
+    if isinstance(result, EmailVerificationRequiredResult):
+        return EmailVerificationRequiredOut(
+            challenge_token=result.raw_challenge_token,
+            email=result.masked_email,
+        )
     _set_session_cookie(response, settings, result)
     return AuthenticatedLoginOut(session=_to_session_payload(result))
 
 
-@router.post("/auth/signup", response_model=SessionPayloadOut, response_model_exclude_none=True)
+@router.post("/auth/signup", response_model=SignupResponseOut, response_model_exclude_none=True)
 async def signup(
     body: SignupBody,
     request: Request,
-    response: Response,
-    settings: Annotated[Settings, Depends(get_settings)],
     db: Annotated[AsyncSession, Depends(get_db_session)],
-) -> SessionPayloadOut:
+) -> SignupResponseOut:
     result = await service.signup(
         db,
         name=body.name,
         email=body.email,
         password=body.password,
         organization_name=body.organization_name,
+        locale=body.locale,
+        ip=_client_ip(request),
+        user_agent=request.headers.get("user-agent"),
+    )
+    return EmailVerificationRequiredOut(
+        challenge_token=result.raw_challenge_token,
+        email=result.masked_email,
+    )
+
+
+@router.post(
+    "/auth/verify-email",
+    response_model=SessionPayloadOut,
+    response_model_exclude_none=True,
+)
+async def verify_email(
+    body: VerifyEmailBody,
+    request: Request,
+    response: Response,
+    settings: Annotated[Settings, Depends(get_settings)],
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+) -> SessionPayloadOut:
+    result = await service.verify_email(
+        db,
+        challenge_token=body.challenge_token,
+        code=body.code,
         ip=_client_ip(request),
         user_agent=request.headers.get("user-agent"),
     )
     _set_session_cookie(response, settings, result)
     return _to_session_payload(result)
+
+
+@router.post(
+    "/auth/resend-verification",
+    response_model=EmailVerificationRequiredOut,
+    response_model_exclude_none=True,
+)
+async def resend_verification(
+    body: ResendVerificationBody,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+) -> EmailVerificationRequiredOut:
+    result = await service.resend_email_verification(
+        db,
+        challenge_token=body.challenge_token,
+        ip=_client_ip(request),
+    )
+    return EmailVerificationRequiredOut(
+        challenge_token=result.raw_challenge_token,
+        email=result.masked_email,
+    )
 
 
 @router.post("/auth/logout", status_code=status.HTTP_204_NO_CONTENT)
@@ -299,6 +358,7 @@ async def accept_invite(
         token=token,
         name=body.name,
         password=body.password,
+        locale=body.locale,
         ip=_client_ip(request),
         user_agent=request.headers.get("user-agent"),
     )

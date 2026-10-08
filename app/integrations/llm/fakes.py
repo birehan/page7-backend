@@ -208,55 +208,35 @@ class FakeLLMProvider:
             }
         if "brand" in name or "research" in name:
             return {
-                "voice_adjectives": {
-                    "value": ["Friendly", "Modern", "Trustworthy"],
-                    "confidence": 0.75,
-                    "source_page_urls": ["https://example.sa/"],
-                },
-                "do_list": {
-                    "value": ["Speak warmly"],
-                    "confidence": 0.6,
-                    "source_page_urls": ["https://example.sa/"],
-                },
-                "dont_list": {
-                    "value": ["Avoid jargon"],
-                    "confidence": 0.55,
-                    "source_page_urls": ["https://example.sa/"],
-                },
-                "banned_claims": {
-                    "value": None,
-                    "confidence": None,
-                    "source_page_urls": [],
-                },
-                "colors": {
-                    "value": ["#0B5D3B"],
+                "name": {
+                    "value": "Example Clinic",
                     "confidence": 0.9,
                     "source_page_urls": ["https://example.sa/"],
                 },
-                "dialect": {
-                    "value": "gulf",
-                    "confidence": 0.7,
+                "industry": {
+                    "value": "healthcare",
+                    "confidence": 0.75,
+                    "source_page_urls": ["https://example.sa/"],
+                },
+                "description": {
+                    "value": "Friendly modern dental care in Riyadh.",
+                    "confidence": 0.8,
+                    "source_page_urls": ["https://example.sa/"],
+                },
+                "colors": {
+                    "value": ["#0B5D3B", "#134E4A"],
+                    "confidence": 0.9,
                     "source_page_urls": ["https://example.sa/"],
                 },
                 "languages": {
-                    "value": ["ar", "en"],
+                    "value": ["ar"],
                     "confidence": 0.85,
                     "source_page_urls": ["https://example.sa/"],
                 },
-                "pillars_suggested": {
-                    "value": [
-                        {
-                            "name": "Community care",
-                            "description": "Local patient stories",
-                        }
-                    ],
-                    "confidence": 0.5,
-                    "source_page_urls": ["https://example.sa/about"],
-                },
-                "competitors_suggested": {
-                    "value": None,
-                    "confidence": None,
-                    "source_page_urls": [],
+                "logo_url": {
+                    "value": "https://example.sa/logo.png",
+                    "confidence": 0.7,
+                    "source_page_urls": ["https://example.sa/"],
                 },
                 "warnings": [],
             }

@@ -1,4 +1,9 @@
-"""Visuals service — generate (SSE-over-jobs), keep, render (Phase 11)."""
+"""Visuals service — generate (SSE-over-jobs), keep, render (Phase 11 / v2).
+
+Callers: features/visuals/router.py. Wires visual brief rewrite, model resolve,
+and logo composite flags into the ai.visuals_generate job.
+User: implement production AI image gen plan.
+"""
 
 from __future__ import annotations
 
@@ -17,8 +22,16 @@ from app.core.errors import ApiError
 from app.core.time import utc_now
 from app.features import brands
 from app.features.visuals import repository
+from app.features.visuals.model_resolve import resolve_model
+from app.features.visuals.prompt_rewrite import (
+    PROMPT_VERSION,
+    assemble_variant_prompts,
+    color_names_from_hex,
+    rewrite_visual_brief,
+)
 from app.features.visuals.schemas import GenerateVisualsBody
 from app.infrastructure.ratelimit.limiter import RateLimiter
+from app.integrations.llm import get_llm_router
 from app.jobs import queue as job_queue
 from app.sse.bridge import bridge_sse_response, create_run
 
@@ -49,7 +62,7 @@ def augment_prompt(
     headline: str | None = None,
     saudi_policy: bool = False,
 ) -> str:
-    """Assemble the prompt sent to fal (architecture/09 §2 / §4 step order)."""
+    """Legacy assembler kept for unit tests; production uses assemble_generation_prompt."""
     parts: list[str] = []
     if style_prefix.strip():
         parts.append(style_prefix.strip())
@@ -114,11 +127,13 @@ async def start_generate(
         raise ApiError("VALIDATION", f"Unknown aspect: {body.aspect}", status_code=422)
 
     brand_colors = _brand_colors_from_out(brand.guidelines)
+    color_names = color_names_from_hex(brand_colors)
     count = body.count
+    mode = "poster" if body.style == "poster" else "photo"
 
+    # Logo compositing is post-process — do NOT pass logo as model reference
+    # (keeps brand mark pixel-faithful). reference_media_id still conditions.
     reference_image_urls: list[str] = []
-    if body.use_brand_logo and brand.logo_url:
-        reference_image_urls.append(brand.logo_url)
     if body.reference_media_id is not None:
         from app.features.media import repository as media_repo
         from app.integrations.storage import get_object_storage
@@ -135,16 +150,49 @@ async def start_generate(
         reference_image_urls.append(storage.public_url(asset.r2_key))
     reference_image_urls = reference_image_urls[:3]
 
-    augmented = augment_prompt(
-        prompt=body.prompt,
+    logo_url = brand.logo_url if body.use_brand_logo and brand.logo_url else None
+
+    router = get_llm_router(settings)
+    brief = await rewrite_visual_brief(
+        caption_or_prompt=body.prompt,
+        style=body.style,
+        aspect=body.aspect,
+        brand_name=brand.name,
+        industry=brand.industry,
+        city=brand.city,
+        brand_colors=brand_colors,
+        router=router,
+        use_llm=True,
+    )
+
+    # User checkbox wins over LLM overlay_hint — never skip a requested logo.
+    overlay_hint = brief.overlay_hint
+    if logo_url and overlay_hint == "none":
+        overlay_hint = "logo_bottom_left"
+    if logo_url and not overlay_hint.startswith("logo_"):
+        overlay_hint = "logo_bottom_left"
+
+    prompt_variants = assemble_variant_prompts(
+        brief,
+        count=count,
         style_prefix=style_cfg.prompt_prefix,
         style_suffix=style_cfg.prompt_suffix,
-        brand_colors=brand_colors,
-        use_brand_colors=body.use_brand_colors,
         industry=brand.industry,
         city=brand.city,
         headline=body.headline,
+        brand_colors_named=color_names,
+        use_brand_colors=body.use_brand_colors,
         saudi_policy=body.style == "poster",
+        mode=mode,
+    )
+    augmented = prompt_variants[0]
+
+    model_id, param_profile = resolve_model(
+        style_cfg,
+        style=body.style,
+        quality=body.quality,
+        headline=body.headline or brief.headline_suggestion,
+        prompt=body.prompt,
     )
 
     key_seed = _inputs_hash(
@@ -155,6 +203,8 @@ async def start_generate(
             "count": count,
             "headline": body.headline,
             "useBrandLogo": body.use_brand_logo,
+            "quality": body.quality,
+            "promptVersion": PROMPT_VERSION,
         }
     )[:16]
     key = idempotency_key or f"visuals_generate:{body.brand_id}:{key_seed}"
@@ -168,9 +218,11 @@ async def start_generate(
             "useBrandColors": body.use_brand_colors,
             "useBrandLogo": body.use_brand_logo,
             "headline": body.headline,
+            "quality": body.quality,
             "referenceMediaId": str(body.reference_media_id)
             if body.reference_media_id
             else None,
+            "promptVersion": PROMPT_VERSION,
         }
     )
 
@@ -184,8 +236,6 @@ async def start_generate(
         created_by=user_id,
     )
 
-    # Reuse run.id as the generation PK (same pattern as brand_research_runs)
-    # so an idempotent re-POST finds the existing row.
     generation = await repository.get_generation(session, generation_id=run.id)
     if generation is None:
         generation = await repository.create_generation(
@@ -193,7 +243,7 @@ async def start_generate(
             organization_id=organization_id,
             brand_id=body.brand_id,
             requested_by=user_id,
-            model=style_cfg.model_id,
+            model=model_id,
             prompt=body.prompt,
             style=body.style,
             aspect=body.aspect,
@@ -215,7 +265,9 @@ async def start_generate(
                 "user_id": str(user_id),
                 "user_name": user_name,
                 "augmented_prompt": augmented,
-                "model_id": style_cfg.model_id,
+                "prompt_variants": prompt_variants,
+                "negative_prompt": brief.negative_prompt or None,
+                "model_id": model_id,
                 "image_size": image_size,
                 "style": body.style,
                 "aspect": body.aspect,
@@ -224,10 +276,17 @@ async def start_generate(
                 "brand_colors": brand_colors,
                 "num_inference_steps": style_cfg.num_inference_steps,
                 "guidance_scale": style_cfg.guidance_scale,
-                "param_profile": style_cfg.param_profile,
+                "param_profile": param_profile,
                 "reference_image_urls": reference_image_urls,
                 "original_prompt": body.prompt,
                 "seed": body.seed,
+                "logo_url": logo_url,
+                "force_logo": bool(logo_url),
+                "overlay_hint": overlay_hint,
+                "quality": body.quality,
+                "prompt_version": PROMPT_VERSION,
+                "target_width": image_size["width"],
+                "target_height": image_size["height"],
             },
             unique_key=f"visuals_generate:{run.id}",
             organization_id=organization_id,
