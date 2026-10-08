@@ -25,16 +25,16 @@ def resolve_model(
     """Pick model + profile for this generation."""
     if quality == "draft" and style_cfg.draft_model_id:
         profile = style_cfg.draft_param_profile or style_cfg.param_profile
-        return style_cfg.draft_model_id, profile  # type: ignore[return-value]
+        return style_cfg.draft_model_id, profile
 
     if quality == "premium" and style_cfg.premium_model_id:
         profile = style_cfg.premium_param_profile or "gpt_image"
-        return style_cfg.premium_model_id, profile  # type: ignore[return-value]
+        return style_cfg.premium_model_id, profile
 
     # Poster EN → Ideogram when configured; AR → Qwen (default model_id).
     if style == "poster" and style_cfg.en_model_id and style_cfg.en_param_profile:
         text = f"{headline or ''} {prompt}"
         if not contains_arabic(text):
-            return style_cfg.en_model_id, style_cfg.en_param_profile  # type: ignore[return-value]
+            return style_cfg.en_model_id, style_cfg.en_param_profile
 
-    return style_cfg.model_id, style_cfg.param_profile  # type: ignore[return-value]
+    return style_cfg.model_id, style_cfg.param_profile
