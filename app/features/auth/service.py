@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import hashlib
+import json
 import secrets
 import time
 import uuid
@@ -52,6 +54,10 @@ _EMAIL_VERIFY_SEND_WINDOW = timedelta(minutes=10)
 _EMAIL_VERIFY_MAX_SENDS_PER_EMAIL = 3
 _EMAIL_VERIFY_MAX_SENDS_PER_IP = 10
 _AUTH_OAUTH_STATE_TTL = timedelta(minutes=10)
+# Short-lived encrypted envelope so the Google callback can hand the session to
+# the frontend without relying on a top-level Set-Cookie on the API host
+# (Chrome blocks that cookie on later cross-site fetches from Vercel).
+_SESSION_HANDOFF_TTL = timedelta(minutes=2)
 _LOGIN_LOCKOUT_THRESHOLD = 10
 _LOGIN_LOCKOUT_WINDOW = timedelta(minutes=15)
 _MFA_VERIFY_LOCKOUT_THRESHOLD = 5
@@ -1071,6 +1077,62 @@ async def start_google_oauth(
         nonce=nonce,
     )
     return GoogleStartResult(authorize_url=url)
+
+
+def mint_session_handoff(raw_token: str) -> str:
+    """Encrypt a short-lived handoff so the SPA can claim the session via fetch."""
+    exp = int((utc_now() + _SESSION_HANDOFF_TTL).timestamp())
+    payload = json.dumps({"t": raw_token, "exp": exp}, separators=(",", ":")).encode()
+    blob, key_id = crypto.encrypt_secret(payload)
+    token = base64.urlsafe_b64encode(blob).decode().rstrip("=")
+    return f"{key_id}.{token}"
+
+
+async def claim_session_handoff(session: AsyncSession, *, handoff: str) -> AuthResult:
+    """Resolve a handoff into a live AuthResult for Set-Cookie on a fetch response."""
+    from app.features import organizations, team
+
+    try:
+        key_id, token = handoff.split(".", 1)
+        padded = token + "=" * (-len(token) % 4)
+        blob = base64.urlsafe_b64decode(padded.encode())
+        data = json.loads(crypto.decrypt_secret(blob, key_id=key_id))
+        raw_token = str(data["t"])
+        exp = int(data["exp"])
+    except Exception as exc:
+        # Broad catch: decrypt failures (InvalidTag, KeyError) and malformed
+        # envelopes must all surface as the same INVALID_HANDOFF to the client.
+        raise ApiError(
+            "INVALID_HANDOFF", "Session handoff is invalid or expired", status_code=400
+        ) from exc
+
+    if exp < int(utc_now().timestamp()):
+        raise ApiError(
+            "INVALID_HANDOFF", "Session handoff is invalid or expired", status_code=400
+        )
+
+    row = await repository.get_session_by_token_hash(session, _hash_token(raw_token))
+    if row is None or row.revoked_at is not None or row.expires_at < utc_now():
+        raise ApiError("UNAUTHORIZED", "Not authenticated", status_code=401)
+
+    user = await repository.get_user_by_id(session, row.user_id)
+    if user is None or user.deactivated_at is not None:
+        raise ApiError("UNAUTHORIZED", "Not authenticated", status_code=401)
+
+    org = await organizations.get_organization(session, row.organization_id)
+    membership = await team.get_membership(
+        session, organization_id=row.organization_id, user_id=user.id
+    )
+    if membership is None:
+        raise ApiError("UNAUTHORIZED", "Not authenticated", status_code=401)
+
+    return AuthResult(
+        user=user,
+        organization=org,
+        session=row,
+        raw_token=raw_token,
+        role=membership.role,
+    )
 
 
 async def finish_google_oauth(

@@ -938,6 +938,109 @@
       }
     },
     {
+      "resource": "auth",
+      "method": "POST",
+      "path": "/auth/session/claim",
+      "summary": "Exchange a short-lived Google OAuth handoff for a session cookie (cross-site).",
+      "stream": false,
+      "idempotent": false,
+      "request": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "handoff": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "handoff"
+        ]
+      },
+      "response": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "name": {
+                "type": "string"
+              },
+              "nameAr": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "admin",
+                  "editor",
+                  "approver",
+                  "viewer"
+                ]
+              },
+              "avatarUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "nameAr",
+              "email",
+              "role"
+            ]
+          },
+          "organizationId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "organizationName": {
+            "type": "string"
+          },
+          "organizationIndustry": {
+            "type": "string"
+          },
+          "organizationCity": {
+            "type": "string"
+          },
+          "organizationVatNumber": {
+            "type": "string"
+          },
+          "brandId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expiresAt": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "mfaEnabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user",
+          "organizationId",
+          "organizationName",
+          "organizationIndustry",
+          "organizationCity",
+          "organizationVatNumber",
+          "expiresAt",
+          "mfaEnabled"
+        ]
+      }
+    },
+    {
       "resource": "users",
       "method": "GET",
       "path": "/users/me",

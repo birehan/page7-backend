@@ -31,6 +31,7 @@ from app.features.auth.schemas import (
     MfaVerifyBody,
     ResendVerificationBody,
     ResetPasswordBody,
+    SessionHandoffBody,
     SessionPayloadOut,
     SessionUserOut,
     SignupBody,
@@ -80,6 +81,8 @@ def _set_session_cookie(response: Response, settings: Settings, result: AuthResu
     samesite = settings.auth.cookie_samesite
     if samesite == "none" and not secure:
         raise RuntimeError("AUTH__COOKIE_SAMESITE=none requires Secure cookies")
+    # Partitioned (CHIPS) so a SameSite=None cookie set via fetch from the SPA
+    # is stored under the frontend's top-level site and sent on later API calls.
     response.set_cookie(
         key=settings.auth.session_cookie_name,
         value=result.raw_token,
@@ -88,6 +91,22 @@ def _set_session_cookie(response: Response, settings: Settings, result: AuthResu
         httponly=True,
         secure=secure,
         samesite=samesite,
+        partitioned=samesite == "none",
+    )
+
+
+def _clear_session_cookie(response: Response, settings: Settings) -> None:
+    secure = settings.app_env is not Environment.DEVELOPMENT
+    samesite = settings.auth.cookie_samesite
+    response.set_cookie(
+        key=settings.auth.session_cookie_name,
+        value="",
+        max_age=0,
+        path="/",
+        httponly=True,
+        secure=secure,
+        samesite=samesite,
+        partitioned=samesite == "none",
     )
 
 
@@ -193,16 +212,35 @@ async def google_callback(
         )
 
     assert outcome.auth_result is not None
-    redirect = RedirectResponse(
+    # Do not Set-Cookie on this top-level API redirect: that cookie is first-party
+    # for the API host and is dropped on later cross-site fetches from Vercel.
+    # Hand the SPA a short-lived encrypted handoff to claim via POST instead.
+    handoff = service.mint_session_handoff(outcome.auth_result.raw_token)
+    return RedirectResponse(
         url=_frontend_path(
             settings,
             outcome.locale,
-            "/onboarding" if outcome.is_new_user else "/dashboard",
+            "/auth/callback",
+            {"handoff": handoff},
         ),
         status_code=status.HTTP_302_FOUND,
     )
-    _set_session_cookie(redirect, settings, outcome.auth_result)
-    return redirect
+
+
+@router.post(
+    "/auth/session/claim",
+    response_model=SessionPayloadOut,
+    response_model_exclude_none=True,
+)
+async def claim_session(
+    body: SessionHandoffBody,
+    response: Response,
+    settings: Annotated[Settings, Depends(get_settings)],
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+) -> SessionPayloadOut:
+    result = await service.claim_session_handoff(db, handoff=body.handoff)
+    _set_session_cookie(response, settings, result)
+    return _to_session_payload(result)
 
 
 @router.post("/auth/login", response_model=LoginResponseOut, response_model_exclude_none=True)
@@ -306,7 +344,7 @@ async def logout(
     db: Annotated[AsyncSession, Depends(get_db_session)],
 ) -> None:
     await service.logout(db, session_id=user.session_id)
-    response.delete_cookie(key=settings.auth.session_cookie_name, path="/")
+    _clear_session_cookie(response, settings)
 
 
 @router.post("/auth/forgot", status_code=status.HTTP_204_NO_CONTENT)

@@ -98,6 +98,13 @@ async def create_session(
     return row
 
 
+async def get_session_by_token_hash(
+    session: AsyncSession, token_hash: str
+) -> AuthSession | None:
+    stmt = select(AuthSession).where(AuthSession.token_hash == token_hash)
+    return (await session.execute(stmt)).scalar_one_or_none()
+
+
 async def revoke_session(session: AsyncSession, row: AuthSession) -> None:
     row.revoked_at = utc_now()
     await session.flush()

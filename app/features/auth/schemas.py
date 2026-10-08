@@ -130,3 +130,7 @@ class AuthProvidersOut(CamelModel):
 
 class GoogleStartOut(CamelModel):
     authorize_url: str
+
+
+class SessionHandoffBody(CamelModel):
+    handoff: str = Field(min_length=1)

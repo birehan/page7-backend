@@ -1,7 +1,7 @@
 """Google OIDC auth tests.
 
 Callers: pytest via `just test` / auth suite.
-API: GET /auth/providers, /auth/google/start, /auth/google/callback.
+API: GET /auth/providers, /auth/google/start, /auth/google/callback, POST /auth/session/claim.
 User instruction: Implement the plan as specified (Page7 auth + Google OIDC).
 """
 
@@ -171,8 +171,10 @@ async def test_google_new_user_creates_org_and_session(
         )
     assert resp.status_code == 302
     location = resp.headers["location"]
-    assert "/onboarding" in location
-    assert get_settings().auth.session_cookie_name in resp.cookies
+    assert "/auth/callback" in location
+    qs = parse_qs(urlparse(location).query)
+    assert "handoff" in qs and qs["handoff"][0]
+    assert get_settings().auth.session_cookie_name not in resp.cookies
 
     user = (await db_session.execute(select(User).where(User.email == email))).scalar_one()
     assert user.password_hash is None
@@ -187,7 +189,47 @@ async def test_google_new_user_creates_org_and_session(
 
 
 @pytest.mark.usefixtures("google_settings")
-async def test_google_returning_identity_goes_to_dashboard(
+async def test_google_handoff_claim_sets_cookie_and_me(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    email = f"google-claim-{_uid()}@example.com"
+    subject = f"google-sub-claim-{_uid()}"
+
+    async def fake_exchange(code: str, *, settings: AuthSettings) -> GoogleProfile:
+        return GoogleProfile(
+            subject=subject,
+            email=email,
+            email_verified=True,
+            name="Claim User",
+            picture=None,
+        )
+
+    monkeypatch.setattr(google_client, "exchange_code", fake_exchange)
+
+    async with _client() as ac:
+        state = await _start_and_extract_state(ac)
+        callback = await ac.get(
+            "/v1/auth/google/callback",
+            params={"code": "claim-code", "state": state},
+        )
+        assert callback.status_code == 302
+        handoff = parse_qs(urlparse(callback.headers["location"]).query)["handoff"][0]
+        cookie_name = get_settings().auth.session_cookie_name
+        assert cookie_name not in callback.cookies
+
+        claim = await ac.post("/v1/auth/session/claim", json={"handoff": handoff})
+        assert claim.status_code == 200, claim.text
+        assert cookie_name in claim.cookies
+        body = claim.json()
+        assert body["user"]["email"] == email
+
+        me = await ac.get("/v1/auth/me")
+        assert me.status_code == 200
+        assert me.json()["user"]["email"] == email
+
+
+@pytest.mark.usefixtures("google_settings")
+async def test_google_returning_identity_issues_handoff_again(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     call_count = 0
@@ -213,7 +255,8 @@ async def test_google_returning_identity_goes_to_dashboard(
             "/v1/auth/google/callback",
             params={"code": "c1", "state": state1},
         )
-        assert "/onboarding" in first.headers["location"]
+        assert "/auth/callback" in first.headers["location"]
+        assert "handoff=" in first.headers["location"]
 
         state2 = await _start_and_extract_state(ac)
         second = await ac.get(
@@ -221,7 +264,8 @@ async def test_google_returning_identity_goes_to_dashboard(
             params={"code": "c2", "state": state2},
         )
     assert second.status_code == 302
-    assert "/dashboard" in second.headers["location"]
+    assert "/auth/callback" in second.headers["location"]
+    assert "handoff=" in second.headers["location"]
     assert call_count == 2
 
 
@@ -258,7 +302,8 @@ async def test_google_links_by_verified_email(
             params={"code": "link", "state": state},
         )
     assert resp.status_code == 302
-    assert "/dashboard" in resp.headers["location"]
+    assert "/auth/callback" in resp.headers["location"]
+    assert "handoff=" in resp.headers["location"]
 
     identity = (
         await db_session.execute(
