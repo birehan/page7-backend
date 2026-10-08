@@ -33,6 +33,9 @@ deploy_pool() {
   add_secret_env LLM__OPENAI_API_KEY LLM__OPENAI_API_KEY
   add_secret_env LLM__ANTHROPIC_API_KEY LLM__ANTHROPIC_API_KEY
   add_secret_env IMAGEGEN__API_KEY IMAGEGEN__API_KEY
+  # email_send jobs need SMTP (API already sets EMAIL__PROVIDER=smtp).
+  add_secret_env EMAIL__SMTP_PASSWORD EMAIL__SMTP_PASSWORD
+  add_secret_env EMAIL__RESEND_API_KEY EMAIL__RESEND_API_KEY
   add_secret_env STORAGE__R2_ACCOUNT_ID STORAGE__R2_ACCOUNT_ID
   add_secret_env STORAGE__R2_ACCESS_KEY_ID STORAGE__R2_ACCESS_KEY_ID
   add_secret_env STORAGE__R2_SECRET_ACCESS_KEY STORAGE__R2_SECRET_ACCESS_KEY
@@ -60,7 +63,7 @@ deploy_pool() {
     --cpu=1 \
     --memory=1Gi \
     --set-cloudsql-instances="$CONNECTION_NAME" \
-    --set-env-vars="^|^APP_ENV=${APP_ENV}|DATABASE__POOL_SIZE=2|STORAGE__PROVIDER=r2|LLM__PROVIDER=auto|SOCIAL__PROVIDER=auto|ZERNIO_CREDENTIAL_ALIASES=t1,t2,t3,t4|SOCIAL__FILL_TO_TIER=3" \
+    --set-env-vars="^|^APP_ENV=${APP_ENV}|DATABASE__POOL_SIZE=2|STORAGE__PROVIDER=r2|LLM__PROVIDER=auto|SOCIAL__PROVIDER=auto|EMAIL__PROVIDER=smtp|EMAIL__SMTP_HOST=smtp.hostinger.com|EMAIL__SMTP_PORT=465|EMAIL__SMTP_USERNAME=contact@page7.io|EMAIL__SMTP_USE_TLS=true|ZERNIO_CREDENTIAL_ALIASES=t1,t2,t3,t4|SOCIAL__FILL_TO_TIER=3" \
     "${SECRET_FLAGS[@]}" \
     --quiet
 }
