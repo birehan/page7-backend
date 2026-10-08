@@ -209,9 +209,13 @@ async def create_post(request: Request) -> Response:
             "body": body,
         }
     )
-    xrid = request.headers.get("x-request-id")
-    if xrid and xrid in request.app.state.posts_by_xrid:
-        stored = request.app.state.posts_by_xrid[xrid]
+    # Real client sends Idempotency-Key (pub: keys are not UUIDs, so not
+    # x-request-id). Keep x-request-id for older callers / mode scripts.
+    idem = request.headers.get("idempotency-key") or request.headers.get(
+        "x-request-id"
+    )
+    if idem and idem in request.app.state.posts_by_xrid:
+        stored = request.app.state.posts_by_xrid[idem]
         return JSONResponse(
             {"existingPost": stored},
             status_code=200,
@@ -272,8 +276,8 @@ async def create_post(request: Request) -> Response:
         "metadata": body.get("metadata") if isinstance(body, dict) else {},
     }
     request.app.state.posts[post_id] = stored
-    if xrid:
-        request.app.state.posts_by_xrid[xrid] = stored
+    if idem:
+        request.app.state.posts_by_xrid[idem] = stored
     return JSONResponse(stored, status_code=201, headers=_rate_limit_headers())
 
 

@@ -1,4 +1,4 @@
-"""Poster style enqueues Qwen with brand logo as a reference image."""
+"""Poster style enqueues Qwen and passes brand logo for post-process composite."""
 
 from __future__ import annotations
 
@@ -92,6 +92,9 @@ async def test_poster_enqueue_includes_logo_reference(
     payload = row["payload"]
     assert payload["param_profile"] == "qwen"
     assert payload["model_id"] == "alibaba/qwen-image-3/text-to-image"
-    assert logo_url in payload["reference_image_urls"]
+    # Logo is composited after generation (pixel-faithful), not sent as a model ref.
+    assert payload["logo_url"] == logo_url
+    assert payload["force_logo"] is True
+    assert logo_url not in payload["reference_image_urls"]
     assert "عرض خاص" in payload["augmented_prompt"]
     assert "no alcohol" in payload["augmented_prompt"]

@@ -16376,7 +16376,10 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["initial", "more"],
+            "enum": [
+              "initial",
+              "more"
+            ],
             "default": "initial"
           }
         }
@@ -16717,6 +16720,31 @@
         },
         "required": [
           "items"
+        ]
+      }
+    },
+    {
+      "resource": "inbox",
+      "method": "POST",
+      "path": "/orgs/:orgId/inbox/conversations/:conversationId/ai-draft",
+      "summary": "Generate bilingual AI reply drafts for a conversation.",
+      "stream": false,
+      "idempotent": false,
+      "request": null,
+      "response": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "suggestedReplyAr": {
+            "type": "string"
+          },
+          "suggestedReplyEn": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "suggestedReplyAr",
+          "suggestedReplyEn"
         ]
       }
     },

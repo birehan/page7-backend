@@ -49,6 +49,11 @@ os.environ.setdefault("ZERNIO_API_KEY__t4", "fake-key-t4")
 # Keep the pool at the aliases tests assert on unless a case opts into t4+.
 os.environ.setdefault("ZERNIO_CREDENTIAL_ALIASES", "t1,t2,t3")
 
+# Cloud Build (and any checkout without a local `.env`) has no encryption keys.
+# MFA enroll/verify encrypts TOTP secrets under APP_ENCRYPTION_KEY_CURRENT.
+os.environ.setdefault("APP_ENCRYPTION_KEY_CURRENT", "k1")
+os.environ.setdefault("APP_ENCRYPTION_KEY__k1", "a" * 43)
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
